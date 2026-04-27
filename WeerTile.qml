@@ -4,7 +4,9 @@ import "weer.js" as WeerJS
 
 Tile {
 	id: weerTile
-	property string tempVal: (app.indexStation < 0) ? "Even geduld" : WeerJS.formatTemp(app.temperatuurGC, app.stationArray[app.indexStation])
+	property string tempVal: app.useOpenMeteo
+		? (app.locationName ? WeerJS.formatTemp(app.temperatuurGC, app.locationName) : "Even geduld")
+		: (app.indexStation < 0 ? "Even geduld" : WeerJS.formatTemp(app.temperatuurGC, app.stationArray[app.indexStation]))
 	property string tempWind: WeerJS.formatWind(app.windrichting, app.windsnelheidBF)
 	property string tempZin: WeerJS.formatZin(app.icoonzin)
 	property string tempLuchtdruk: WeerJS.formatLuchtdruk(app.luchtdruk,app.luchtvochtigheid)

@@ -359,8 +359,20 @@ App {
 					doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
 					doc2.send(temperatuurGC + ":" + current['time']);
 
+					// reverse-geocode GPS coordinates to city name
+					var geoHttp = new XMLHttpRequest();
+					geoHttp.onreadystatechange = function() {
+						if (geoHttp.readyState == 4 && geoHttp.status == 200) {
+							var geo = JSON.parse(geoHttp.responseText);
+							var addr = geo['address'];
+							locationName = addr['city'] || addr['town'] || addr['village'] || addr['hamlet'] || addr['municipality'] || (lat4 + ", " + lon4);
+						}
+					}
+					geoHttp.open("GET", "https://nominatim.openstreetmap.org/reverse?lat=" + lat4 + "&lon=" + lon4 + "&format=json", true);
+					geoHttp.send();
+
 					// actualweather model for details screen
-					var locStr = lat4 + ", " + lon4;
+					var locStr = locationName ? locationName : (lat4 + ", " + lon4);
 					var tmpActual = [];
 					tmpActual.push({'location': 'GPS locatie',
 						'temperature': 'Temperatuur:',
