@@ -15,7 +15,8 @@ Screen {
 		if (text) {
 			app.lon = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
 			lonLabel.inputText = app.lon;
-	   		app.saveSettings();
+			app.knmiNearestStationId = "";
+			app.saveSettings();
 		}
 	}
 
@@ -24,7 +25,8 @@ Screen {
 		if (text) {
 			app.lat = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
 			latLabel.inputText = app.lat;
-	   		app.saveSettings();
+			app.knmiNearestStationId = "";
+			app.saveSettings();
 			findNearestWeatherStation();
 		}
 	}
@@ -89,12 +91,13 @@ Screen {
 	onCustomButtonClicked: {
 		app.saveSettings();
 		app.updateRegenkans();
+		app.updateKNMITemperature();
 		hide();
 	}
 
 	Text {
 		id: title
-		text: "Invoeren GPS coordinaten (2 decimalen) voor de exacte regenverwachting en automatische selektie van het dichtsbijzijnde weerstation."
+		text: "Invoeren GPS coordinaten (2 decimalen) voor de exacte regenverwachting, KNMI temperatuur en automatische selektie van het dichtsbijzijnde weerstation voor overige weerdata."
        		width: isNxt ? 500 : 400
         	wrapMode: Text.WordWrap
 		font.pixelSize: isNxt ? 20 : 16
