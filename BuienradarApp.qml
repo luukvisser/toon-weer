@@ -6,7 +6,7 @@ import "buienradar.js" as BuienradarJS
 
 App {
 	id: buienradarApp
-	objectName: "BuienradarApp"
+	objectName: "BuienradarWazeApp"
 
 		// default weerstation after cold boot if no saved location exists	
 	property string location : "6344";
@@ -90,9 +90,9 @@ App {
 
 	
 	function init() {
-		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("Buienradar"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "Regenverw.", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "Zon op/onder", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("Buienradar (beta)"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "Regenverw. (beta)", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "Zon op/onder (beta)", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", p.buienradarDetailsScreenUrl, this, "buienradarDetailsScreen");
 		registry.registerWidget("screen", p.buienradarStationScreenUrl, this, "buienradarStationScreen");
 		registry.registerWidget("screen", p.buienradarActualRadarScreenUrl, this, "buienradarActualRadarScreen");
