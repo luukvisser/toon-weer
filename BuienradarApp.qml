@@ -43,7 +43,6 @@ App {
 
 	// KNMI Data Platform settings
 	property string knmiApiKey : "eyJvcmciOiI1ZTU1NGUxOTI3NGE5NjAwMDEyYTNlYjEiLCJpZCI6ImVlNDFjMWI0MjlkODQ2MThiNWI4ZDViZDAyMTM2YTM3IiwiaCI6Im11cm11cjEyOCJ9"
-	property string knmiNearestStationId : ""
 	property bool useKNMIData : false
 
 	property string temperatuurGC
@@ -117,7 +116,6 @@ App {
 			if (buienradarSettingsJson['selectedLongitude']) lon = buienradarSettingsJson['selectedLongitude'];
 			if (buienradarSettingsJson['selectedLatitude']) lat = buienradarSettingsJson['selectedLatitude'];
 			if (buienradarSettingsJson['knmiApiKey']) knmiApiKey = buienradarSettingsJson['knmiApiKey'];
-			if (buienradarSettingsJson['knmiNearestStationId']) knmiNearestStationId = buienradarSettingsJson['knmiNearestStationId'];
 			if (buienradarSettingsJson['useKNMIData'] !== undefined) useKNMIData = buienradarSettingsJson['useKNMIData'];
 		} catch(e) {
 		}
@@ -131,7 +129,6 @@ App {
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
 			"knmiApiKey": knmiApiKey,
-			"knmiNearestStationId": knmiNearestStationId,
 			"useKNMIData": useKNMIData
 		}
 
@@ -144,56 +141,6 @@ App {
 		var pad2 = function(n) { return (n < 10 ? '0' : '') + n; };
 		return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate()) +
 		       'T' + pad2(d.getUTCHours()) + ':' + pad2(d.getUTCMinutes()) + ':' + pad2(d.getUTCSeconds()) + 'Z';
-	}
-
-	function knmiHaversine(lat1, lon1, lat2, lon2) {
-		var R = 6371;
-		var dLat = (lat2 - lat1) * Math.PI / 180;
-		var dLon = (lon2 - lon1) * Math.PI / 180;
-		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-		        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	}
-
-	function findKNMINearestStation(callback) {
-		var latVal = parseFloat(lat);
-		var lonVal = parseFloat(lon);
-		if (isNaN(latVal) || isNaN(lonVal)) return;
-
-		var now = new Date();
-		var url = "https://api.dataplatform.knmi.nl/edr/v1/collections/10-minute-in-situ-meteorological-observations/locations" +
-		          "?datetime=" + encodeURIComponent(formatISODate(now));
-
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-				try {
-					var response = JSON.parse(xmlhttp.responseText);
-					var features = response.features;
-					var nearestId = "";
-					var nearestDist = 1000000;
-
-					for (var i = 0; i < features.length; i++) {
-						var coords = features[i].geometry.coordinates; // [lon, lat]
-						var dist = knmiHaversine(latVal, lonVal, coords[1], coords[0]);
-						if (dist < nearestDist) {
-							nearestDist = dist;
-							nearestId = features[i].id;
-						}
-					}
-
-					if (nearestId) {
-						knmiNearestStationId = nearestId;
-						saveSettings();
-						if (callback) callback();
-					}
-				} catch(e) {}
-			}
-		};
-		xmlhttp.open("GET", url, true);
-		xmlhttp.setRequestHeader("Authorization", knmiApiKey);
-		xmlhttp.send();
 	}
 
 	function knmiMsToBeaufort(ms) {
@@ -248,15 +195,19 @@ App {
 	}
 
 	function fetchKNMIData() {
-		if (!knmiNearestStationId) return;
+		var latVal = parseFloat(lat);
+		var lonVal = parseFloat(lon);
+		if (isNaN(latVal) || isNaN(lonVal)) return;
 
 		var now = new Date();
 		var thirtyMinsAgo = new Date(now.getTime() - 30 * 60 * 1000);
 		var datetime = formatISODate(thirtyMinsAgo) + "/" + formatISODate(now);
 
-		var url = "https://api.dataplatform.knmi.nl/edr/v1/collections/10-minute-in-situ-meteorological-observations/locations/" +
-		          knmiNearestStationId +
-		          "?datetime=" + encodeURIComponent(datetime) +
+		// OGC EDR /position endpoint: POINT(longitude latitude) in WKT
+		var coords = "POINT(" + lonVal + " " + latVal + ")";
+		var url = "https://api.dataplatform.knmi.nl/edr/v1/collections/10-minute-in-situ-meteorological-observations/position" +
+		          "?coords=" + encodeURIComponent(coords) +
+		          "&datetime=" + encodeURIComponent(datetime) +
 		          "&parameter-name=ta,rh,pp,ff,dd,zm,td";
 
 		var xmlhttp = new XMLHttpRequest();
@@ -313,11 +264,7 @@ App {
 
 	function updateKNMITemperature() {
 		if (!useKNMIData) return;
-		if (!knmiNearestStationId) {
-			findKNMINearestStation(fetchKNMIData);
-		} else {
-			fetchKNMIData();
-		}
+		fetchKNMIData();
 	}
 
 	function updateBuienradar() {

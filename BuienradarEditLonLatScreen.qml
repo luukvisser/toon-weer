@@ -15,7 +15,6 @@ Screen {
 		if (text) {
 			app.lon = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
 			lonLabel.inputText = app.lon;
-			app.knmiNearestStationId = "";
 			app.saveSettings();
 		}
 	}
@@ -25,7 +24,6 @@ Screen {
 		if (text) {
 			app.lat = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
 			latLabel.inputText = app.lat;
-			app.knmiNearestStationId = "";
 			app.saveSettings();
 			findNearestWeatherStation();
 		}
