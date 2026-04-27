@@ -1,17 +1,17 @@
 import QtQuick 2.1
 import qb.components 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Screen {
-	id: buienradarDetailsScreen
+	id: weerDetailsScreen
 
 	screenTitle: "Actueel weer plus weersverwachting";
 
 	property bool dimState: screenStateController.dimmedColors;
 
 	onCustomButtonClicked: {
-		if (app.buienradarEditLonLatScreen) {
-			 app.buienradarEditLonLatScreen.show();
+		if (app.weerEditLonLatScreen) {
+			 app.weerEditLonLatScreen.show();
 		}
 	}
 
@@ -366,7 +366,7 @@ Screen {
         }
 
 	Text {
-		id: buienradarDS2wvtitel
+		id: weerDS2wvtitel
 		text: app.weersverwachtingTitel
 		anchors {
 			baseline: parent.top
@@ -417,8 +417,8 @@ Screen {
 		MouseArea {
 			anchors.fill: parent
 			onClicked: {
-				if (app.buienradarFullWeatherForecastScreen)
-					app.buienradarFullWeatherForecastScreen.show();
+				if (app.weerFullWeatherForecastScreen)
+					app.weerFullWeatherForecastScreen.show();
 			}
 		}
 
@@ -445,9 +445,9 @@ Screen {
 				} else {
 					app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 				}
-				if (app.buienradarActualRadarScreen) {
-					app.buienradarActualRadarScreen.setTitle("Actuele Buienradar");
-					app.buienradarActualRadarScreen.show();
+				if (app.weerActualRadarScreen) {
+					app.weerActualRadarScreen.setTitle("Actuele Weer");
+					app.weerActualRadarScreen.show();
 				}
 			}
 		}

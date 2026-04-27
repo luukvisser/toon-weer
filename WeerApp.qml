@@ -2,11 +2,11 @@ import QtQuick 2.1
 import qb.components 1.0
 import qb.base 1.0
 import FileIO 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 App {
-	id: buienradarApp
-	objectName: "BuienradarApp"
+	id: weerApp
+	objectName: "WeerApp"
 
 		// default weerstation after cold boot if no saved location exists	
 	property string location : "6344";
@@ -14,17 +14,17 @@ App {
 	property string lat : "52.21"
 	property string lon : "4.53"
 
-	property url tileUrl : "BuienradarTile.qml"
-	property url tileUrlRegen : "BuienradarRegenTile.qml"
-	property url tileSunrise : "BuienradarSunriseTile.qml"
-	property url thumbnailIcon: "qrc:/tsc/buienradar.png"
-	property BuienradarDetailsScreen buienradarDetailsScreen
-	property BuienradarStationScreen buienradarStationScreen
-	property BuienradarActualRadarScreen buienradarActualRadarScreen
-	property BuienradarEditLonLatScreen buienradarEditLonLatScreen
-	property BuienradarFullWeatherForecastScreen buienradarFullWeatherForecastScreen
-	property url menuUrl : "BuienradarMenu.qml"
-	property url trayUrl : "BuienradarTray.qml";
+	property url tileUrl : "WeerTile.qml"
+	property url tileUrlRegen : "WeerRegenTile.qml"
+	property url tileSunrise : "WeerSunriseTile.qml"
+	property url thumbnailIcon: "qrc:/tsc/weer.png"
+	property WeerDetailsScreen weerDetailsScreen
+	property WeerStationScreen weerStationScreen
+	property WeerActualRadarScreen weerActualRadarScreen
+	property WeerEditLonLatScreen weerEditLonLatScreen
+	property WeerFullWeatherForecastScreen weerFullWeatherForecastScreen
+	property url menuUrl : "WeerMenu.qml"
+	property url trayUrl : "WeerTray.qml";
 	property string timeStr
 
 	property string locationName
@@ -71,37 +71,37 @@ App {
 	property bool useOpenMeteo: false
 
 	// user settings from config file
-	property variant buienradarSettingsJson : {}
+	property variant weerSettingsJson : {}
 
 	FileIO {
-		id: buienradarSettingsFile
-		source: "file:///mnt/data/tsc/buienradar.userSettings.json"
+		id: weerSettingsFile
+		source: "file:///mnt/data/tsc/weer.userSettings.json"
  	}
 
 	QtObject {
 		id: p
 
-		property url buienradarDetailsScreenUrl : "BuienradarDetailsScreen.qml"
-		property url buienradarStationScreenUrl : "BuienradarStationScreen.qml"
-		property url buienradarActualRadarScreenUrl : "BuienradarActualRadarScreen.qml"
-		property url buienradarEditLonLatScreenUrl : "BuienradarEditLonLatScreen.qml"
-		property url buienradarFullWeatherForecastScreenUrl : "BuienradarFullWeatherForecastScreen.qml"
-		property url buienradarMenuUrl   : "BuienradarMenu.qml"
-		property url buienradarTrayUrl: "BuienradarTray.qml"
+		property url weerDetailsScreenUrl : "WeerDetailsScreen.qml"
+		property url weerStationScreenUrl : "WeerStationScreen.qml"
+		property url weerActualRadarScreenUrl : "WeerActualRadarScreen.qml"
+		property url weerEditLonLatScreenUrl : "WeerEditLonLatScreen.qml"
+		property url weerFullWeatherForecastScreenUrl : "WeerFullWeatherForecastScreen.qml"
+		property url weerMenuUrl   : "WeerMenu.qml"
+		property url weerTrayUrl: "WeerTray.qml"
 	}
 
 	
 	function init() {
-		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("Buienradar"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "Regenverw.", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "Zon op/onder", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("screen", p.buienradarDetailsScreenUrl, this, "buienradarDetailsScreen");
-		registry.registerWidget("screen", p.buienradarStationScreenUrl, this, "buienradarStationScreen");
-		registry.registerWidget("screen", p.buienradarActualRadarScreenUrl, this, "buienradarActualRadarScreen");
-		registry.registerWidget("screen", p.buienradarEditLonLatScreenUrl, this, "buienradarEditLonLatScreen");
-		registry.registerWidget("screen", p.buienradarFullWeatherForecastScreenUrl, this, "buienradarFullWeatherForecastScreen");
-		registry.registerWidget("menuItem", p.buienradarMenuUrl, this, "buienradarMenu", {weight: 110});
-		registry.registerWidget("systrayIcon", p.buienradarTrayUrl, buienradarApp);
+		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("OM Weer"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "OM Regenverw.", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "OM Zon op/onder", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("screen", p.weerDetailsScreenUrl, this, "weerDetailsScreen");
+		registry.registerWidget("screen", p.weerStationScreenUrl, this, "weerStationScreen");
+		registry.registerWidget("screen", p.weerActualRadarScreenUrl, this, "weerActualRadarScreen");
+		registry.registerWidget("screen", p.weerEditLonLatScreenUrl, this, "weerEditLonLatScreen");
+		registry.registerWidget("screen", p.weerFullWeatherForecastScreenUrl, this, "weerFullWeatherForecastScreen");
+		registry.registerWidget("menuItem", p.weerMenuUrl, this, "weerMenu", {weight: 110});
+		registry.registerWidget("systrayIcon", p.weerTrayUrl, weerApp);
 	}
 
 	Component.onCompleted: {
@@ -109,11 +109,11 @@ App {
 		//read user settings
 
 		try {
-			buienradarSettingsJson = JSON.parse(buienradarSettingsFile.read());
-			if (buienradarSettingsJson['selectedStation']) location = buienradarSettingsJson['selectedStation'];
-			if (buienradarSettingsJson['selectedLongitude']) lon = buienradarSettingsJson['selectedLongitude'];
-			if (buienradarSettingsJson['selectedLatitude']) lat = buienradarSettingsJson['selectedLatitude'];
-			if (buienradarSettingsJson['useOpenMeteo'] !== undefined) useOpenMeteo = buienradarSettingsJson['useOpenMeteo'];
+			weerSettingsJson = JSON.parse(weerSettingsFile.read());
+			if (weerSettingsJson['selectedStation']) location = weerSettingsJson['selectedStation'];
+			if (weerSettingsJson['selectedLongitude']) lon = weerSettingsJson['selectedLongitude'];
+			if (weerSettingsJson['selectedLatitude']) lat = weerSettingsJson['selectedLatitude'];
+			if (weerSettingsJson['useOpenMeteo'] !== undefined) useOpenMeteo = weerSettingsJson['useOpenMeteo'];
 		} catch(e) {
 		}
 	}
@@ -129,11 +129,11 @@ App {
 		}
 
   		var doc3 = new XMLHttpRequest();
-   		doc3.open("PUT", "file:///mnt/data/tsc/buienradar.userSettings.json");
+   		doc3.open("PUT", "file:///mnt/data/tsc/weer.userSettings.json");
    		doc3.send(JSON.stringify(tmpUserSettingsJson ));
 	}
 
-	function updateBuienradar() {
+	function updateWeer() {
 		
   		var weekday = new Array(7);
   		weekday[0] = "Zo";
@@ -158,10 +158,10 @@ App {
 						// if not done already first fill array with available weatherstations
 
 					for (var i=0; i < brJson['actual']['stationmeasurements'].length; i++) {
-						stationArray = BuienradarJS.addStationName(stationArray, i, brJson['actual']['stationmeasurements'][i]['stationname'].slice (-1 * (brJson['actual']['stationmeasurements'][i]['stationname'].length - 12)));
-						locationArray = BuienradarJS.addStationName(locationArray, i, brJson['actual']['stationmeasurements'][i]['stationid']);
-						latArray = BuienradarJS.addStationName(latArray, i, brJson['actual']['stationmeasurements'][i]['lat']);
-						lonArray = BuienradarJS.addStationName(lonArray, i, brJson['actual']['stationmeasurements'][i]['lon']);
+						stationArray = WeerJS.addStationName(stationArray, i, brJson['actual']['stationmeasurements'][i]['stationname'].slice (-1 * (brJson['actual']['stationmeasurements'][i]['stationname'].length - 12)));
+						locationArray = WeerJS.addStationName(locationArray, i, brJson['actual']['stationmeasurements'][i]['stationid']);
+						latArray = WeerJS.addStationName(latArray, i, brJson['actual']['stationmeasurements'][i]['lat']);
+						lonArray = WeerJS.addStationName(lonArray, i, brJson['actual']['stationmeasurements'][i]['lon']);
 						if (location == brJson['actual']['stationmeasurements'][i]['stationid']) indexStation = i;
 					}
 
@@ -173,7 +173,7 @@ App {
 						// save actual temp for use in TemperatureLogger app
 
    						var doc2 = new XMLHttpRequest();
-						doc2.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
+						doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
    						doc2.send(brJson['actual']['stationmeasurements'][indexStation]['temperature'] + ":" + brJson['actual']['stationmeasurements'][indexStation]['timestamp']);
 
 						if (brJson['actual']['stationmeasurements'][indexStation]['windspeed']) windsnelheidMS = brJson['actual']['stationmeasurements'][indexStation]['windspeed'];
@@ -201,14 +201,14 @@ App {
 							  'luchtdruk': 'Luchtdruk:',
 							  'zicht': 'Zicht:',
 							  'zonoponder': 'Zon op\/onder'});
-						tmpActual.push({'location': BuienradarJS.dateFormat(brJson['actual']['stationmeasurements'][indexStation]['timestamp']),
+						tmpActual.push({'location': WeerJS.dateFormat(brJson['actual']['stationmeasurements'][indexStation]['timestamp']),
 							  'temperature': temperatuurGC,
 							  'windrichting': windrichting,
 							  'windsnelheid': windsnelheidBF,
 							  'luchtvochtigheid': luchtvochtigheid,
 							  'luchtdruk': luchtdruk,
 							  'zicht': zichtmeters,
-							  'zonoponder': BuienradarJS.lineZonOpOnder(brJson['actual']['sunrise'], brJson['actual']['sunset'])});
+							  'zonoponder': WeerJS.lineZonOpOnder(brJson['actual']['sunrise'], brJson['actual']['sunset'])});
 						actualweather = tmpActual;
 
 				
@@ -281,8 +281,8 @@ App {
 
 						// link to icon images
 
-					icoonimageDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonimageNoDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageDim = WeerJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/weer/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageNoDim = WeerJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/weer/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
 				}
 			}
 		}
@@ -325,8 +325,8 @@ App {
 
 					var windKmh = current['wind_speed_10m'];
 					windsnelheidMS = (windKmh / 3.6).toFixed(1);
-					windsnelheidBF = BuienradarJS.kmhToBft(windKmh);
-					windrichting = BuienradarJS.degreesToWindDir(current['wind_direction_10m']);
+					windsnelheidBF = WeerJS.kmhToBft(windKmh);
+					windrichting = WeerJS.degreesToWindDir(current['wind_direction_10m']);
 
 					// visibility from hourly slot matching current time
 					var currentHourStr = current['time'].substring(0, 13) + ":00";
@@ -342,21 +342,21 @@ App {
 					zononder  = daily['sunset'][0];
 
 					// weather icon mapped from WMO code
-					icoonid = BuienradarJS.wmoCodeToIconId(current['weather_code']);
+					icoonid = WeerJS.wmoCodeToIconId(current['weather_code']);
 					icoonzin = "";
-					icoonlink = "file:///qmf/qml/apps/buienradar/drawables/Home"
+					icoonlink = "file:///qmf/qml/apps/weer/drawables/Home"
 						+ icoonid + ".png";
 
-					icoonimageDim    = BuienradarJS.parseWeatherIdAndText(
-						false, "file:///qmf/qml/apps/buienradar/drawables/Dim",
+					icoonimageDim    = WeerJS.parseWeatherIdAndText(
+						false, "file:///qmf/qml/apps/weer/drawables/Dim",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonimageNoDim  = BuienradarJS.parseWeatherIdAndText(
-						false, "file:///qmf/qml/apps/buienradar/drawables/Home",
+					icoonimageNoDim  = WeerJS.parseWeatherIdAndText(
+						false, "file:///qmf/qml/apps/weer/drawables/Home",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
 
 					// save actual temp for TemperatureLogger
 					var doc2 = new XMLHttpRequest();
-					doc2.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
+					doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
 					doc2.send(temperatuurGC + ":" + current['time']);
 
 					// actualweather model for details screen
@@ -377,7 +377,7 @@ App {
 						'luchtvochtigheid': luchtvochtigheid,
 						'luchtdruk': luchtdruk,
 						'zicht': zichtmeters,
-						'zonoponder': BuienradarJS.lineZonOpOnder(zonopkomst, zononder)});
+						'zonoponder': WeerJS.lineZonOpOnder(zonopkomst, zononder)});
 					actualweather = tmpActual;
 
 					// 5-day forecast
@@ -393,12 +393,12 @@ App {
 						var dayName = weekday[dayDate.getDay()];
 						var sunPct = Math.min(100, Math.round(daily['sunshine_duration'][i] / 432));
 						var rainPct = daily['precipitation_probability_max'][i] || 0;
-						var wDir = BuienradarJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
-						var wBft = BuienradarJS.kmhToBft(daily['wind_speed_10m_max'][i]);
-						var fcIconId = BuienradarJS.wmoCodeToIconId(daily['weather_code'][i]);
-						var fcIconPath = BuienradarJS.parseWeatherIdAndText(
+						var wDir = WeerJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
+						var wBft = WeerJS.kmhToBft(daily['wind_speed_10m_max'][i]);
+						var fcIconId = WeerJS.wmoCodeToIconId(daily['weather_code'][i]);
+						var fcIconPath = WeerJS.parseWeatherIdAndText(
 							false,
-							"file:///qmf/qml/apps/buienradar/drawables/Home",
+							"file:///qmf/qml/apps/weer/drawables/Home",
 							fcIconId, "", daily['sunrise'][0], daily['sunset'][0], "12:00");
 						tmpForecast.push({
 							'dagweek': dayName,
@@ -475,8 +475,8 @@ App {
 							}
 						}
 
-       			       			regenVerwachtingMidden = BuienradarJS.addMinutes(regenVerwachtingVanaf, 60);
-       		          			regenVerwachtingTot = BuienradarJS.addMinutes(regenVerwachtingVanaf, 120);
+       			       			regenVerwachtingMidden = WeerJS.addMinutes(regenVerwachtingVanaf, 60);
+       		          			regenVerwachtingTot = WeerJS.addMinutes(regenVerwachtingVanaf, 120);
 						regenVerwachting = newArray;
 							
 						regenMaxValue = Math.round(maxValue + 0.5); 
@@ -496,7 +496,7 @@ App {
 		triggeredOnStart: true
 		running: true
 		repeat: true
-		onTriggered: useOpenMeteo ? updateOpenMeteo() : updateBuienradar()
+		onTriggered: useOpenMeteo ? updateOpenMeteo() : updateWeer()
 	}
 
 

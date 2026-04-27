@@ -3,7 +3,7 @@ import qb.components 1.0
 import BasicUIControls 1.0
 
 import BxtClient 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Screen {
 	id: lonlatEntryScreen
@@ -34,7 +34,7 @@ Screen {
 	hasCancelButton: true
 	hasSaveButton: false
 
-	screenTitle: "Buienradar settings"
+	screenTitle: "Weer settings"
 
 	onShown: {
 		addCustomTopRightButton("Opslaan");
@@ -79,9 +79,9 @@ Screen {
 		app.location = nearestStation;
 		app.indexStation = app.locationArray.indexOf(parseInt(app.location))
 		app.saveSettings();
-		app.updateBuienradar();
+		app.updateWeer();
 		stationLabel.inputText = app.stationArray[app.indexStation]; 
-		qdialog.showDialog(qdialog.SizeLarge, "Buienradar mededeling", "Op basis van de ingevoerde lat/lon coordinaten is het volgende dichtsbijzijnde weerstation geselekteerd:\n\nStation: " + app.stationArray[app.indexStation] + "\nAfstand : " + (Math.round(nearestDistance * 100) / 100) + " km", "Sluiten");
+		qdialog.showDialog(qdialog.SizeLarge, "Weer mededeling", "Op basis van de ingevoerde lat/lon coordinaten is het volgende dichtsbijzijnde weerstation geselekteerd:\n\nStation: " + app.stationArray[app.indexStation] + "\nAfstand : " + (Math.round(nearestDistance * 100) / 100) + " km", "Sluiten");
 	}
 
 	onCustomButtonClicked: {
@@ -195,8 +195,8 @@ Screen {
 		}
 
 		onClicked: {
-			if (app.buienradarStationScreen) {
-				app.buienradarStationScreen.show();
+			if (app.weerStationScreen) {
+				app.weerStationScreen.show();
 			}
 		}
 	}
@@ -216,8 +216,8 @@ Screen {
 
 		topClickMargin: 3
 		onClicked: {
-			if (app.buienradarStationScreen) {
-				app.buienradarStationScreen.show();
+			if (app.weerStationScreen) {
+				app.weerStationScreen.show();
 			}
 		}
 	}
@@ -285,7 +285,7 @@ Screen {
 				if (app.useOpenMeteo) {
 					app.updateOpenMeteo();
 				} else {
-					app.updateBuienradar();
+					app.updateWeer();
 				}
 			}
 		}
@@ -295,7 +295,7 @@ Screen {
 		id: openMeteoUitleg
 		text: app.useOpenMeteo
 			? "Alle weerdata via Open-Meteo op basis van GPS coordinaten (geen weerstation nodig)."
-			: "Gebruik Buienradar weerstation voor actuele meting."
+			: "Gebruik Weer weerstation voor actuele meting."
 		width: isNxt ? 480 : 370
 		wrapMode: Text.WordWrap
 		anchors {

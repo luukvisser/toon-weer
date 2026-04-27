@@ -1,17 +1,17 @@
 import QtQuick 2.1
 import qb.components 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Tile {
-	id: buienradarTile
+	id: weerTile
 
 	property bool dimState: screenStateController.dimmedColors
 
 	onClicked: {
 		app.radarimagesSmallurl ="http://toon/";  //resetimage
 		app.radarimagesSmallurl ="https://api.buienradar.nl/image/1.0/RadarMapNL?w=180&h=180";
-		if (app.buienradarDetailsScreen)
-			app.buienradarDetailsScreen.show();
+		if (app.weerDetailsScreen)
+			app.weerDetailsScreen.show();
 	}
 
 

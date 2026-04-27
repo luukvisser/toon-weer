@@ -1,11 +1,11 @@
 import QtQuick 2.1
 import qb.components 1.0
 import BasicUIControls 1.0;
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Tile {
 	id: root
-	property string displayScale: BuienradarJS.formatScale(app.regenMaxValue, app.yaxisScale)
+	property string displayScale: WeerJS.formatScale(app.regenMaxValue, app.yaxisScale)
 
 	onClicked: {
 		app.radarimagesurl ="http://toon/";  //resetimage
@@ -15,14 +15,14 @@ Tile {
 			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 		}
 
-		if (app.buienradarActualRadarScreen) {
-			app.buienradarActualRadarScreen.setTitle("Actuele Buienradar");
-			app.buienradarActualRadarScreen.show();
+		if (app.weerActualRadarScreen) {
+			app.weerActualRadarScreen.setTitle("Actuele Weer");
+			app.weerActualRadarScreen.show();
 		}
 	}
 
 	Text {
-		id: buienradarRegenTileTitleText
+		id: weerRegenTileTitleText
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 38 : 30
@@ -38,7 +38,7 @@ Tile {
 	}
 
 	Text {
-		id: buienradarRegenTileTitleText2
+		id: weerRegenTileTitleText2
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 110 : 90
@@ -79,7 +79,7 @@ Tile {
 	}
 
 	Text {
-		id: buienradarYaxis
+		id: weerYaxis
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 55 : 45
@@ -96,7 +96,7 @@ Tile {
 	}
 
 	Text {
-		id: buienradarYaxismm
+		id: weerYaxismm
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 75 : 60
