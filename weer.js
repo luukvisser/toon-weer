@@ -123,6 +123,39 @@ function lineWindstotenMS(ws) {
 * @return relative path to weather icon as string
 */
 
+function wmoCodeToDescription(wmoCode) {
+    if (wmoCode === 0)  return "Helder";
+    if (wmoCode === 1)  return "Overwegend helder";
+    if (wmoCode === 2)  return "Gedeeltelijk bewolkt";
+    if (wmoCode === 3)  return "Bewolkt";
+    if (wmoCode === 45) return "Mist";
+    if (wmoCode === 48) return "Rijpmist";
+    if (wmoCode === 51) return "Lichte motregen";
+    if (wmoCode === 53) return "Matige motregen";
+    if (wmoCode === 55) return "Dichte motregen";
+    if (wmoCode === 56) return "Lichte ijzel";
+    if (wmoCode === 57) return "Zware ijzel";
+    if (wmoCode === 61) return "Lichte regen";
+    if (wmoCode === 63) return "Matige regen";
+    if (wmoCode === 65) return "Zware regen";
+    if (wmoCode === 66) return "Lichte ijsregen";
+    if (wmoCode === 67) return "Zware ijsregen";
+    if (wmoCode === 71) return "Lichte sneeuwval";
+    if (wmoCode === 73) return "Matige sneeuwval";
+    if (wmoCode === 75) return "Zware sneeuwval";
+    if (wmoCode === 77) return "Sneeuwkorrels";
+    if (wmoCode === 80) return "Lichte regenbuien";
+    if (wmoCode === 81) return "Matige regenbuien";
+    if (wmoCode === 82) return "Hevige regenbuien";
+    if (wmoCode === 85) return "Lichte sneeuwbuien";
+    if (wmoCode === 86) return "Zware sneeuwbuien";
+    if (wmoCode === 95) return "Onweer";
+    if (wmoCode === 96) return "Onweer met hagel";
+    if (wmoCode === 99) return "Onweer met zware hagel";
+    return "";
+}
+
+
 function wmoCodeToIconId(wmoCode) {
     if (wmoCode === 0) return 'a';
     if (wmoCode <= 2) return 'b';

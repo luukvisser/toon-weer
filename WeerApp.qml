@@ -343,7 +343,7 @@ App {
 
 					// weather icon mapped from WMO code
 					icoonid = WeerJS.wmoCodeToIconId(current['weather_code']);
-					icoonzin = "";
+					icoonzin = WeerJS.wmoCodeToDescription(current['weather_code']);
 					icoonlink = "file:///qmf/qml/apps/weer/drawables/Home"
 						+ icoonid + ".png";
 
