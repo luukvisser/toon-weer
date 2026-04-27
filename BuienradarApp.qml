@@ -68,6 +68,8 @@ App {
 	property variant actualweather: []
 	property string firstdayForecast: "  "
 
+	property bool useOpenMeteo: false
+
 	// user settings from config file
 	property variant buienradarSettingsJson : {}
 
@@ -108,20 +110,22 @@ App {
 
 		try {
 			buienradarSettingsJson = JSON.parse(buienradarSettingsFile.read());
-			if (buienradarSettingsJson['selectedStation']) location = buienradarSettingsJson['selectedStation'];		
-			if (buienradarSettingsJson['selectedLongitude']) lon = buienradarSettingsJson['selectedLongitude'];		
-			if (buienradarSettingsJson['selectedLatitude']) lat = buienradarSettingsJson['selectedLatitude'];		
+			if (buienradarSettingsJson['selectedStation']) location = buienradarSettingsJson['selectedStation'];
+			if (buienradarSettingsJson['selectedLongitude']) lon = buienradarSettingsJson['selectedLongitude'];
+			if (buienradarSettingsJson['selectedLatitude']) lat = buienradarSettingsJson['selectedLatitude'];
+			if (buienradarSettingsJson['useOpenMeteo'] !== undefined) useOpenMeteo = buienradarSettingsJson['useOpenMeteo'];
 		} catch(e) {
 		}
 	}
 
 	function saveSettings() {
-		
+
 		// save user settings
- 		var tmpUserSettingsJson = {
+		var tmpUserSettingsJson = {
 			"selectedStation": location,
 			"selectedLongitude": lon,
-			"selectedLatitude": lat
+			"selectedLatitude": lat,
+			"useOpenMeteo": useOpenMeteo
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -286,6 +290,138 @@ App {
 		xmlhttp.send();
 	}
 
+	function updateOpenMeteo() {
+
+		var weekday = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
+		var now = new Date().getTime();
+		timeStr = i18n.dateTime(now, i18n.time_yes);
+
+		var lat4 = parseFloat(lat).toFixed(4);
+		var lon4 = parseFloat(lon).toFixed(4);
+		var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
+			+ "&longitude=" + lon4
+			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
+			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code"
+			+ "&hourly=visibility"
+			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
+			+ ",precipitation_probability_max,wind_speed_10m_max"
+			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset"
+			+ "&timezone=auto&forecast_days=6";
+
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4) {
+				if (xmlhttp.status == 200) {
+					var data = JSON.parse(xmlhttp.responseText);
+					var current = data['current'];
+					var daily = data['daily'];
+					var hourly = data['hourly'];
+
+					// current conditions
+					temperatuurGC = current['temperature_2m'];
+					gevoelstemperatuur = current['apparent_temperature'];
+					luchtvochtigheid = current['relative_humidity_2m'];
+					luchtdruk = current['surface_pressure'];
+
+					var windKmh = current['wind_speed_10m'];
+					windsnelheidMS = (windKmh / 3.6).toFixed(1);
+					windsnelheidBF = BuienradarJS.kmhToBft(windKmh);
+					windrichting = BuienradarJS.degreesToWindDir(current['wind_direction_10m']);
+
+					// visibility from hourly slot matching current time
+					var currentHourStr = current['time'].substring(0, 13) + ":00";
+					for (var j = 0; j < hourly['time'].length; j++) {
+						if (hourly['time'][j] === currentHourStr) {
+							zichtmeters = hourly['visibility'][j];
+							break;
+						}
+					}
+
+					// sunrise / sunset from first daily entry
+					zonopkomst = daily['sunrise'][0];
+					zononder  = daily['sunset'][0];
+
+					// weather icon mapped from WMO code
+					icoonid = BuienradarJS.wmoCodeToIconId(current['weather_code']);
+					icoonzin = "";
+					icoonlink = "file:///qmf/qml/apps/buienradar/drawables/Home"
+						+ icoonid + ".png";
+
+					icoonimageDim    = BuienradarJS.parseWeatherIdAndText(
+						false, "file:///qmf/qml/apps/buienradar/drawables/Dim",
+						icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageNoDim  = BuienradarJS.parseWeatherIdAndText(
+						false, "file:///qmf/qml/apps/buienradar/drawables/Home",
+						icoonid, icoonzin, zonopkomst, zononder, timeStr);
+
+					// save actual temp for TemperatureLogger
+					var doc2 = new XMLHttpRequest();
+					doc2.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
+					doc2.send(temperatuurGC + ":" + current['time']);
+
+					// actualweather model for details screen
+					var locStr = lat4 + ", " + lon4;
+					var tmpActual = [];
+					tmpActual.push({'location': 'GPS locatie',
+						'temperature': 'Temperatuur:',
+						'windsnelheid': 'Windsnelheid:',
+						'windrichting': 'Windrichting:',
+						'luchtvochtigheid': 'Luchtvochtigheid:',
+						'luchtdruk': 'Luchtdruk:',
+						'zicht': 'Zicht:',
+						'zonoponder': 'Zon op\/onder'});
+					tmpActual.push({'location': locStr,
+						'temperature': temperatuurGC,
+						'windsnelheid': windsnelheidBF,
+						'windrichting': windrichting,
+						'luchtvochtigheid': luchtvochtigheid,
+						'luchtdruk': luchtdruk,
+						'zicht': zichtmeters,
+						'zonoponder': BuienradarJS.lineZonOpOnder(zonopkomst, zononder)});
+					actualweather = tmpActual;
+
+					// 5-day forecast
+					var tmpForecast = [];
+					tmpForecast.push({'kanszon': 'zon %',
+						'kansregen': 'regen %',
+						'mintemp': 'min',
+						'maxtemp': 'max',
+						'wind': 'wind'});
+
+					for (var i = 0; i < 5; i++) {
+						var dayDate = new Date(daily['time'][i]);
+						var dayName = weekday[dayDate.getDay()];
+						var sunPct = Math.min(100, Math.round(daily['sunshine_duration'][i] / 432));
+						var rainPct = daily['precipitation_probability_max'][i] || 0;
+						var wDir = BuienradarJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
+						var wBft = BuienradarJS.kmhToBft(daily['wind_speed_10m_max'][i]);
+						var fcIconId = BuienradarJS.wmoCodeToIconId(daily['weather_code'][i]);
+						var fcIconPath = BuienradarJS.parseWeatherIdAndText(
+							false,
+							"file:///qmf/qml/apps/buienradar/drawables/Home",
+							fcIconId, "", daily['sunrise'][0], daily['sunset'][0], "12:00");
+						tmpForecast.push({
+							'dagweek': dayName,
+							'kanszon': sunPct.toString(),
+							'kansregen': rainPct.toString(),
+							'mintemp': Math.round(daily['temperature_2m_min'][i]).toString(),
+							'maxtemp': Math.round(daily['temperature_2m_max'][i]).toString(),
+							'wind': wDir + " " + wBft,
+							'icoon': fcIconPath});
+					}
+					fivedayforecast = tmpForecast;
+
+					// no narrative forecast text from Open-Meteo
+					weersverwachtingTitel = "Open-Meteo GPS";
+					weersverwachtingTekst = "";
+				}
+			}
+		}
+		xmlhttp.open("GET", url, true);
+		xmlhttp.send();
+	}
+
+
 	function updateRegenkans() {
 		var xmlhttp = new XMLHttpRequest();
 		var newArray = [];
@@ -360,7 +496,7 @@ App {
 		triggeredOnStart: true
 		running: true
 		repeat: true
-		onTriggered: updateBuienradar()
+		onTriggered: useOpenMeteo ? updateOpenMeteo() : updateBuienradar()
 	}
 
 

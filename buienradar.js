@@ -123,6 +123,49 @@ function lineWindstotenMS(ws) {
 * @return relative path to weather icon as string
 */
 
+function wmoCodeToIconId(wmoCode) {
+    if (wmoCode === 0) return 'a';
+    if (wmoCode <= 2) return 'b';
+    if (wmoCode === 3) return 'c';
+    if (wmoCode <= 48) return 'd';
+    if (wmoCode <= 55) return 'm';
+    if (wmoCode <= 57) return 'w';
+    if (wmoCode === 61) return 'f';
+    if (wmoCode <= 65) return 'k';
+    if (wmoCode <= 67) return 'w';
+    if (wmoCode <= 73) return 'u';
+    if (wmoCode <= 77) return 'v';
+    if (wmoCode === 80) return 'f';
+    if (wmoCode <= 82) return 'k';
+    if (wmoCode <= 86) return 'u';
+    if (wmoCode === 95) return 'g';
+    return 'h';
+}
+
+
+function degreesToWindDir(degrees) {
+    var dirs = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
+    return dirs[Math.round(degrees / 45) % 8];
+}
+
+
+function kmhToBft(kmh) {
+    if (kmh < 1) return 0;
+    if (kmh < 6) return 1;
+    if (kmh < 12) return 2;
+    if (kmh < 20) return 3;
+    if (kmh < 29) return 4;
+    if (kmh < 39) return 5;
+    if (kmh < 50) return 6;
+    if (kmh < 62) return 7;
+    if (kmh < 75) return 8;
+    if (kmh < 89) return 9;
+    if (kmh < 103) return 10;
+    if (kmh < 118) return 11;
+    return 12;
+}
+
+
 function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText, zonop, zononder, tijdnu) {
     
 	var isTodayNight = determineNight (tijdnu, zonop, zononder);

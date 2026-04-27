@@ -11,21 +11,19 @@ Screen {
 	property string qrCodeID
 
 	function saveLon(text) {
-		//rounding at 2 decimals
 		if (text) {
-			app.lon = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
+			app.lon = (Math.round(parseFloat(text.replace(",", ".")) * 10000) / 10000);
 			lonLabel.inputText = app.lon;
-	   		app.saveSettings();
+			app.saveSettings();
 		}
 	}
 
 	function saveLat(text) {
-		//rounding at 2 decimals
 		if (text) {
-			app.lat = (Math.round(parseFloat(text.replace(",", ".")) * 100) / 100);
+			app.lat = (Math.round(parseFloat(text.replace(",", ".")) * 10000) / 10000);
 			latLabel.inputText = app.lat;
-	   		app.saveSettings();
-			findNearestWeatherStation();
+			app.saveSettings();
+			if (!app.useOpenMeteo) findNearestWeatherStation();
 		}
 	}
 
@@ -94,7 +92,7 @@ Screen {
 
 	Text {
 		id: title
-		text: "Invoeren GPS coordinaten (2 decimalen) voor de exacte regenverwachting en automatische selektie van het dichtsbijzijnde weerstation."
+		text: "Invoeren GPS coordinaten (4 decimalen) voor de exacte regenverwachting en automatische selektie van het dichtsbijzijnde weerstation."
        		width: isNxt ? 500 : 400
         	wrapMode: Text.WordWrap
 		font.pixelSize: isNxt ? 20 : 16
@@ -188,6 +186,7 @@ Screen {
 		height: isNxt ? 45 : 35
 		leftText: "Weerstation:"
 		leftTextAvailableWidth: isNxt ?  175 : 140
+		visible: !app.useOpenMeteo
 
 		anchors {
 			left: lonLabel.left
@@ -196,10 +195,9 @@ Screen {
 		}
 
 		onClicked: {
-  	              if (app.buienradarStationScreen) {
-  	                     app.buienradarStationScreen.show();
-  	              }
-
+			if (app.buienradarStationScreen) {
+				app.buienradarStationScreen.show();
+			}
 		}
 	}
 
@@ -207,6 +205,7 @@ Screen {
 		id: stationButton
 		width: isNxt ? 50 : 40
 		iconSource: "qrc:/tsc/edit.png"
+		visible: !app.useOpenMeteo
 
 		anchors {
 			left: stationLabel.right
@@ -217,17 +216,17 @@ Screen {
 
 		topClickMargin: 3
 		onClicked: {
- 	              if (app.buienradarStationScreen) {
-  	                     app.buienradarStationScreen.show();
-  	              }
-
+			if (app.buienradarStationScreen) {
+				app.buienradarStationScreen.show();
+			}
 		}
 	}
 
 	Text {
 		id: uitlegStation
 		text: "Eventuele handmatige selektie weerstation."
-       		width: isNxt ? 500 : 400
+		width: isNxt ? 500 : 400
+		visible: !app.useOpenMeteo
 		anchors {
 			left: stationButton.right
 			leftMargin: 20
@@ -236,6 +235,77 @@ Screen {
 		font {
 			family: qfont.semiBold.name
 			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	// Open-Meteo GPS mode toggle
+	Text {
+		id: openMeteoLabel
+		text: "Open-Meteo GPS modus:"
+		anchors {
+			left: lonLabel.left
+			top: latLabel.bottom
+			topMargin: isNxt ? 62 : 50
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: openMeteoToggleBg
+		width: isNxt ? 72 : 56
+		height: isNxt ? 36 : 28
+		radius: height / 2
+		color: app.useOpenMeteo ? "#4CAF50" : "#888888"
+		anchors {
+			left: openMeteoLabel.right
+			leftMargin: 12
+			verticalCenter: openMeteoLabel.verticalCenter
+		}
+
+		Rectangle {
+			id: openMeteoThumb
+			width: parent.height - 6
+			height: width
+			radius: width / 2
+			color: "white"
+			anchors.verticalCenter: parent.verticalCenter
+			x: app.useOpenMeteo ? parent.width - width - 3 : 3
+		}
+
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.useOpenMeteo = !app.useOpenMeteo;
+				app.saveSettings();
+				if (app.useOpenMeteo) {
+					app.updateOpenMeteo();
+				} else {
+					app.updateBuienradar();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: openMeteoUitleg
+		text: app.useOpenMeteo
+			? "Alle weerdata via Open-Meteo op basis van GPS coordinaten (geen weerstation nodig)."
+			: "Gebruik Buienradar weerstation voor actuele meting."
+		width: isNxt ? 480 : 370
+		wrapMode: Text.WordWrap
+		anchors {
+			left: openMeteoToggleBg.right
+			leftMargin: 16
+			top: openMeteoToggleBg.top
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 18 : 14
 		}
 		color: colors.rbTitle
 	}

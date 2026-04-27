@@ -351,11 +351,13 @@ Screen {
 				Image {
 					id: forecasticoon
 					source: icoon
+					width: isNxt ? 64 : 48
+					height: isNxt ? 64 : 48
+					fillMode: Image.PreserveAspectFit
 					anchors {
 						top: forecastwind.bottom
 						topMargin: isNxt ? 10 : 8
 						left: forecastdagweek.left
-
 					}
 					cache: false
 				}
