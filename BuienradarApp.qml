@@ -165,61 +165,197 @@ App {
 		return dirs[Math.round(deg / 22.5) % 16];
 	}
 
+	function wmoToIconSuffix(code, isNight) {
+		if (code === 0)                   return isNight ? "ClearNight"     : "Sunny";
+		if (code <= 2)                    return isNight ? "CloudedNight"   : "SunnyIntervals";
+		if (code === 3)                   return "Clouded";
+		if (code <= 48)                   return isNight ? "FogNight"       : "FogDay";
+		if (code <= 55)                   return isNight ? "LightRainNight" : "LightRainDay";
+		if (code <= 57)                   return isNight ? "SleetNight"     : "SleetDay";
+		if (code <= 67)                   return isNight ? "RainNight"      : "RainDay";
+		if (code === 71 || code === 77)   return isNight ? "LightSnowNight" : "LightSnowDay";
+		if (code <= 75)                   return isNight ? "SnowNight"      : "SnowDay";
+		if (code === 80)                  return isNight ? "LightRainNight" : "LightRainDay";
+		if (code <= 82)                   return isNight ? "RainNight"      : "RainDay";
+		if (code === 85)                  return isNight ? "LightSnowNight" : "LightSnowDay";
+		if (code === 86)                  return isNight ? "SnowNight"      : "SnowDay";
+		if (code === 95)                  return isNight ? "ThunderNight"   : "ThunderDay";
+		return                                   isNight ? "RainHailNight"  : "RainHailDay";
+	}
+
+	function wmoToDescription(code) {
+		if (code === 0)  return "Helder";
+		if (code === 1)  return "Overwegend helder";
+		if (code === 2)  return "Gedeeltelijk bewolkt";
+		if (code === 3)  return "Bewolkt";
+		if (code === 45) return "Mist";
+		if (code === 48) return "Aanvriezende mist";
+		if (code === 51) return "Lichte motregen";
+		if (code === 53) return "Motregen";
+		if (code === 55) return "Dichte motregen";
+		if (code === 56) return "Lichte ijzel";
+		if (code === 57) return "IJzel";
+		if (code === 61) return "Lichte regen";
+		if (code === 63) return "Regen";
+		if (code === 65) return "Zware regen";
+		if (code === 66) return "Lichte bevriezenregen";
+		if (code === 67) return "Zware bevriezenregen";
+		if (code === 71) return "Lichte sneeuwval";
+		if (code === 73) return "Sneeuwval";
+		if (code === 75) return "Zware sneeuwval";
+		if (code === 77) return "Sneeuwkorrels";
+		if (code === 80) return "Lichte buien";
+		if (code === 81) return "Buien";
+		if (code === 82) return "Zware buien";
+		if (code === 85) return "Lichte sneeuwbuien";
+		if (code === 86) return "Zware sneeuwbuien";
+		if (code === 95) return "Onweer";
+		if (code === 96) return "Onweer met hagel";
+		if (code === 99) return "Onweer met zware hagel";
+		return "Onbekend";
+	}
+
 	function fetchKNMIData() {
 		var latVal = parseFloat(lat);
 		var lonVal = parseFloat(lon);
 		if (isNaN(latVal) || isNaN(lonVal)) return;
 
-		// Open-Meteo wraps the KNMI HARMONIE-AROME model (~2 km grid) and interpolates
-		// to the exact GPS coordinate — no nearest-station lookup involved.
 		var url = "https://api.open-meteo.com/v1/knmi" +
 		          "?latitude=" + latVal +
 		          "&longitude=" + lonVal +
-		          "&current=temperature_2m,relative_humidity_2m,apparent_temperature,pressure_msl,wind_speed_10m,wind_direction_10m,visibility" +
-		          "&wind_speed_unit=ms";
+		          "&current=temperature_2m,relative_humidity_2m,apparent_temperature,pressure_msl,wind_speed_10m,wind_direction_10m,visibility,weather_code" +
+		          "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant,sunrise,sunset" +
+		          "&timezone=auto" +
+		          "&wind_speed_unit=ms" +
+		          "&forecast_days=6";
 
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				try {
-					var c = JSON.parse(xmlhttp.responseText).current;
+					var data = JSON.parse(xmlhttp.responseText);
+					var c = data.current;
+					var dly = data.daily;
 
-					var ta = c.temperature_2m;
-					var rh = c.relative_humidity_2m;
-					var pp = c.pressure_msl;
-					var ff = c.wind_speed_10m;
-					var dd = c.wind_direction_10m;
-					var zm = c.visibility;
-					var at = c.apparent_temperature;
+					// --- Current observations ---
+					var ta  = c.temperature_2m;
+					var rh  = c.relative_humidity_2m;
+					var pp  = c.pressure_msl;
+					var ff  = c.wind_speed_10m;
+					var dir = c.wind_direction_10m;
+					var zm  = c.visibility;
+					var at  = c.apparent_temperature;
+					var wc  = c.weather_code;
 
-					if (ta !== undefined && ta !== null) temperatuurGC      = (Math.round(ta * 10) / 10).toString();
-					if (at !== undefined && at !== null) gevoelstemperatuur = (Math.round(at * 10) / 10).toString();
-					if (rh !== undefined && rh !== null) luchtvochtigheid   = Math.round(rh).toString();
-					if (pp !== undefined && pp !== null) luchtdruk          = (Math.round(pp * 10) / 10).toString();
-					if (ff !== undefined && ff !== null) {
+					if (ta  !== undefined && ta  !== null) temperatuurGC      = (Math.round(ta  * 10) / 10).toString();
+					if (at  !== undefined && at  !== null) gevoelstemperatuur = (Math.round(at  * 10) / 10).toString();
+					if (rh  !== undefined && rh  !== null) luchtvochtigheid   = Math.round(rh).toString();
+					if (pp  !== undefined && pp  !== null) luchtdruk          = (Math.round(pp  * 10) / 10).toString();
+					if (ff  !== undefined && ff  !== null) {
 						windsnelheidMS = (Math.round(ff * 10) / 10).toString();
 						windsnelheidBF = knmiMsToBeaufort(ff).toString();
 					}
-					if (dd !== undefined && dd !== null) windrichting = knmiDegreesToCompass(dd);
-					if (zm !== undefined && zm !== null) zichtmeters  = Math.round(zm).toString();
+					if (dir !== undefined && dir !== null) windrichting = knmiDegreesToCompass(dir);
+					if (zm  !== undefined && zm  !== null) zichtmeters  = Math.round(zm).toString();
 
-					// Refresh the details-screen actualweather row
-					if (actualweather.length > 1) {
-						var tmp = actualweather;
-						if (ta !== undefined && ta !== null) tmp[1]['temperature']      = temperatuurGC;
-						if (ff !== undefined && ff !== null) tmp[1]['windsnelheid']     = windsnelheidBF;
-						if (dd !== undefined && dd !== null) tmp[1]['windrichting']     = windrichting;
-						if (rh !== undefined && rh !== null) tmp[1]['luchtvochtigheid'] = luchtvochtigheid;
-						if (pp !== undefined && pp !== null) tmp[1]['luchtdruk']        = luchtdruk;
-						if (zm !== undefined && zm !== null) tmp[1]['zicht']            = zichtmeters;
-						actualweather = tmp;
+					// Current weather icon from WMO code
+					if (wc !== undefined && wc !== null) {
+						var nowT = new Date();
+						var hh = nowT.getHours();
+						var mi = nowT.getMinutes();
+						var nowStr = (hh < 10 ? '0' : '') + hh + ':' + (mi < 10 ? '0' : '') + mi;
+						var rise = (dly && dly.sunrise && dly.sunrise[0]) ? dly.sunrise[0] : "";
+						var sset = (dly && dly.sunset  && dly.sunset[0])  ? dly.sunset[0]  : "";
+						var night = (rise && sset) ? BuienradarJS.determineNight(nowStr, rise, sset) : (hh < 7 || hh >= 21);
+						var suf = wmoToIconSuffix(wc, night);
+						icoonzin        = wmoToDescription(wc);
+						icoonimageDim   = "file:///qmf/qml/apps/buienradar/drawables/Dim"  + suf + ".png";
+						icoonimageNoDim = "file:///qmf/qml/apps/buienradar/drawables/Home" + suf + ".png";
+						icoonlink       = icoonimageNoDim;
 					}
+
+					// Refresh or initialise actualweather
+					var tmpActual;
+					if (actualweather.length > 1) {
+						tmpActual = actualweather;
+					} else {
+						tmpActual = [
+							{ 'location': 'Open-Meteo/KNMI',
+							  'temperature': 'Temperatuur:', 'windsnelheid': 'Windsnelheid:',
+							  'windrichting': 'Windrichting:', 'luchtvochtigheid': 'Luchtvochtigheid:',
+							  'luchtdruk': 'Luchtdruk:', 'zicht': 'Zicht:', 'zonoponder': 'Zon op\/onder' },
+							{ 'location': c.time || '',
+							  'temperature': temperatuurGC, 'windsnelheid': windsnelheidBF,
+							  'windrichting': windrichting, 'luchtvochtigheid': luchtvochtigheid,
+							  'luchtdruk': luchtdruk, 'zicht': zichtmeters, 'zonoponder': '' }
+						];
+					}
+					if (ta  !== undefined && ta  !== null) tmpActual[1]['temperature']     = temperatuurGC;
+					if (ff  !== undefined && ff  !== null) tmpActual[1]['windsnelheid']     = windsnelheidBF;
+					if (dir !== undefined && dir !== null) tmpActual[1]['windrichting']     = windrichting;
+					if (rh  !== undefined && rh  !== null) tmpActual[1]['luchtvochtigheid'] = luchtvochtigheid;
+					if (pp  !== undefined && pp  !== null) tmpActual[1]['luchtdruk']        = luchtdruk;
+					if (zm  !== undefined && zm  !== null) tmpActual[1]['zicht']            = zichtmeters;
+					actualweather = tmpActual;
 
 					if (ta !== undefined && ta !== null) {
 						var doc = new XMLHttpRequest();
 						doc.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
 						doc.send(temperatuurGC + ":" + c.time);
 					}
+
+					// --- Daily forecast ---
+					if (dly && dly.time && dly.time.length > 1) {
+						var dnames = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
+
+						// Sunrise/sunset for today (index 0)
+						if (dly.sunrise && dly.sunrise[0]) zonopkomst = dly.sunrise[0];
+						if (dly.sunset  && dly.sunset[0])  zononder   = dly.sunset[0];
+						if (dly.sunrise && dly.sunrise[0] && dly.sunset && dly.sunset[0]) {
+							var tmpA = actualweather;
+							tmpA[1]['zonoponder'] = BuienradarJS.lineZonOpOnder(dly.sunrise[0], dly.sunset[0]);
+							actualweather = tmpA;
+						}
+
+						// fivedayforecast: index 0 = headers, 1 = rolling "today" slot, 2..6 = days
+						var tmpdagweek = dnames[new Date(dly.time[1] + "T12:00:00").getDay()];
+						var tmpForecast = [];
+						tmpForecast.push({ 'kanszon': 'zon %', 'kansregen': 'regen %',
+						                   'mintemp': 'min', 'maxtemp': 'max', 'wind': 'wind' });
+
+						if (firstdayForecast === "  ") {
+							firstdayForecast = tmpdagweek;
+							tmpForecast.push({});
+						} else if (firstdayForecast !== tmpdagweek) {
+							tmpForecast.push(fivedayforecast.length > 2 ? fivedayforecast[2] : {});
+							firstdayForecast = tmpdagweek;
+						} else {
+							tmpForecast.push(fivedayforecast.length > 1 ? fivedayforecast[1] : {});
+						}
+
+						var maxDays = Math.min(5, dly.time.length - 1);
+						for (var fi = 1; fi <= maxDays; fi++) {
+							var fwc  = dly.weather_code[fi];
+							var ftmn = dly.temperature_2m_min[fi];
+							var ftmx = dly.temperature_2m_max[fi];
+							var frn  = dly.precipitation_probability_max[fi];
+							var fff  = dly.wind_speed_10m_max[fi];
+							var fdir = dly.wind_direction_10m_dominant[fi];
+							var fday = dnames[new Date(dly.time[fi] + "T12:00:00").getDay()];
+							var fsuf = wmoToIconSuffix(fwc, false);
+							tmpForecast.push({
+								'dagweek':   fday,
+								'kanszon':   "",
+								'kansregen': (frn  !== null && frn  !== undefined) ? Math.round(frn).toString()             : "",
+								'mintemp':   (ftmn !== null && ftmn !== undefined) ? (Math.round(ftmn * 10) / 10).toString() : "",
+								'maxtemp':   (ftmx !== null && ftmx !== undefined) ? (Math.round(ftmx * 10) / 10).toString() : "",
+								'wind':      knmiDegreesToCompass(fdir) + " " + knmiMsToBeaufort(fff).toString(),
+								'icoon':     "file:///qmf/qml/apps/buienradar/drawables/Home" + fsuf + ".png"
+							});
+						}
+						fivedayforecast = tmpForecast;
+					}
+
 				} catch(e) {}
 			}
 		};
@@ -266,7 +402,7 @@ App {
 
 						// read specific selected location weather data
 
-					if ( indexStation > -1 ) {
+					if ( indexStation > -1 && !useKNMIData ) {
  
 	
 						// save actual temp for use in TemperatureLogger app
@@ -319,10 +455,11 @@ App {
 
 						// read 5-days weather forecast
 
+					if (!useKNMIData) {
 					var tmpNewDate = new Date(brJson['forecast']['fivedayforecast'][0]['day']);
 					var tmpdagweek = weekday[tmpNewDate.getDay()];
 
-					var tmpForecast = [];	
+					var tmpForecast = [];
 					tmpForecast.push({'kanszon': 'zon %',
 							  'kansregen': 'regen %',
 							  'mintemp': 'min',
@@ -360,6 +497,7 @@ App {
 							  'icoon': dpicoon});
 					}
 					fivedayforecast = tmpForecast;
+					} // end !useKNMIData forecast block
 
 						//forecast title and text, remove special characters
 
@@ -380,8 +518,10 @@ App {
 
 						// link to icon images
 
+					if (!useKNMIData) {
 					icoonimageDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
 					icoonimageNoDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					}
 				}
 			}
 		}
