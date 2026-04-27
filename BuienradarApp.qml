@@ -372,4 +372,9 @@ App {
 		repeat: true
 		onTriggered: updateRegenkans()
 	}
+
+	// Instantiate the Waze travel time app so it can register its own tile
+	WazeTravelTimeApp {
+		id: wazeTravelTimeApp
+	}
 }
