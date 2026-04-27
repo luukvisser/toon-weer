@@ -294,7 +294,7 @@ Screen {
 
 	Text {
 		id: uitlegKNMI
-		text: "Vervangt meting van weerstation door KNMI data (temp, wind, druk, vochtigheid, zicht)."
+		text: "Vervangt weerstation door KNMI HARMONIE model (Open-Meteo): exacte GPS locatie, geen dichtstbijzijnde station (temp, gevoelstemp, wind, druk, vochtigheid, zicht)."
 		width: isNxt ? 500 : 400
 		wrapMode: Text.WordWrap
 		anchors {

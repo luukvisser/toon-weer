@@ -165,100 +165,65 @@ App {
 		return dirs[Math.round(deg / 22.5) % 16];
 	}
 
-	function knmiApparentTemp(tempC, windMs, humPct) {
-		var V = windMs * 3.6; // km/h
-		if (tempC < 10 && windMs >= 1.3)
-			return Math.round((13.12 + 0.6215*tempC - 11.37*Math.pow(V,0.16) + 0.3965*tempC*Math.pow(V,0.16)) * 10) / 10;
-		if (tempC > 26 && humPct !== null) {
-			var E = (humPct / 100) * 6.105 * Math.exp(17.27 * tempC / (237.7 + tempC));
-			return Math.round((tempC + 0.33*E - 0.70*windMs - 4.00) * 10) / 10;
-		}
-		return Math.round(tempC * 10) / 10;
-	}
-
-	function extractKNMILatestValue(response, param) {
-		if (response.coverages) {
-			for (var j = response.coverages.length - 1; j >= 0; j--) {
-				var cov = response.coverages[j];
-				if (cov.ranges && cov.ranges[param] && cov.ranges[param].values) {
-					var vals = cov.ranges[param].values;
-					for (var k = vals.length - 1; k >= 0; k--)
-						if (vals[k] !== null && vals[k] !== undefined) return vals[k];
-				}
-			}
-		} else if (response.ranges && response.ranges[param] && response.ranges[param].values) {
-			var values = response.ranges[param].values;
-			for (var i = values.length - 1; i >= 0; i--)
-				if (values[i] !== null && values[i] !== undefined) return values[i];
-		}
-		return null;
-	}
-
 	function fetchKNMIData() {
 		var latVal = parseFloat(lat);
 		var lonVal = parseFloat(lon);
 		if (isNaN(latVal) || isNaN(lonVal)) return;
 
-		var now = new Date();
-		var thirtyMinsAgo = new Date(now.getTime() - 30 * 60 * 1000);
-		var datetime = formatISODate(thirtyMinsAgo) + "/" + formatISODate(now);
-
-		// OGC EDR /position endpoint: POINT(longitude latitude) in WKT
-		var coords = "POINT(" + lonVal + " " + latVal + ")";
-		var url = "https://api.dataplatform.knmi.nl/edr/v1/collections/10-minute-in-situ-meteorological-observations/position" +
-		          "?coords=" + encodeURIComponent(coords) +
-		          "&datetime=" + encodeURIComponent(datetime) +
-		          "&parameter-name=ta,rh,pp,ff,dd,zm,td";
+		// Open-Meteo wraps the KNMI HARMONIE-AROME model (~2 km grid) and interpolates
+		// to the exact GPS coordinate — no nearest-station lookup involved.
+		var url = "https://api.open-meteo.com/v1/knmi" +
+		          "?latitude=" + latVal +
+		          "&longitude=" + lonVal +
+		          "&current=temperature_2m,relative_humidity_2m,apparent_temperature,pressure_msl,wind_speed_10m,wind_direction_10m,visibility" +
+		          "&wind_speed_unit=ms";
 
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				try {
-					var response = JSON.parse(xmlhttp.responseText);
-					var timestamp = formatISODate(now);
+					var c = JSON.parse(xmlhttp.responseText).current;
 
-					var ta  = extractKNMILatestValue(response, "ta");   // °C
-					var rh  = extractKNMILatestValue(response, "rh");   // %
-					var pp  = extractKNMILatestValue(response, "pp");   // hPa
-					var ff  = extractKNMILatestValue(response, "ff");   // m/s
-					var dd  = extractKNMILatestValue(response, "dd");   // degrees
-					var zm  = extractKNMILatestValue(response, "zm");   // metres
-					var td  = extractKNMILatestValue(response, "td");   // dew point °C
+					var ta = c.temperature_2m;
+					var rh = c.relative_humidity_2m;
+					var pp = c.pressure_msl;
+					var ff = c.wind_speed_10m;
+					var dd = c.wind_direction_10m;
+					var zm = c.visibility;
+					var at = c.apparent_temperature;
 
-					if (ta  !== null) temperatuurGC    = (Math.round(ta  * 10) / 10).toString();
-					if (rh  !== null) luchtvochtigheid = Math.round(rh).toString();
-					if (pp  !== null) luchtdruk        = (Math.round(pp  * 10) / 10).toString();
-					if (ff  !== null) {
+					if (ta !== undefined && ta !== null) temperatuurGC      = (Math.round(ta * 10) / 10).toString();
+					if (at !== undefined && at !== null) gevoelstemperatuur = (Math.round(at * 10) / 10).toString();
+					if (rh !== undefined && rh !== null) luchtvochtigheid   = Math.round(rh).toString();
+					if (pp !== undefined && pp !== null) luchtdruk          = (Math.round(pp * 10) / 10).toString();
+					if (ff !== undefined && ff !== null) {
 						windsnelheidMS = (Math.round(ff * 10) / 10).toString();
 						windsnelheidBF = knmiMsToBeaufort(ff).toString();
 					}
-					if (dd  !== null) windrichting     = knmiDegreesToCompass(dd);
-					if (zm  !== null) zichtmeters       = Math.round(zm).toString();
-					if (ta  !== null && ff !== null)
-						gevoelstemperatuur = knmiApparentTemp(ta, ff, rh).toString();
+					if (dd !== undefined && dd !== null) windrichting = knmiDegreesToCompass(dd);
+					if (zm !== undefined && zm !== null) zichtmeters  = Math.round(zm).toString();
 
 					// Refresh the details-screen actualweather row
 					if (actualweather.length > 1) {
 						var tmp = actualweather;
-						if (ta  !== null) tmp[1]['temperature']    = temperatuurGC;
-						if (ff  !== null) tmp[1]['windsnelheid']   = windsnelheidBF;
-						if (dd  !== null) tmp[1]['windrichting']   = windrichting;
-						if (rh  !== null) tmp[1]['luchtvochtigheid'] = luchtvochtigheid;
-						if (pp  !== null) tmp[1]['luchtdruk']      = luchtdruk;
-						if (zm  !== null) tmp[1]['zicht']          = zichtmeters;
+						if (ta !== undefined && ta !== null) tmp[1]['temperature']      = temperatuurGC;
+						if (ff !== undefined && ff !== null) tmp[1]['windsnelheid']     = windsnelheidBF;
+						if (dd !== undefined && dd !== null) tmp[1]['windrichting']     = windrichting;
+						if (rh !== undefined && rh !== null) tmp[1]['luchtvochtigheid'] = luchtvochtigheid;
+						if (pp !== undefined && pp !== null) tmp[1]['luchtdruk']        = luchtdruk;
+						if (zm !== undefined && zm !== null) tmp[1]['zicht']            = zichtmeters;
 						actualweather = tmp;
 					}
 
-					if (ta !== null) {
+					if (ta !== undefined && ta !== null) {
 						var doc = new XMLHttpRequest();
 						doc.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
-						doc.send(temperatuurGC + ":" + timestamp);
+						doc.send(temperatuurGC + ":" + c.time);
 					}
 				} catch(e) {}
 			}
 		};
 		xmlhttp.open("GET", url, true);
-		xmlhttp.setRequestHeader("Authorization", knmiApiKey);
 		xmlhttp.send();
 	}
 
