@@ -242,4 +242,72 @@ Screen {
 		}
 		color: colors.rbTitle
 	}
+
+	// KNMI Data Platform toggle
+	Text {
+		id: knmiDataLabel
+		text: "KNMI weerdata:"
+		height: isNxt ? 45 : 35
+		verticalAlignment: Text.AlignVCenter
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+		anchors {
+			left: lonLabel.left
+			top: stationLabel.bottom
+			topMargin: isNxt ? 18 : 14
+		}
+	}
+
+	Text {
+		id: knmiDataValue
+		text: app.useKNMIData ? "Aan" : "Uit"
+		height: isNxt ? 45 : 35
+		verticalAlignment: Text.AlignVCenter
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: app.useKNMIData ? "#00AA00" : colors.rbTitle
+		anchors {
+			left: knmiDataLabel.right
+			leftMargin: isNxt ? 12 : 10
+			verticalCenter: knmiDataLabel.verticalCenter
+		}
+	}
+
+	IconButton {
+		id: knmiToggleButton
+		width: isNxt ? 50 : 40
+		iconSource: "qrc:/tsc/edit.png"
+		anchors {
+			left: knmiDataValue.right
+			leftMargin: 6
+			verticalCenter: knmiDataLabel.verticalCenter
+		}
+		onClicked: {
+			app.useKNMIData = !app.useKNMIData;
+			app.saveSettings();
+			if (app.useKNMIData) app.updateKNMITemperature();
+		}
+	}
+
+	Text {
+		id: uitlegKNMI
+		text: "Vervangt meting van weerstation door KNMI data (temp, wind, druk, vochtigheid, zicht)."
+		width: isNxt ? 500 : 400
+		wrapMode: Text.WordWrap
+		anchors {
+			left: knmiToggleButton.right
+			leftMargin: 20
+			top: knmiToggleButton.top
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
 }

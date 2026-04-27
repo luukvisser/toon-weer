@@ -44,6 +44,7 @@ App {
 	// KNMI Data Platform settings
 	property string knmiApiKey : "eyJvcmciOiI1ZTU1NGUxOTI3NGE5NjAwMDEyYTNlYjEiLCJpZCI6ImVlNDFjMWI0MjlkODQ2MThiNWI4ZDViZDAyMTM2YTM3IiwiaCI6Im11cm11cjEyOCJ9"
 	property string knmiNearestStationId : ""
+	property bool useKNMIData : false
 
 	property string temperatuurGC
 	property string gevoelstemperatuur
@@ -117,6 +118,7 @@ App {
 			if (buienradarSettingsJson['selectedLatitude']) lat = buienradarSettingsJson['selectedLatitude'];
 			if (buienradarSettingsJson['knmiApiKey']) knmiApiKey = buienradarSettingsJson['knmiApiKey'];
 			if (buienradarSettingsJson['knmiNearestStationId']) knmiNearestStationId = buienradarSettingsJson['knmiNearestStationId'];
+			if (buienradarSettingsJson['useKNMIData'] !== undefined) useKNMIData = buienradarSettingsJson['useKNMIData'];
 		} catch(e) {
 		}
 	}
@@ -129,7 +131,8 @@ App {
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
 			"knmiApiKey": knmiApiKey,
-			"knmiNearestStationId": knmiNearestStationId
+			"knmiNearestStationId": knmiNearestStationId,
+			"useKNMIData": useKNMIData
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -193,7 +196,58 @@ App {
 		xmlhttp.send();
 	}
 
-	function fetchKNMITemperature() {
+	function knmiMsToBeaufort(ms) {
+		if (ms < 0.5)  return 0;
+		if (ms < 1.6)  return 1;
+		if (ms < 3.4)  return 2;
+		if (ms < 5.5)  return 3;
+		if (ms < 8.0)  return 4;
+		if (ms < 10.8) return 5;
+		if (ms < 13.9) return 6;
+		if (ms < 17.2) return 7;
+		if (ms < 20.8) return 8;
+		if (ms < 24.5) return 9;
+		if (ms < 28.5) return 10;
+		if (ms < 32.7) return 11;
+		return 12;
+	}
+
+	function knmiDegreesToCompass(deg) {
+		if (deg === null || deg === undefined || deg === 0) return "VAR";
+		var dirs = ['N','NNO','NO','ONO','O','OZO','ZO','ZZO','Z','ZZW','ZW','WZW','W','WNW','NW','NNW'];
+		return dirs[Math.round(deg / 22.5) % 16];
+	}
+
+	function knmiApparentTemp(tempC, windMs, humPct) {
+		var V = windMs * 3.6; // km/h
+		if (tempC < 10 && windMs >= 1.3)
+			return Math.round((13.12 + 0.6215*tempC - 11.37*Math.pow(V,0.16) + 0.3965*tempC*Math.pow(V,0.16)) * 10) / 10;
+		if (tempC > 26 && humPct !== null) {
+			var E = (humPct / 100) * 6.105 * Math.exp(17.27 * tempC / (237.7 + tempC));
+			return Math.round((tempC + 0.33*E - 0.70*windMs - 4.00) * 10) / 10;
+		}
+		return Math.round(tempC * 10) / 10;
+	}
+
+	function extractKNMILatestValue(response, param) {
+		if (response.coverages) {
+			for (var j = response.coverages.length - 1; j >= 0; j--) {
+				var cov = response.coverages[j];
+				if (cov.ranges && cov.ranges[param] && cov.ranges[param].values) {
+					var vals = cov.ranges[param].values;
+					for (var k = vals.length - 1; k >= 0; k--)
+						if (vals[k] !== null && vals[k] !== undefined) return vals[k];
+				}
+			}
+		} else if (response.ranges && response.ranges[param] && response.ranges[param].values) {
+			var values = response.ranges[param].values;
+			for (var i = values.length - 1; i >= 0; i--)
+				if (values[i] !== null && values[i] !== undefined) return values[i];
+		}
+		return null;
+	}
+
+	function fetchKNMIData() {
 		if (!knmiNearestStationId) return;
 
 		var now = new Date();
@@ -203,54 +257,48 @@ App {
 		var url = "https://api.dataplatform.knmi.nl/edr/v1/collections/10-minute-in-situ-meteorological-observations/locations/" +
 		          knmiNearestStationId +
 		          "?datetime=" + encodeURIComponent(datetime) +
-		          "&parameter-name=ta";
+		          "&parameter-name=ta,rh,pp,ff,dd,zm,td";
 
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				try {
 					var response = JSON.parse(xmlhttp.responseText);
-					var knmiTemp = null;
 					var timestamp = formatISODate(now);
 
-					// CoverageCollection: each Coverage is one time step; take the last non-null value
-					if (response.coverages && response.coverages.length > 0) {
-						for (var j = response.coverages.length - 1; j >= 0; j--) {
-							var cov = response.coverages[j];
-							if (cov.ranges && cov.ranges.ta && cov.ranges.ta.values) {
-								var vals = cov.ranges.ta.values;
-								for (var k = vals.length - 1; k >= 0; k--) {
-									if (vals[k] !== null && vals[k] !== undefined) {
-										knmiTemp = vals[k];
-										if (cov.domain && cov.domain.axes && cov.domain.axes.t && cov.domain.axes.t.values.length > 0)
-											timestamp = cov.domain.axes.t.values[cov.domain.axes.t.values.length - 1];
-										break;
-									}
-								}
-								if (knmiTemp !== null) break;
-							}
-						}
-					} else if (response.ranges && response.ranges.ta && response.ranges.ta.values) {
-						// Single Coverage with time-series values
-						var values = response.ranges.ta.values;
-						for (var i = values.length - 1; i >= 0; i--) {
-							if (values[i] !== null && values[i] !== undefined) {
-								knmiTemp = values[i];
-								break;
-							}
-						}
+					var ta  = extractKNMILatestValue(response, "ta");   // °C
+					var rh  = extractKNMILatestValue(response, "rh");   // %
+					var pp  = extractKNMILatestValue(response, "pp");   // hPa
+					var ff  = extractKNMILatestValue(response, "ff");   // m/s
+					var dd  = extractKNMILatestValue(response, "dd");   // degrees
+					var zm  = extractKNMILatestValue(response, "zm");   // metres
+					var td  = extractKNMILatestValue(response, "td");   // dew point °C
+
+					if (ta  !== null) temperatuurGC    = (Math.round(ta  * 10) / 10).toString();
+					if (rh  !== null) luchtvochtigheid = Math.round(rh).toString();
+					if (pp  !== null) luchtdruk        = (Math.round(pp  * 10) / 10).toString();
+					if (ff  !== null) {
+						windsnelheidMS = (Math.round(ff * 10) / 10).toString();
+						windsnelheidBF = knmiMsToBeaufort(ff).toString();
+					}
+					if (dd  !== null) windrichting     = knmiDegreesToCompass(dd);
+					if (zm  !== null) zichtmeters       = Math.round(zm).toString();
+					if (ta  !== null && ff !== null)
+						gevoelstemperatuur = knmiApparentTemp(ta, ff, rh).toString();
+
+					// Refresh the details-screen actualweather row
+					if (actualweather.length > 1) {
+						var tmp = actualweather;
+						if (ta  !== null) tmp[1]['temperature']    = temperatuurGC;
+						if (ff  !== null) tmp[1]['windsnelheid']   = windsnelheidBF;
+						if (dd  !== null) tmp[1]['windrichting']   = windrichting;
+						if (rh  !== null) tmp[1]['luchtvochtigheid'] = luchtvochtigheid;
+						if (pp  !== null) tmp[1]['luchtdruk']      = luchtdruk;
+						if (zm  !== null) tmp[1]['zicht']          = zichtmeters;
+						actualweather = tmp;
 					}
 
-					if (knmiTemp !== null) {
-						temperatuurGC = (Math.round(knmiTemp * 10) / 10).toString();
-
-						// Also refresh the value inside the actualweather details array
-						if (actualweather.length > 1) {
-							var tmp = actualweather;
-							tmp[1]['temperature'] = temperatuurGC;
-							actualweather = tmp;
-						}
-
+					if (ta !== null) {
 						var doc = new XMLHttpRequest();
 						doc.open("PUT", "file:///var/volatile/tmp/actualBuienradarTemp.txt");
 						doc.send(temperatuurGC + ":" + timestamp);
@@ -264,10 +312,11 @@ App {
 	}
 
 	function updateKNMITemperature() {
+		if (!useKNMIData) return;
 		if (!knmiNearestStationId) {
-			findKNMINearestStation(fetchKNMITemperature);
+			findKNMINearestStation(fetchKNMIData);
 		} else {
-			fetchKNMITemperature();
+			fetchKNMIData();
 		}
 	}
 
