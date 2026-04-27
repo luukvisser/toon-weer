@@ -277,8 +277,8 @@ App {
 
 						// link to icon images
 
-					icoonimageDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonimageNoDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradar/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradarwaze/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageNoDim = BuienradarJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/buienradarwaze/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
 				}
 			}
 		}
