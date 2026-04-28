@@ -71,7 +71,7 @@ function determineNight (tijdnu, zonop, zononder) {
 
 	
 function formatLuchtdruk(ld, humidity) {
-	return i18n.number(ld, 0, i18n.general_rounding, 1) + " hPa; lv: " + humidity + " %";
+	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa; lv: " + humidity + " %";
 }
 
 
@@ -96,7 +96,7 @@ function lineLuchtvochtigheid(lv) {
 
 
 function lineLuchtdruk(ld) {
-	return i18n.number(ld, 0, i18n.general_rounding, 1) + " hPa";
+	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa";
 }
 
 
@@ -177,8 +177,8 @@ function wmoCodeToIconId(wmoCode) {
 
 
 function degreesToWindDir(degrees) {
-    var dirs = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
-    return dirs[Math.round(degrees / 45) % 8];
+    var dirs = ['N', 'NNO', 'NO', 'ONO', 'O', 'OZO', 'ZO', 'ZZO', 'Z', 'ZZW', 'ZW', 'WZW', 'W', 'WNW', 'NW', 'NNW'];
+    return dirs[Math.round(degrees / 22.5) % 16];
 }
 
 

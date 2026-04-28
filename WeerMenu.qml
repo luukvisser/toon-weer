@@ -6,7 +6,7 @@ import qb.base 1.0
 MenuItem {
 	property WeerApp app;
 	label: "Weer"
-	image: "qrc:/tsc/weer.png"
+	image: "qrc:/tsc/buienradar.png"
 	weight: 200
 
 	onClicked: {

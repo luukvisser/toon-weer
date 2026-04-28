@@ -202,12 +202,12 @@ App {
 							  'zicht': 'Zicht:',
 							  'zonoponder': 'Zon op\/onder'});
 						tmpActual.push({'location': WeerJS.dateFormat(brJson['actual']['stationmeasurements'][indexStation]['timestamp']),
-							  'temperature': temperatuurGC,
+							  'temperature': WeerJS.lineTemp(temperatuurGC),
 							  'windrichting': windrichting,
-							  'windsnelheid': windsnelheidBF,
-							  'luchtvochtigheid': luchtvochtigheid,
-							  'luchtdruk': luchtdruk,
-							  'zicht': zichtmeters,
+							  'windsnelheid': WeerJS.lineWindsnelheid(windsnelheidBF),
+							  'luchtvochtigheid': WeerJS.lineLuchtvochtigheid(luchtvochtigheid),
+							  'luchtdruk': WeerJS.lineLuchtdruk(luchtdruk),
+							  'zicht': WeerJS.lineZichtmeters(zichtmeters),
 							  'zonoponder': WeerJS.lineZonOpOnder(brJson['actual']['sunrise'], brJson['actual']['sunset'])});
 						actualweather = tmpActual;
 
@@ -301,7 +301,7 @@ App {
 		var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
-			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code"
+			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
 			+ "&hourly=visibility"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_probability_max,wind_speed_10m_max"
@@ -344,15 +344,13 @@ App {
 					// weather icon mapped from WMO code
 					icoonid = WeerJS.wmoCodeToIconId(current['weather_code']);
 					icoonzin = WeerJS.wmoCodeToDescription(current['weather_code']);
-					icoonlink = "file:///qmf/qml/apps/weer/drawables/Home"
-						+ icoonid + ".png";
-
-					icoonimageDim    = WeerJS.parseWeatherIdAndText(
+					icoonimageDim   = WeerJS.parseWeatherIdAndText(
 						false, "file:///qmf/qml/apps/weer/drawables/Dim",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonimageNoDim  = WeerJS.parseWeatherIdAndText(
+					icoonimageNoDim = WeerJS.parseWeatherIdAndText(
 						false, "file:///qmf/qml/apps/weer/drawables/Home",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonlink = icoonimageNoDim;
 
 					// save actual temp for TemperatureLogger
 					var doc2 = new XMLHttpRequest();
@@ -380,15 +378,15 @@ App {
 						'windrichting': 'Windrichting:',
 						'luchtvochtigheid': 'Luchtvochtigheid:',
 						'luchtdruk': 'Luchtdruk:',
-						'zicht': 'Zicht:',
+						'zicht': 'UV index:',
 						'zonoponder': 'Zon op\/onder'});
 					tmpActual.push({'location': locStr,
-						'temperature': temperatuurGC,
-						'windsnelheid': windsnelheidBF,
+						'temperature': WeerJS.lineTemp(temperatuurGC),
+						'windsnelheid': WeerJS.lineWindsnelheid(windsnelheidBF),
 						'windrichting': windrichting,
-						'luchtvochtigheid': luchtvochtigheid,
-						'luchtdruk': luchtdruk,
-						'zicht': zichtmeters,
+						'luchtvochtigheid': WeerJS.lineLuchtvochtigheid(luchtvochtigheid),
+						'luchtdruk': WeerJS.lineLuchtdruk(luchtdruk),
+						'zicht': current['uv_index'] != null ? current['uv_index'].toString() : "-",
 						'zonoponder': WeerJS.lineZonOpOnder(zonopkomst, zononder)});
 					actualweather = tmpActual;
 
@@ -396,14 +394,15 @@ App {
 					var tmpForecast = [];
 					tmpForecast.push({'kanszon': 'zon %',
 						'kansregen': 'regen %',
-						'mintemp': 'min',
-						'maxtemp': 'max',
+						'mintemp': 'min °C',
+						'maxtemp': 'max °C',
 						'wind': 'wind'});
 
 					for (var i = 0; i < 5; i++) {
 						var dayDate = new Date(daily['time'][i]);
 						var dayName = weekday[dayDate.getDay()];
-						var sunPct = Math.min(100, Math.round(daily['sunshine_duration'][i] / 432));
+						var daylightSec = (new Date(daily['sunset'][i]).getTime() - new Date(daily['sunrise'][i]).getTime()) / 1000;
+						var sunPct = daylightSec > 0 ? Math.round(daily['sunshine_duration'][i] / daylightSec * 100) : 0;
 						var rainPct = daily['precipitation_probability_max'][i] || 0;
 						var wDir = WeerJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
 						var wBft = WeerJS.kmhToBft(daily['wind_speed_10m_max'][i]);
@@ -416,8 +415,8 @@ App {
 							'dagweek': dayName,
 							'kanszon': sunPct.toString(),
 							'kansregen': rainPct.toString(),
-							'mintemp': Math.round(daily['temperature_2m_min'][i]).toString(),
-							'maxtemp': Math.round(daily['temperature_2m_max'][i]).toString(),
+							'mintemp': daily['temperature_2m_min'][i].toString(),
+							'maxtemp': daily['temperature_2m_max'][i].toString(),
 							'wind': wDir + " " + wBft,
 							'icoon': fcIconPath});
 					}

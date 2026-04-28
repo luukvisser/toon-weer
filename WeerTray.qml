@@ -24,6 +24,6 @@ SystrayIcon {
 	Image {
 		id: imgNewMessage
 		anchors.centerIn: parent
-		source: "qrc:/tsc/weerTray.png"
+		source: "qrc:/tsc/buienradarTray.png"
 	}
 }
