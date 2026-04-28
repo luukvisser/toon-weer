@@ -1,8 +1,6 @@
-module apps.buienradarwaze
-BuienradarApp 1.0 BuienradarApp.qml
-BuienradarDetailsScreen 1.0 BuienradarDetailsScreen.qml
-BuienradarStationScreen 1.0 BuienradarStationScreen.qml
+module apps.waze
 WazeTravelTimeApp 1.0 WazeTravelTimeApp.qml
 WazeTravelTimeTile 1.0 WazeTravelTimeTile.qml
 WazeTravelTimeEditScreen 1.0 WazeTravelTimeEditScreen.qml
 WazeTravelTimeMenu 1.0 WazeTravelTimeMenu.qml
+EditTextLabel4421 1.0 EditTextLabel4421.qml
