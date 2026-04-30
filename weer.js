@@ -200,8 +200,8 @@ function kmhToBft(kmh) {
 
 
 function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText, zonop, zononder, tijdnu) {
-    
-	var isTodayNight = determineNight (tijdnu, zonop, zononder);
+
+	var isTodayNight = forceDay ? false : determineNight(tijdnu, zonop, zononder);
 
     switch (weatherId) {
     case 'a': sourceFileName += isTodayNight ? "ClearNight" : "Sunny";
@@ -221,7 +221,7 @@ function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText,
 	sourceFileName += isTodayNight ? "RainHailNight" : "RainHailDay";
 	break;
     case 'g':
-	sourceFileName += isTodayNight ? "Thunder Night" : "ThunderDay";
+	sourceFileName += isTodayNight ? "ThunderNight" : "ThunderDay";
 	break;
     case 'u':
 	sourceFileName += isTodayNight ? "LightSnowNight" : "LightSnowDay";
