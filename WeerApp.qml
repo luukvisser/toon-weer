@@ -235,7 +235,8 @@ App {
 							  'kansregen': 'regen %',
 							  'mintemp': 'min',
 							  'maxtemp': 'max',
-							  'wind': 'wind'});
+							  'wind': 'wind',
+							  'score': 'score'});
 
 						// if the new day-plus 1 differs from the old one, we have received a new set of 5 days and can copy the old day1 to day0 (which is today actually)
 
@@ -259,12 +260,17 @@ App {
 						var tmpUrl = brJson['forecast']['fivedayforecast'][i]['iconurl'].split("/");
 						var dpicoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
 						var dpicoon = "qrc:/tsc/" + dpicoonid + ".png";
+						var fcKanszon  = brJson['forecast']['fivedayforecast'][i]['sunChance'].toString();
+						var fcKansregen = brJson['forecast']['fivedayforecast'][i]['rainChance'].toString();
+						var fcMaxtemp  = brJson['forecast']['fivedayforecast'][i]['maxtemperatureMax'].toString();
+						var fcWind     = brJson['forecast']['fivedayforecast'][i]['windDirection'].toUpperCase() + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
 						tmpForecast.push({'dagweek': tmpdagweek,
-							  'kanszon': brJson['forecast']['fivedayforecast'][i]['sunChance'].toString(),
-							  'kansregen': brJson['forecast']['fivedayforecast'][i]['rainChance'].toString(),
+							  'kanszon': fcKanszon,
+							  'kansregen': fcKansregen,
 							  'mintemp': brJson['forecast']['fivedayforecast'][i]['mintemperatureMin'].toString(),
-							  'maxtemp': brJson['forecast']['fivedayforecast'][i]['maxtemperatureMax'].toString(),
-							  'wind': brJson['forecast']['fivedayforecast'][i]['windDirection'].toUpperCase() + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString(),
+							  'maxtemp': fcMaxtemp,
+							  'wind': fcWind,
+							  'score': WeerJS.calcWeatherScore(fcKanszon, fcKansregen, fcMaxtemp, fcWind).toString(),
 							  'icoon': dpicoon});
 					}
 					fivedayforecast = tmpForecast;
@@ -412,7 +418,8 @@ App {
 						'kansregen': 'regen %',
 						'mintemp': 'min °C',
 						'maxtemp': 'max °C',
-						'wind': 'wind'});
+						'wind': 'wind',
+						'score': 'score'});
 
 					for (var i = 0; i < 5; i++) {
 						var dayDate = new Date(daily['time'][i]);
@@ -427,13 +434,18 @@ App {
 							false,
 							"file:///qmf/qml/apps/weer/drawables/Home",
 							fcIconId, "", daily['sunrise'][0], daily['sunset'][0], "12:00");
+						var omKanszon  = sunPct.toString();
+						var omKansregen = rainPct.toString();
+						var omMaxtemp  = daily['temperature_2m_max'][i].toString();
+						var omWind     = wDir + " " + wBft;
 						tmpForecast.push({
 							'dagweek': dayName,
-							'kanszon': sunPct.toString(),
-							'kansregen': rainPct.toString(),
+							'kanszon': omKanszon,
+							'kansregen': omKansregen,
 							'mintemp': daily['temperature_2m_min'][i].toString(),
-							'maxtemp': daily['temperature_2m_max'][i].toString(),
-							'wind': wDir + " " + wBft,
+							'maxtemp': omMaxtemp,
+							'wind': omWind,
+							'score': WeerJS.calcWeatherScore(omKanszon, omKansregen, omMaxtemp, omWind).toString(),
 							'icoon': fcIconPath});
 					}
 					fivedayforecast = tmpForecast;

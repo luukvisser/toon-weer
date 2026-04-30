@@ -343,3 +343,48 @@ function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText,
     return sourceFileName += ".png"
 }
 
+/**
+ * Score the "niceness" of a forecast day on a 1-10 scale.
+ * Inputs: kanszon (0-100), kansregen (0-100), maxtemp (°C),
+ *         windStr e.g. "ZW 3"  (last token = Beaufort number)
+ */
+function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
+    var tmax = parseFloat(maxtemp) || 15;
+
+    // Temperature score — sweet spot 20-24 °C for Netherlands context
+    var tempScore;
+    if (tmax >= 20 && tmax <= 24) {
+        tempScore = 10;
+    } else if (tmax > 24 && tmax <= 28) {
+        tempScore = 10 - (tmax - 24) * 0.3;
+    } else if (tmax > 28) {
+        tempScore = Math.max(1, 8.8 - (tmax - 28) * 0.6);
+    } else if (tmax >= 15) {
+        tempScore = 10 - (20 - tmax) * 0.5;
+    } else if (tmax >= 10) {
+        tempScore = 7.5 - (15 - tmax) * 0.4;
+    } else if (tmax >= 5) {
+        tempScore = 5.5 - (10 - tmax) * 0.4;
+    } else {
+        tempScore = Math.max(1, 3.5 + tmax * 0.1);
+    }
+
+    // Sun score: linear 0-100 % → 0-10
+    var sunScore = parseFloat(kanszon) / 10;
+
+    // Rain score: inverse linear 0-100 % → 10-0
+    var rainScore = (100 - parseFloat(kansregen)) / 10;
+
+    // Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
+    var parts = windStr.toString().trim().split(/\s+/);
+    var bft = parseInt(parts[parts.length - 1]) || 0;
+    var windScore = bft <= 2 ? 10
+                  : bft === 3 ? 8
+                  : bft === 4 ? 6
+                  : bft === 5 ? 4
+                  : bft === 6 ? 2 : 0;
+
+    var raw = 0.30 * tempScore + 0.30 * sunScore + 0.30 * rainScore + 0.10 * windScore;
+    return Math.min(10, Math.max(1, Math.round(raw)));
+}
+

@@ -348,6 +348,29 @@ Screen {
 					}
 					color: colors.clockTileColor
 				}
+
+				Text {
+					id: forecastscore
+					text: score
+					anchors {
+						top: forecastwind.bottom
+						topMargin: isNxt ? 5 : 4
+						left: forecastdagweek.left
+					}
+					font {
+						family: qfont.bold.name
+						pixelSize: isNxt ? 18 : 15
+					}
+					color: {
+						var s = parseInt(score);
+						if (isNaN(s)) return colors.clockTileColor;
+						if (s >= 8) return "#4CAF50";
+						if (s >= 6) return "#FF9800";
+						if (s >= 4) return "#FFC107";
+						return "#F44336";
+					}
+				}
+
 				Image {
 					id: forecasticoon
 					source: icoon
