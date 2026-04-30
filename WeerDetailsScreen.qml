@@ -365,8 +365,8 @@ Screen {
 						var s = parseInt(score);
 						if (isNaN(s)) return colors.clockTileColor;
 						if (s >= 8) return "#4CAF50";
-						if (s >= 6) return "#FF9800";
-						if (s >= 4) return "#FFC107";
+						if (s >= 6) return "#FFC107";
+						if (s >= 4) return "#FF9800";
 						return "#F44336";
 					}
 				}
