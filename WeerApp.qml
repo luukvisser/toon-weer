@@ -17,6 +17,7 @@ App {
 	property url tileUrl : "WeerTile.qml"
 	property url tileUrlRegen : "WeerRegenTile.qml"
 	property url tileSunrise : "WeerSunriseTile.qml"
+	property url tileSummary : "WeerSummaryTile.qml"
 	property url thumbnailIcon: "qrc:/tsc/weer.png"
 	property WeerDetailsScreen weerDetailsScreen
 	property WeerStationScreen weerStationScreen
@@ -64,6 +65,11 @@ App {
 	property string zonopkomst
 	property string zononder
 
+	property string minTemp12h: ""
+	property string maxTemp12h: ""
+	property int    maxUV12h: 0
+	property real   totalRegen12h: 0
+
 	property variant fivedayforecast: []
 	property variant actualweather: []
 	property string firstdayForecast: "  "
@@ -95,6 +101,7 @@ App {
 		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("OM Weer"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "OM Regenverw.", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "OM Zon op/onder", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileSummary, this, null, {thumbLabel: "OM Vandaag", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", p.weerDetailsScreenUrl, this, "weerDetailsScreen");
 		registry.registerWidget("screen", p.weerStationScreenUrl, this, "weerStationScreen");
 		registry.registerWidget("screen", p.weerActualRadarScreenUrl, this, "weerActualRadarScreen");
@@ -262,6 +269,15 @@ App {
 					}
 					fivedayforecast = tmpForecast;
 
+						// summary tile data from today's forecast
+					var todayFc = brJson['forecast']['fivedayforecast'][0];
+					if (todayFc) {
+						if (todayFc['mintemperatureMin'] !== undefined) minTemp12h = todayFc['mintemperatureMin'].toString();
+						if (todayFc['maxtemperatureMax'] !== undefined) maxTemp12h = todayFc['maxtemperatureMax'].toString();
+						if (todayFc['uvindex'] !== undefined) maxUV12h = todayFc['uvindex'];
+						if (todayFc['mmRainMax'] !== undefined) totalRegen12h = todayFc['mmRainMax'];
+					}
+
 						//forecast title and text, remove special characters
 
 					weersverwachtingTitel = brJson['forecast']['weatherreport']['title'];
@@ -304,8 +320,8 @@ App {
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
 			+ "&hourly=visibility"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
-			+ ",precipitation_probability_max,wind_speed_10m_max"
-			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset"
+			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
+			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
 			+ "&timezone=auto&forecast_days=6";
 
 		var xmlhttp = new XMLHttpRequest();
@@ -421,6 +437,12 @@ App {
 							'icoon': fcIconPath});
 					}
 					fivedayforecast = tmpForecast;
+
+					// summary tile data
+					if (daily['temperature_2m_min'][0] !== undefined) minTemp12h = daily['temperature_2m_min'][0].toString();
+					if (daily['temperature_2m_max'][0] !== undefined) maxTemp12h = daily['temperature_2m_max'][0].toString();
+					if (daily['uv_index_max'] && daily['uv_index_max'][0] !== undefined) maxUV12h = Math.round(daily['uv_index_max'][0]);
+					if (daily['precipitation_sum'] && daily['precipitation_sum'][0] !== undefined) totalRegen12h = daily['precipitation_sum'][0];
 
 					// no narrative forecast text from Open-Meteo
 					weersverwachtingTitel = "Open-Meteo GPS";
