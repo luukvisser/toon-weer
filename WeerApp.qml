@@ -321,7 +321,7 @@ App {
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
-			+ "&hourly=visibility"
+			+ "&hourly=visibility,temperature_2m,uv_index,precipitation"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
@@ -347,12 +347,14 @@ App {
 					windsnelheidBF = WeerJS.kmhToBft(windKmh);
 					windrichting = WeerJS.degreesToWindDir(current['wind_direction_10m']);
 
-					// visibility from hourly slot matching current time
+					// visibility from hourly slot matching current time; remember index for 12h aggregates
 					var currentHourStr = current['time'].substring(0, 13) + ":00";
 					zichtmeters = "";
+					var startHourIdx = -1;
 					for (var j = 0; j < hourly['time'].length; j++) {
 						if (hourly['time'][j] === currentHourStr) {
 							zichtmeters = hourly['visibility'][j];
+							startHourIdx = j;
 							break;
 						}
 					}
@@ -452,11 +454,30 @@ App {
 					}
 					fivedayforecast = tmpForecast;
 
-					// summary tile data
-					if (daily['temperature_2m_min'][0] !== undefined) minTemp12h = daily['temperature_2m_min'][0].toString();
-					if (daily['temperature_2m_max'][0] !== undefined) maxTemp12h = daily['temperature_2m_max'][0].toString();
-					if (daily['uv_index_max'] && daily['uv_index_max'][0] !== undefined) maxUV12h = Math.round(daily['uv_index_max'][0]);
-					if (daily['precipitation_sum'] && daily['precipitation_sum'][0] !== undefined) totalRegen12h = daily['precipitation_sum'][0];
+					// summary tile data: aggregate the next 12 hourly slots starting at the current hour
+					minTemp12h = "";
+					maxTemp12h = "";
+					maxUV12h = 0;
+					totalRegen12h = 0;
+					if (startHourIdx >= 0) {
+						var endIdx = Math.min(startHourIdx + 12, hourly['time'].length);
+						var minT = null, maxT = null, maxUV = 0, totalRain = 0;
+						for (var k = startHourIdx; k < endIdx; k++) {
+							var t = hourly['temperature_2m'][k];
+							if (t !== null && t !== undefined) {
+								if (minT === null || t < minT) minT = t;
+								if (maxT === null || t > maxT) maxT = t;
+							}
+							var uv = hourly['uv_index'] ? hourly['uv_index'][k] : null;
+							if (uv !== null && uv !== undefined && uv > maxUV) maxUV = uv;
+							var pr = hourly['precipitation'] ? hourly['precipitation'][k] : null;
+							if (pr !== null && pr !== undefined) totalRain += pr;
+						}
+						minTemp12h = minT !== null ? Math.round(minT).toString() : "";
+						maxTemp12h = maxT !== null ? Math.round(maxT).toString() : "";
+						maxUV12h = Math.round(maxUV);
+						totalRegen12h = Math.round(totalRain * 10) / 10;
+					}
 
 					// no narrative forecast text from Open-Meteo
 					weersverwachtingTitel = "Open-Meteo GPS";

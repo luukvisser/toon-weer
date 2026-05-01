@@ -4,88 +4,19 @@ import qb.components 1.0
 Tile {
 	id: weerSummaryTile
 
-	property bool dimState: screenStateController.dimmedColors
-
 	onClicked: {
 		if (app.weerDetailsScreen)
 			app.weerDetailsScreen.show();
 	}
 
-	// Dimmed state: show large temperature only
-	Text {
-		id: summaryDimTemp
-		text: i18n.number(Number(app.temperatuurGC), 1) + "°"
-		anchors {
-			baseline: parent.top
-			baselineOffset: isNxt ? 70 : 55
-			horizontalCenter: parent.horizontalCenter
-		}
-		font {
-			family: qfont.regular.name
-			pixelSize: isNxt ? 65 : 50
-		}
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.waTileTextColor : colors.waTileTextColor
-		visible: dimState
-	}
-
-	// Normal state
-
-	Text {
-		id: summaryTitle
-		text: "Vandaag"
-		anchors {
-			baseline: parent.top
-			baselineOffset: isNxt ? 28 : 22
-			horizontalCenter: parent.horizontalCenter
-		}
-		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 18 : 14
-		}
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
-	}
-
-	Text {
-		id: summaryCurrentTemp
-		text: i18n.number(Number(app.temperatuurGC), 1) + "°"
-		anchors {
-			baseline: parent.top
-			baselineOffset: isNxt ? 84 : 67
-			horizontalCenter: parent.horizontalCenter
-		}
-		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 54 : 43
-		}
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
-	}
-
-	Rectangle {
-		id: summarySeparator
-		height: 1
-		opacity: 0.35
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		anchors {
-			top: parent.top
-			topMargin: isNxt ? 96 : 76
-			left: parent.left
-			right: parent.right
-			leftMargin: isNxt ? 14 : 11
-			rightMargin: isNxt ? 14 : 11
-		}
-		visible: !dimState
-	}
-
-	// Bottom 2×2 grid: top row = min/max temp, bottom row = UV/precipitation
+	// Top corners: min/max temp for the next 12 hours
 
 	Text {
 		id: summaryMinTemp
 		text: "min: " + (app.minTemp12h !== "" ? app.minTemp12h + "°" : "—")
 		anchors {
-			baseline: parent.bottom
-			baselineOffset: isNxt ? -36 : -29
+			top: parent.top
+			topMargin: isNxt ? 14 : 11
 			left: parent.left
 			leftMargin: isNxt ? 14 : 11
 		}
@@ -94,14 +25,14 @@ Tile {
 			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
 	}
 
 	Text {
 		id: summaryMaxTemp
 		text: "max: " + (app.maxTemp12h !== "" ? app.maxTemp12h + "°" : "—")
 		anchors {
-			baseline: summaryMinTemp.baseline
+			top: parent.top
+			topMargin: isNxt ? 14 : 11
 			right: parent.right
 			rightMargin: isNxt ? 14 : 11
 		}
@@ -110,8 +41,21 @@ Tile {
 			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
 	}
+
+	// Center: current temperature
+	Text {
+		id: summaryCurrentTemp
+		text: i18n.number(Number(app.temperatuurGC), 1) + "°"
+		anchors.centerIn: parent
+		font {
+			family: qfont.bold.name
+			pixelSize: isNxt ? 54 : 43
+		}
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+	}
+
+	// Bottom corners: max UV and total precipitation for the next 12 hours
 
 	Text {
 		id: summaryUV
@@ -127,7 +71,6 @@ Tile {
 			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
 	}
 
 	Text {
@@ -143,6 +86,5 @@ Tile {
 			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		visible: !dimState
 	}
 }
