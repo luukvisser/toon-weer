@@ -430,10 +430,7 @@ App {
 						var wDir = WeerJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
 						var wBft = WeerJS.kmhToBft(daily['wind_speed_10m_max'][i]);
 						var fcIconId = WeerJS.wmoCodeToIconId(daily['weather_code'][i]);
-						var fcIconPath = WeerJS.parseWeatherIdAndText(
-							false,
-							"file:///qmf/qml/apps/weer/drawables/Home",
-							fcIconId, "", daily['sunrise'][0], daily['sunset'][0], "12:00");
+						var fcIconPath = "file:///qmf/qml/apps/weer/drawables/" + fcIconId + ".png";
 						var omKanszon  = sunPct.toString();
 						var omKansregen = rainPct.toString();
 						var omMaxtemp  = daily['temperature_2m_max'][i].toString();
