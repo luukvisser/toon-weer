@@ -62,10 +62,14 @@ App {
 	property string zonopkomst
 	property string zononder
 
-	property string minTemp12h: ""
-	property string maxTemp12h: ""
-	property int    maxUV12h: 0
-	property real   totalRegen12h: 0
+	property string minTempSummary: ""
+	property string maxTempSummary: ""
+	property int    maxUVSummary: 0
+	property real   totalRegenSummary: 0
+	property string maxWindBftSummary: ""
+	property string maxWindDirSummary: ""
+	property string scoreToday: ""
+	property int    summaryHours: 18
 	property real   yaxisScale: 0
 
 	property variant fivedayforecast: []
@@ -116,6 +120,10 @@ App {
 			if (s['selectedLongitude']) lon = s['selectedLongitude'];
 			if (s['selectedLatitude']) lat = s['selectedLatitude'];
 			if (s['useOpenMeteo'] !== undefined) useOpenMeteo = s['useOpenMeteo'];
+			if (s['summaryHours'] !== undefined) {
+				var sh = parseInt(s['summaryHours']);
+				if (!isNaN(sh) && sh >= 1 && sh <= 24) summaryHours = sh;
+			}
 		} catch(e) {
 		}
 	}
@@ -127,7 +135,8 @@ App {
 			"selectedStation": location,
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
-			"useOpenMeteo": useOpenMeteo
+			"useOpenMeteo": useOpenMeteo,
+			"summaryHours": summaryHours
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -263,25 +272,29 @@ App {
 						var fcMaxtemp  = brJson['forecast']['fivedayforecast'][i]['maxtemperatureMax'].toString();
 						var fcWindDir  = brJson['forecast']['fivedayforecast'][i]['windDirection'];
 						var fcWind     = (fcWindDir ? fcWindDir.toUpperCase() : "") + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
+						var fcScore    = WeerJS.calcWeatherScore(fcKanszon, fcKansregen, fcMaxtemp, fcWind).toString();
+						if (i === 0) scoreToday = fcScore;
 						tmpForecast.push({'dagweek': tmpdagweek,
 							  'kanszon': fcKanszon,
 							  'kansregen': fcKansregen,
 							  'mintemp': brJson['forecast']['fivedayforecast'][i]['mintemperatureMin'].toString(),
 							  'maxtemp': fcMaxtemp,
 							  'wind': fcWind,
-							  'score': WeerJS.calcWeatherScore(fcKanszon, fcKansregen, fcMaxtemp, fcWind).toString(),
+							  'score': fcScore,
 							  'icoon': dpicoon});
 					}
 					fivedayforecast = tmpForecast;
 
-						// summary tile data from today's forecast
+						// summary tile data from today's forecast (Buienradar feed has no hourly weather data)
 					var todayFc = brJson['forecast']['fivedayforecast'][0];
 					if (todayFc) {
-						if (todayFc['mintemperatureMin'] !== undefined) minTemp12h = todayFc['mintemperatureMin'].toString();
-						if (todayFc['maxtemperatureMax'] !== undefined) maxTemp12h = todayFc['maxtemperatureMax'].toString();
-						if (todayFc['uvindex'] !== undefined) maxUV12h = todayFc['uvindex'];
-						if (todayFc['mmRainMax'] !== undefined) totalRegen12h = todayFc['mmRainMax'];
+						if (todayFc['mintemperatureMin'] !== undefined) minTempSummary = todayFc['mintemperatureMin'].toString();
+						if (todayFc['maxtemperatureMax'] !== undefined) maxTempSummary = todayFc['maxtemperatureMax'].toString();
+						if (todayFc['uvindex'] !== undefined) maxUVSummary = todayFc['uvindex'];
+						if (todayFc['mmRainMax'] !== undefined) totalRegenSummary = todayFc['mmRainMax'];
 					}
+					maxWindBftSummary = windsnelheidBF;
+					maxWindDirSummary = windrichting;
 
 						//forecast title and text, remove special characters
 
@@ -321,7 +334,7 @@ App {
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
-			+ "&hourly=visibility,temperature_2m,uv_index,precipitation"
+			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
@@ -347,7 +360,7 @@ App {
 					windsnelheidBF = WeerJS.kmhToBft(windKmh);
 					windrichting = WeerJS.degreesToWindDir(current['wind_direction_10m']);
 
-					// visibility from hourly slot matching current time; remember index for 12h aggregates
+					// visibility from hourly slot matching current time; remember index for summary aggregates
 					var currentHourStr = current['time'].substring(0, 13) + ":00";
 					zichtmeters = "";
 					var startHourIdx = -1;
@@ -402,21 +415,27 @@ App {
 							'zonoponder': WeerJS.lineZonOpOnder(zonopkomst, zononder)});
 						actualweather = rows;
 					}
-					buildActualWeatherOM(lat4 + ", " + lon4);
+					// fall back to coordinates immediately so the tile resolves even if the geocode fails
+					locationName = lat4 + ", " + lon4;
+					buildActualWeatherOM(locationName);
 
-					// reverse-geocode GPS coordinates to city name
+					// reverse-geocode GPS coordinates to city name via BigDataCloud
+					// (free, no API key, no User-Agent requirement — Nominatim rejects header-less QML XHRs)
 					var geoHttp = new XMLHttpRequest();
 					geoHttp.onreadystatechange = function() {
 						if (geoHttp.readyState == 4 && geoHttp.status == 200) {
-							var geo = JSON.parse(geoHttp.responseText);
-							var addr = geo['address'];
-							if (addr) {
-								locationName = addr['city'] || addr['town'] || addr['village'] || addr['hamlet'] || addr['municipality'] || (lat4 + ", " + lon4);
-								buildActualWeatherOM(locationName);
+							try {
+								var geo = JSON.parse(geoHttp.responseText);
+								var city = geo['city'] || geo['locality'] || geo['principalSubdivision'];
+								if (city) {
+									locationName = city;
+									buildActualWeatherOM(locationName);
+								}
+							} catch (e) {
 							}
 						}
 					}
-					geoHttp.open("GET", "https://nominatim.openstreetmap.org/reverse?lat=" + lat4 + "&lon=" + lon4 + "&format=json", true);
+					geoHttp.open("GET", "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat4 + "&longitude=" + lon4 + "&localityLanguage=nl", true);
 					geoHttp.send();
 
 					// 5-day forecast
@@ -442,6 +461,8 @@ App {
 						var omKansregen = rainPct.toString();
 						var omMaxtemp  = daily['temperature_2m_max'][i].toString();
 						var omWind     = wDir + " " + wBft;
+						var omScore    = WeerJS.calcWeatherScore(omKanszon, omKansregen, omMaxtemp, omWind).toString();
+						if (i === 0) scoreToday = omScore;
 						tmpForecast.push({
 							'dagweek': dayName,
 							'kanszon': omKanszon,
@@ -449,19 +470,22 @@ App {
 							'mintemp': daily['temperature_2m_min'][i].toString(),
 							'maxtemp': omMaxtemp,
 							'wind': omWind,
-							'score': WeerJS.calcWeatherScore(omKanszon, omKansregen, omMaxtemp, omWind).toString(),
+							'score': omScore,
 							'icoon': fcIconPath});
 					}
 					fivedayforecast = tmpForecast;
 
-					// summary tile data: aggregate the next 12 hourly slots starting at the current hour
-					minTemp12h = "";
-					maxTemp12h = "";
-					maxUV12h = 0;
-					totalRegen12h = 0;
+					// summary tile data: aggregate the next summaryHours hourly slots starting at the current hour
+					minTempSummary = "";
+					maxTempSummary = "";
+					maxUVSummary = 0;
+					totalRegenSummary = 0;
+					maxWindBftSummary = "";
+					maxWindDirSummary = "";
 					if (startHourIdx >= 0) {
-						var endIdx = Math.min(startHourIdx + 12, hourly['time'].length);
+						var endIdx = Math.min(startHourIdx + summaryHours, hourly['time'].length);
 						var minT = null, maxT = null, maxUV = 0, totalRain = 0;
+						var maxWindKmh = -1, maxWindDirDeg = 0;
 						for (var k = startHourIdx; k < endIdx; k++) {
 							var t = hourly['temperature_2m'][k];
 							if (t !== null && t !== undefined) {
@@ -472,11 +496,21 @@ App {
 							if (uv !== null && uv !== undefined && uv > maxUV) maxUV = uv;
 							var pr = hourly['precipitation'] ? hourly['precipitation'][k] : null;
 							if (pr !== null && pr !== undefined) totalRain += pr;
+							var ws = hourly['wind_speed_10m'] ? hourly['wind_speed_10m'][k] : null;
+							if (ws !== null && ws !== undefined && ws > maxWindKmh) {
+								maxWindKmh = ws;
+								var wd = hourly['wind_direction_10m'] ? hourly['wind_direction_10m'][k] : null;
+								if (wd !== null && wd !== undefined) maxWindDirDeg = wd;
+							}
 						}
-						minTemp12h = minT !== null ? Math.round(minT).toString() : "";
-						maxTemp12h = maxT !== null ? Math.round(maxT).toString() : "";
-						maxUV12h = Math.round(maxUV);
-						totalRegen12h = Math.round(totalRain * 10) / 10;
+						minTempSummary = minT !== null ? Math.round(minT).toString() : "";
+						maxTempSummary = maxT !== null ? Math.round(maxT).toString() : "";
+						maxUVSummary = Math.round(maxUV);
+						totalRegenSummary = Math.round(totalRain * 10) / 10;
+						if (maxWindKmh >= 0) {
+							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
+							maxWindDirSummary = WeerJS.degreesToWindDir(maxWindDirDeg);
+						}
 					}
 
 					// no narrative forecast text from Open-Meteo

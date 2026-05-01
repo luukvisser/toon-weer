@@ -374,8 +374,8 @@ Screen {
 				Image {
 					id: forecasticoon
 					source: icoon
-					width: isNxt ? 64 : 48
-					height: isNxt ? 64 : 48
+					width: isNxt ? 32 : 24
+					height: isNxt ? 32 : 24
 					fillMode: Image.PreserveAspectFit
 					anchors {
 						top: forecastwind.bottom
