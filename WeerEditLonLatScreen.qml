@@ -12,7 +12,7 @@ Screen {
 
 	function saveLon(text) {
 		if (text) {
-			app.lon = (Math.round(parseFloat(text.replace(",", ".")) * 10000) / 10000);
+			app.lon = parseFloat(text.replace(",", ".")).toFixed(4);
 			lonLabel.inputText = app.lon;
 			app.saveSettings();
 		}
@@ -20,7 +20,7 @@ Screen {
 
 	function saveLat(text) {
 		if (text) {
-			app.lat = (Math.round(parseFloat(text.replace(",", ".")) * 10000) / 10000);
+			app.lat = parseFloat(text.replace(",", ".")).toFixed(4);
 			latLabel.inputText = app.lat;
 			app.saveSettings();
 			if (!app.useOpenMeteo) findNearestWeatherStation();
@@ -38,13 +38,9 @@ Screen {
 
 	onShown: {
 		addCustomTopRightButton("Opslaan");
-		if (app.indexStation > -1) stationLabel.inputText = app.stationArray[app.indexStation]; 
+		if (app.indexStation > -1) stationLabel.inputText = app.stationArray[app.indexStation];
 		lonLabel.inputText = app.lon;
 		latLabel.inputText = app.lat;
-		dimSunDownLabel.inputText = app.autoDimlevelSunDown;
-		dimSunUpLabel.inputText = app.autoDimlevelSunUp;
-		yaxisLabel.inputText = app.yaxisScale;
-		autoDimToggle.isSwitchedOn = app.autoAdjustDimBrightness ;
 	}
 	
 	function toRad(x) {

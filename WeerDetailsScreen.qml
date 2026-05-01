@@ -251,8 +251,8 @@ Screen {
 		id: delegateGrid
 
 		Item {
-			width: grid.width / grid.columns
-		        height: grid.height
+			width: grid2.cellWidth
+		        height: grid2.cellHeight
 			Rectangle {
 				anchors.fill: parent
 
@@ -318,7 +318,7 @@ Screen {
 				}
 
 				Text {
-					id: forecastmaxtenmp
+					id: forecastmaxtemp
 					text: maxtemp
 					anchors {
 						top: forecastmintemp.bottom
@@ -337,7 +337,7 @@ Screen {
 					id: forecastwind
 					text: wind
 					anchors {
-						top: forecastmaxtenmp.bottom
+						top: forecastmaxtemp.bottom
 						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
 

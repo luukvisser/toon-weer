@@ -40,8 +40,6 @@ App {
 	property int indexStation
 	property variant latArray : []
 	property variant lonArray : []
-	property variant brJson : {}
-
 	property string temperatuurGC
 	property string gevoelstemperatuur
 	property string windsnelheidBF
@@ -61,7 +59,6 @@ App {
 	property string stillimagesurl
 	property string radarimagesurl
 	property string radarimagesSmallurl
-	property string extraScreensurl
 	property string zonopkomst
 	property string zononder
 
@@ -69,15 +66,13 @@ App {
 	property string maxTemp12h: ""
 	property int    maxUV12h: 0
 	property real   totalRegen12h: 0
+	property real   yaxisScale: 0
 
 	property variant fivedayforecast: []
 	property variant actualweather: []
 	property string firstdayForecast: "  "
 
 	property bool useOpenMeteo: false
-
-	// user settings from config file
-	property variant weerSettingsJson : {}
 
 	FileIO {
 		id: weerSettingsFile
@@ -116,11 +111,11 @@ App {
 		//read user settings
 
 		try {
-			weerSettingsJson = JSON.parse(weerSettingsFile.read());
-			if (weerSettingsJson['selectedStation']) location = weerSettingsJson['selectedStation'];
-			if (weerSettingsJson['selectedLongitude']) lon = weerSettingsJson['selectedLongitude'];
-			if (weerSettingsJson['selectedLatitude']) lat = weerSettingsJson['selectedLatitude'];
-			if (weerSettingsJson['useOpenMeteo'] !== undefined) useOpenMeteo = weerSettingsJson['useOpenMeteo'];
+			var s = JSON.parse(weerSettingsFile.read());
+			if (s['selectedStation']) location = s['selectedStation'];
+			if (s['selectedLongitude']) lon = s['selectedLongitude'];
+			if (s['selectedLatitude']) lat = s['selectedLatitude'];
+			if (s['useOpenMeteo'] !== undefined) useOpenMeteo = s['useOpenMeteo'];
 		} catch(e) {
 		}
 	}
@@ -193,9 +188,12 @@ App {
 						if (brJson['actual']['stationmeasurements'][indexStation]['humidity']) luchtvochtigheid = brJson['actual']['stationmeasurements'][indexStation]['humidity'];
 
 						icoonzin = brJson['actual']['stationmeasurements'][indexStation]['weatherdescription'];
-						var tmpUrl = brJson['actual']['stationmeasurements'][indexStation]['iconurl'].split("/");
-						icoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
-						icoonlink = "qrc:/tsc/" + icoonid + ".png";
+						var rawIconUrl = brJson['actual']['stationmeasurements'][indexStation]['iconurl'];
+						if (rawIconUrl) {
+							var tmpUrl = rawIconUrl.split("/");
+							icoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
+							icoonlink = "file:///qmf/qml/apps/weer/drawables/" + icoonid + ".png";
+						}
 
 							// fill model for grid of weather station data on detail screen
 	
@@ -257,13 +255,14 @@ App {
 					for (var i = 0; i < 5; i++) {
 						var tmpNewDate = new Date(brJson['forecast']['fivedayforecast'][i]['day']);
 						var tmpdagweek = weekday[tmpNewDate.getDay()];
-						var tmpUrl = brJson['forecast']['fivedayforecast'][i]['iconurl'].split("/");
-						var dpicoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
-						var dpicoon = "qrc:/tsc/" + dpicoonid + ".png";
+						var fcRawUrl = brJson['forecast']['fivedayforecast'][i]['iconurl'];
+						var dpicoonid = fcRawUrl ? fcRawUrl.split("/").pop().replace(".png", "") : "a";
+						var dpicoon = "file:///qmf/qml/apps/weer/drawables/" + dpicoonid + ".png";
 						var fcKanszon  = brJson['forecast']['fivedayforecast'][i]['sunChance'].toString();
 						var fcKansregen = brJson['forecast']['fivedayforecast'][i]['rainChance'].toString();
 						var fcMaxtemp  = brJson['forecast']['fivedayforecast'][i]['maxtemperatureMax'].toString();
-						var fcWind     = brJson['forecast']['fivedayforecast'][i]['windDirection'].toUpperCase() + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
+						var fcWindDir  = brJson['forecast']['fivedayforecast'][i]['windDirection'];
+						var fcWind     = (fcWindDir ? fcWindDir.toUpperCase() : "") + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
 						tmpForecast.push({'dagweek': tmpdagweek,
 							  'kanszon': fcKanszon,
 							  'kansregen': fcKansregen,
@@ -289,22 +288,20 @@ App {
 					weersverwachtingTitel = brJson['forecast']['weatherreport']['title'];
 					weersverwachtingTekst = brJson['forecast']['weatherreport']['text'];
 					var w = weersverwachtingTekst.indexOf("nbsp;");
-					while (w > 0) { 
-						var tmptx = weersverwachtingTekst.substring(0, w - 5) + " " + weersverwachtingTekst.substring(w + 5, weersverwachtingTekst.length);
-						weersverwachtingTekst = tmptx;
-						w = weersverwachtingTekst.indexOf("nbsp;")
+					while (w !== -1) {
+						weersverwachtingTekst = weersverwachtingTekst.substring(0, w - 1) + " " + weersverwachtingTekst.substring(w + 5);
+						w = weersverwachtingTekst.indexOf("nbsp;");
 					}
 					w = weersverwachtingTekst.indexOf("rsquo;");
-					while (w > 0) { 
-						var tmptx = weersverwachtingTekst.substring(0, w - 5) + "'" + weersverwachtingTekst.substring(w + 6, weersverwachtingTekst.length);
-						weersverwachtingTekst = tmptx;
-						w = weersverwachtingTekst.indexOf("rsquo;")
+					while (w !== -1) {
+						weersverwachtingTekst = weersverwachtingTekst.substring(0, w - 1) + "'" + weersverwachtingTekst.substring(w + 6);
+						w = weersverwachtingTekst.indexOf("rsquo;");
 					}
 
 						// link to icon images
 
-					icoonimageDim = WeerJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/weer/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonimageNoDim = WeerJS.parseWeatherIdAndText(true, "file:///qmf/qml/apps/weer/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Dim", icoonid, icoonzin, zonopkomst, zononder, timeStr);
+					icoonimageNoDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Home", icoonid, icoonzin, zonopkomst, zononder, timeStr);
 				}
 			}
 		}
@@ -328,7 +325,7 @@ App {
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
-			+ "&timezone=auto&forecast_days=6";
+			+ "&timezone=auto&forecast_days=5";
 
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
@@ -352,6 +349,7 @@ App {
 
 					// visibility from hourly slot matching current time
 					var currentHourStr = current['time'].substring(0, 13) + ":00";
+					zichtmeters = "";
 					for (var j = 0; j < hourly['time'].length; j++) {
 						if (hourly['time'][j] === currentHourStr) {
 							zichtmeters = hourly['visibility'][j];
@@ -372,12 +370,37 @@ App {
 					icoonimageNoDim = WeerJS.parseWeatherIdAndText(
 						false, "file:///qmf/qml/apps/weer/drawables/Home",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
-					icoonlink = icoonimageNoDim;
+					var isNight = WeerJS.determineNight(timeStr, zonopkomst, zononder);
+					icoonlink = "file:///qmf/qml/apps/weer/drawables/" + (isNight ? icoonid + icoonid : icoonid) + ".png";
 
 					// save actual temp for TemperatureLogger
 					var doc2 = new XMLHttpRequest();
 					doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
 					doc2.send(temperatuurGC + ":" + current['time']);
+
+					// build actualweather immediately with coordinates, update when geocode resolves
+					var omUvIndex = current['uv_index'] != null ? current['uv_index'].toString() : "-";
+					function buildActualWeatherOM(locStr) {
+						var rows = [];
+						rows.push({'location': 'GPS locatie',
+							'temperature': 'Temperatuur:',
+							'windsnelheid': 'Windsnelheid:',
+							'windrichting': 'Windrichting:',
+							'luchtvochtigheid': 'Luchtvochtigheid:',
+							'luchtdruk': 'Luchtdruk:',
+							'zicht': 'UV index:',
+							'zonoponder': 'Zon op\/onder'});
+						rows.push({'location': locStr,
+							'temperature': WeerJS.lineTemp(temperatuurGC),
+							'windsnelheid': WeerJS.lineWindsnelheid(windsnelheidBF),
+							'windrichting': windrichting,
+							'luchtvochtigheid': WeerJS.lineLuchtvochtigheid(luchtvochtigheid),
+							'luchtdruk': WeerJS.lineLuchtdruk(luchtdruk),
+							'zicht': omUvIndex,
+							'zonoponder': WeerJS.lineZonOpOnder(zonopkomst, zononder)});
+						actualweather = rows;
+					}
+					buildActualWeatherOM(lat4 + ", " + lon4);
 
 					// reverse-geocode GPS coordinates to city name
 					var geoHttp = new XMLHttpRequest();
@@ -385,32 +408,14 @@ App {
 						if (geoHttp.readyState == 4 && geoHttp.status == 200) {
 							var geo = JSON.parse(geoHttp.responseText);
 							var addr = geo['address'];
-							locationName = addr['city'] || addr['town'] || addr['village'] || addr['hamlet'] || addr['municipality'] || (lat4 + ", " + lon4);
+							if (addr) {
+								locationName = addr['city'] || addr['town'] || addr['village'] || addr['hamlet'] || addr['municipality'] || (lat4 + ", " + lon4);
+								buildActualWeatherOM(locationName);
+							}
 						}
 					}
 					geoHttp.open("GET", "https://nominatim.openstreetmap.org/reverse?lat=" + lat4 + "&lon=" + lon4 + "&format=json", true);
 					geoHttp.send();
-
-					// actualweather model for details screen
-					var locStr = locationName ? locationName : (lat4 + ", " + lon4);
-					var tmpActual = [];
-					tmpActual.push({'location': 'GPS locatie',
-						'temperature': 'Temperatuur:',
-						'windsnelheid': 'Windsnelheid:',
-						'windrichting': 'Windrichting:',
-						'luchtvochtigheid': 'Luchtvochtigheid:',
-						'luchtdruk': 'Luchtdruk:',
-						'zicht': 'UV index:',
-						'zonoponder': 'Zon op\/onder'});
-					tmpActual.push({'location': locStr,
-						'temperature': WeerJS.lineTemp(temperatuurGC),
-						'windsnelheid': WeerJS.lineWindsnelheid(windsnelheidBF),
-						'windrichting': windrichting,
-						'luchtvochtigheid': WeerJS.lineLuchtvochtigheid(luchtvochtigheid),
-						'luchtdruk': WeerJS.lineLuchtdruk(luchtdruk),
-						'zicht': current['uv_index'] != null ? current['uv_index'].toString() : "-",
-						'zonoponder': WeerJS.lineZonOpOnder(zonopkomst, zononder)});
-					actualweather = tmpActual;
 
 					// 5-day forecast
 					var tmpForecast = [];

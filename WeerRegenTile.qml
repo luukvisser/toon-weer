@@ -5,8 +5,6 @@ import "weer.js" as WeerJS
 
 Tile {
 	id: root
-	property string displayScale: WeerJS.formatScale(app.regenMaxValue, app.yaxisScale)
-
 	onClicked: {
 		app.radarimagesurl ="http://toon/";  //resetimage
 		if (isNxt) {

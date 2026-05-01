@@ -17,7 +17,7 @@ Tile {
 
 	Text {
 		id: weatherSunrise
-		text: app.zonopkomst.substr(11,5)
+		text: app.zonopkomst ? app.zonopkomst.substr(11, 5) : ""
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 70 : 55
@@ -47,11 +47,11 @@ Tile {
 
 	Text {
 		id: weatherSunset
-		text: app.zononder.substr(11,5)
+		text: app.zononder ? app.zononder.substr(11, 5) : ""
 		anchors {
 			left: weatherSunrise.left
-			topMargin: isNxt ? 20 : 16
-			top: weatherSunrise.bottom
+			top: weatherSunsetText.bottom
+			topMargin: isNxt ? 4 : 3
 		}
 		font {
 			family: qfont.regular.name

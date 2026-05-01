@@ -104,8 +104,8 @@ Tile {
 		id: weerTileWindsnelheidText
 		text: tempWind
 		anchors {
-			baseline: weerTileLuchtdrukText4.top
-			baselineOffset: isNxt ? -5 : -4
+			bottom: weerTileLuchtdrukText4.top
+			bottomMargin: isNxt ? 5 : 4
 			horizontalCenter: parent.horizontalCenter
 		}
 		font {

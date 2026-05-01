@@ -14,7 +14,7 @@ function addMinutes(time/*"hh:mm"*/, minsToAdd/*"N"*/) {
 }
 
 function formatScale(maxRegen, yScale) {
-    if (yScale = 0) {
+    if (yScale === 0) {
 	return 72 / maxRegen;
     } else {
 	return 72 / yScale;
