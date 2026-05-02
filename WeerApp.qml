@@ -69,6 +69,8 @@ App {
 	property string maxWindBftSummary: ""
 	property string maxWindDirSummary: ""
 	property string scoreToday: ""
+	property string scoreNow: ""
+	property string scoreSummary: ""
 	property int    summaryHours: 18
 	property int    rainHours: 6
 	property real   yaxisScale: 0
@@ -209,6 +211,13 @@ App {
 							icoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
 							icoonlink = "file:///qmf/qml/apps/weer/drawables/" + icoonid + ".png";
 						}
+						if (icoonid) {
+							var srNow2 = WeerJS.iconIdToSunRainPct(icoonid);
+							scoreNow = WeerJS.calcWeatherScore(
+								srNow2.sun.toString(), srNow2.rain.toString(),
+								temperatuurGC, windrichting + " " + windsnelheidBF
+							).toString();
+						}
 
 							// fill model for grid of weather station data on detail screen
 	
@@ -279,7 +288,10 @@ App {
 						var fcWindDir  = brJson['forecast']['fivedayforecast'][i]['windDirection'];
 						var fcWind     = (fcWindDir ? fcWindDir.toUpperCase() : "") + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
 						var fcScore    = WeerJS.calcWeatherScore(fcKanszon, fcKansregen, fcMaxtemp, fcWind).toString();
-						if (i === 0) scoreToday = fcScore;
+						if (i === 0) {
+							scoreToday = fcScore;
+							scoreSummary = fcScore;
+						}
 						tmpForecast.push({'dagweek': tmpdagweek,
 							  'kanszon': fcKanszon,
 							  'kansregen': fcKansregen,
@@ -340,7 +352,7 @@ App {
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
-			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m"
+			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m,weather_code,precipitation_probability"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
@@ -385,6 +397,11 @@ App {
 					// weather icon mapped from WMO code
 					icoonid = WeerJS.wmoCodeToIconId(current['weather_code']);
 					icoonzin = WeerJS.wmoCodeToDescription(current['weather_code']);
+					var srNow = WeerJS.wmoCodeToSunRainPct(current['weather_code']);
+					scoreNow = WeerJS.calcWeatherScore(
+						srNow.sun.toString(), srNow.rain.toString(),
+						temperatuurGC, windrichting + " " + windsnelheidBF
+					).toString();
 					icoonimageDim   = WeerJS.parseWeatherIdAndText(
 						false, "file:///qmf/qml/apps/weer/drawables/Dim",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
@@ -488,10 +505,12 @@ App {
 					totalRegenSummary = 0;
 					maxWindBftSummary = "";
 					maxWindDirSummary = "";
+					scoreSummary = "";
 					if (startHourIdx >= 0) {
 						var endIdx = Math.min(startHourIdx + summaryHours, hourly['time'].length);
 						var minT = null, maxT = null, maxUV = 0, totalRain = 0;
 						var maxWindKmh = -1, maxWindDirDeg = 0;
+						var maxRainProb = 0, clearHourCount = 0;
 						for (var k = startHourIdx; k < endIdx; k++) {
 							var t = hourly['temperature_2m'][k];
 							if (t !== null && t !== undefined) {
@@ -508,6 +527,10 @@ App {
 								var wd = hourly['wind_direction_10m'] ? hourly['wind_direction_10m'][k] : null;
 								if (wd !== null && wd !== undefined) maxWindDirDeg = wd;
 							}
+							var rp = hourly['precipitation_probability'] ? hourly['precipitation_probability'][k] : null;
+							if (rp !== null && rp !== undefined && rp > maxRainProb) maxRainProb = rp;
+							var wc = hourly['weather_code'] ? hourly['weather_code'][k] : null;
+							if (wc !== null && wc !== undefined && wc <= 2) clearHourCount++;
 						}
 						minTempSummary = minT !== null ? Math.round(minT).toString() : "";
 						maxTempSummary = maxT !== null ? Math.round(maxT).toString() : "";
@@ -517,6 +540,11 @@ App {
 							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
 							maxWindDirSummary = WeerJS.degreesToWindDir(maxWindDirDeg);
 						}
+						var sunPct = Math.round(clearHourCount / (endIdx - startHourIdx) * 100);
+						scoreSummary = WeerJS.calcWeatherScore(
+							sunPct.toString(), maxRainProb.toString(),
+							maxTempSummary, maxWindDirSummary + " " + maxWindBftSummary
+						).toString();
 					}
 
 					// no narrative forecast text from Open-Meteo

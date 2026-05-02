@@ -104,7 +104,11 @@ Tile {
 
 	Text {
 		id: summaryScore
-		text: app.scoreToday !== "" ? app.scoreToday + "/10 score" : "—"
+		text: {
+			var nowStr = app.scoreNow !== "" ? app.scoreNow : "—"
+			var sumStr = app.scoreSummary !== "" ? app.scoreSummary : "—"
+			return "nu: " + nowStr + "  +" + app.summaryHours + "h: " + sumStr
+		}
 		anchors {
 			baseline: summaryWind.baseline
 			right: parent.right
@@ -112,7 +116,7 @@ Tile {
 		}
 		font {
 			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
