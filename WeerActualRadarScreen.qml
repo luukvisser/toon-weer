@@ -2,17 +2,17 @@ import QtQuick 2.1
 import qb.components 1.0
 
 Screen {
-	id: buienradarActualRadarScreen
+	id: weerActualRadarScreen
 
-	screenTitle: "Actuele Buienradar";
+	screenTitle: "Actuele Weer";
 	property variant rightNow
 	property string todayStr
 	property string todayStrFormatted
 	property string currentHours
 
 	onCustomButtonClicked: {
-		if (app.buienradarEditLonLatScreen) {
-			app.buienradarEditLonLatScreen.show();
+		if (app.weerEditLonLatScreen) {
+			app.weerEditLonLatScreen.show();
 		}
 	}
 
@@ -54,9 +54,9 @@ Screen {
 	}
 
 	StandardButton {
-		id: btnBuienradar
+		id: btnWeer
 		width: isNxt ? 350 : 305
-		text: "Buienradar"
+		text: "Weer"
 		anchors {
 			baseline: parent.top
 			left: parent.left
@@ -70,7 +70,7 @@ Screen {
 			} else {
 				app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 			}
-			setTitle("Actuele Buienradar");
+			setTitle("Actuele Weer");
 		}
 	}
 
@@ -79,9 +79,9 @@ Screen {
 		width: isNxt ? 350 : 305
 		text: "UV index"
 		anchors {
-			top: btnBuienradar.bottom
+			top: btnWeer.bottom
 			topMargin: 10
-			left: btnBuienradar.left
+			left: btnWeer.left
 		}
 		onClicked: {
 			stillRadarImage.visible = true;
@@ -98,7 +98,7 @@ Screen {
 		anchors {
 			top: btnUVindexradar.bottom
 			topMargin: 10
-			left: btnBuienradar.left
+			left: btnWeer.left
 		}
 		onClicked: {
 			setTitle("Muggenradar vandaag");

@@ -2,7 +2,7 @@ import QtQuick 2.1
 import qb.components 1.0
 
 Screen {
-	id: buienradarFullWeatherForecastScreen
+	id: weerFullWeatherForecastScreen
 	screenTitle: app.weersverwachtingTitel;
 
 	Rectangle {

@@ -14,7 +14,7 @@ function addMinutes(time/*"hh:mm"*/, minsToAdd/*"N"*/) {
 }
 
 function formatScale(maxRegen, yScale) {
-    if (yScale = 0) {
+    if (yScale === 0) {
 	return 72 / maxRegen;
     } else {
 	return 72 / yScale;
@@ -71,7 +71,7 @@ function determineNight (tijdnu, zonop, zononder) {
 
 	
 function formatLuchtdruk(ld, humidity) {
-	return i18n.number(ld, 0, i18n.general_rounding, 1) + " hPa; lv: " + humidity + " %";
+	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa; lv: " + humidity + " %";
 }
 
 
@@ -96,7 +96,7 @@ function lineLuchtvochtigheid(lv) {
 
 
 function lineLuchtdruk(ld) {
-	return i18n.number(ld, 0, i18n.general_rounding, 1) + " hPa";
+	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa";
 }
 
 
@@ -123,9 +123,85 @@ function lineWindstotenMS(ws) {
 * @return relative path to weather icon as string
 */
 
+function wmoCodeToDescription(wmoCode) {
+    if (wmoCode === 0)  return "Helder";
+    if (wmoCode === 1)  return "Overwegend helder";
+    if (wmoCode === 2)  return "Gedeeltelijk bewolkt";
+    if (wmoCode === 3)  return "Bewolkt";
+    if (wmoCode === 45) return "Mist";
+    if (wmoCode === 48) return "Rijpmist";
+    if (wmoCode === 51) return "Lichte motregen";
+    if (wmoCode === 53) return "Matige motregen";
+    if (wmoCode === 55) return "Dichte motregen";
+    if (wmoCode === 56) return "Lichte ijzel";
+    if (wmoCode === 57) return "Zware ijzel";
+    if (wmoCode === 61) return "Lichte regen";
+    if (wmoCode === 63) return "Matige regen";
+    if (wmoCode === 65) return "Zware regen";
+    if (wmoCode === 66) return "Lichte ijsregen";
+    if (wmoCode === 67) return "Zware ijsregen";
+    if (wmoCode === 71) return "Lichte sneeuwval";
+    if (wmoCode === 73) return "Matige sneeuwval";
+    if (wmoCode === 75) return "Zware sneeuwval";
+    if (wmoCode === 77) return "Sneeuwkorrels";
+    if (wmoCode === 80) return "Lichte regenbuien";
+    if (wmoCode === 81) return "Matige regenbuien";
+    if (wmoCode === 82) return "Hevige regenbuien";
+    if (wmoCode === 85) return "Lichte sneeuwbuien";
+    if (wmoCode === 86) return "Zware sneeuwbuien";
+    if (wmoCode === 95) return "Onweer";
+    if (wmoCode === 96) return "Onweer met hagel";
+    if (wmoCode === 99) return "Onweer met zware hagel";
+    return "";
+}
+
+
+function wmoCodeToIconId(wmoCode) {
+    if (wmoCode === 0) return 'a';
+    if (wmoCode <= 2) return 'b';
+    if (wmoCode === 3) return 'c';
+    if (wmoCode <= 48) return 'd';
+    if (wmoCode <= 55) return 'm';
+    if (wmoCode <= 57) return 'w';
+    if (wmoCode === 61) return 'f';
+    if (wmoCode <= 65) return 'k';
+    if (wmoCode <= 67) return 'w';
+    if (wmoCode <= 73) return 'u';
+    if (wmoCode <= 77) return 'v';
+    if (wmoCode === 80) return 'f';
+    if (wmoCode <= 82) return 'k';
+    if (wmoCode <= 86) return 'u';
+    if (wmoCode === 95) return 'g';
+    return 'h';
+}
+
+
+function degreesToWindDir(degrees) {
+    var dirs = ['N', 'NNO', 'NO', 'ONO', 'O', 'OZO', 'ZO', 'ZZO', 'Z', 'ZZW', 'ZW', 'WZW', 'W', 'WNW', 'NW', 'NNW'];
+    return dirs[Math.round(degrees / 22.5) % 16];
+}
+
+
+function kmhToBft(kmh) {
+    if (kmh < 1) return 0;
+    if (kmh < 6) return 1;
+    if (kmh < 12) return 2;
+    if (kmh < 20) return 3;
+    if (kmh < 29) return 4;
+    if (kmh < 39) return 5;
+    if (kmh < 50) return 6;
+    if (kmh < 62) return 7;
+    if (kmh < 75) return 8;
+    if (kmh < 89) return 9;
+    if (kmh < 103) return 10;
+    if (kmh < 118) return 11;
+    return 12;
+}
+
+
 function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText, zonop, zononder, tijdnu) {
-    
-	var isTodayNight = determineNight (tijdnu, zonop, zononder);
+
+	var isTodayNight = forceDay ? false : determineNight(tijdnu, zonop, zononder);
 
     switch (weatherId) {
     case 'a': sourceFileName += isTodayNight ? "ClearNight" : "Sunny";
@@ -145,7 +221,7 @@ function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText,
 	sourceFileName += isTodayNight ? "RainHailNight" : "RainHailDay";
 	break;
     case 'g':
-	sourceFileName += isTodayNight ? "Thunder Night" : "ThunderDay";
+	sourceFileName += isTodayNight ? "ThunderNight" : "ThunderDay";
 	break;
     case 'u':
 	sourceFileName += isTodayNight ? "LightSnowNight" : "LightSnowDay";
@@ -265,5 +341,50 @@ function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText,
     }
     
     return sourceFileName += ".png"
+}
+
+/**
+ * Score the "niceness" of a forecast day on a 1-10 scale.
+ * Inputs: kanszon (0-100), kansregen (0-100), maxtemp (°C),
+ *         windStr e.g. "ZW 3"  (last token = Beaufort number)
+ */
+function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
+    var tmax = parseFloat(maxtemp) || 15;
+
+    // Temperature score — sweet spot 20-24 °C for Netherlands context
+    var tempScore;
+    if (tmax >= 20 && tmax <= 24) {
+        tempScore = 10;
+    } else if (tmax > 24 && tmax <= 28) {
+        tempScore = 10 - (tmax - 24) * 0.3;
+    } else if (tmax > 28) {
+        tempScore = Math.max(1, 8.8 - (tmax - 28) * 0.6);
+    } else if (tmax >= 15) {
+        tempScore = 10 - (20 - tmax) * 0.5;
+    } else if (tmax >= 10) {
+        tempScore = 7.5 - (15 - tmax) * 0.4;
+    } else if (tmax >= 5) {
+        tempScore = 5.5 - (10 - tmax) * 0.4;
+    } else {
+        tempScore = Math.max(1, 3.5 + tmax * 0.1);
+    }
+
+    // Sun score: linear 0-100 % → 0-10
+    var sunScore = parseFloat(kanszon) / 10;
+
+    // Rain score: inverse linear 0-100 % → 10-0
+    var rainScore = (100 - parseFloat(kansregen)) / 10;
+
+    // Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
+    var parts = windStr.toString().trim().split(/\s+/);
+    var bft = parseInt(parts[parts.length - 1]) || 0;
+    var windScore = bft <= 2 ? 10
+                  : bft === 3 ? 8
+                  : bft === 4 ? 6
+                  : bft === 5 ? 4
+                  : bft === 6 ? 2 : 0;
+
+    var raw = 0.30 * tempScore + 0.30 * sunScore + 0.30 * rainScore + 0.10 * windScore;
+    return Math.min(10, Math.max(1, Math.round(raw)));
 }
 

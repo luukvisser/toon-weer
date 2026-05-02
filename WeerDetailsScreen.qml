@@ -1,17 +1,17 @@
 import QtQuick 2.1
 import qb.components 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Screen {
-	id: buienradarDetailsScreen
+	id: weerDetailsScreen
 
 	screenTitle: "Actueel weer plus weersverwachting";
 
 	property bool dimState: screenStateController.dimmedColors;
 
 	onCustomButtonClicked: {
-		if (app.buienradarEditLonLatScreen) {
-			 app.buienradarEditLonLatScreen.show();
+		if (app.weerEditLonLatScreen) {
+			 app.weerEditLonLatScreen.show();
 		}
 	}
 
@@ -251,8 +251,8 @@ Screen {
 		id: delegateGrid
 
 		Item {
-			width: grid.width / grid.columns
-		        height: grid.height
+			width: grid2.cellWidth
+		        height: grid2.cellHeight
 			Rectangle {
 				anchors.fill: parent
 
@@ -318,7 +318,7 @@ Screen {
 				}
 
 				Text {
-					id: forecastmaxtenmp
+					id: forecastmaxtemp
 					text: maxtemp
 					anchors {
 						top: forecastmintemp.bottom
@@ -337,7 +337,7 @@ Screen {
 					id: forecastwind
 					text: wind
 					anchors {
-						top: forecastmaxtenmp.bottom
+						top: forecastmaxtemp.bottom
 						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
 
@@ -348,14 +348,39 @@ Screen {
 					}
 					color: colors.clockTileColor
 				}
+
+				Text {
+					id: forecastscore
+					text: score
+					anchors {
+						top: forecastwind.bottom
+						topMargin: isNxt ? 5 : 4
+						left: forecastdagweek.left
+					}
+					font {
+						family: qfont.bold.name
+						pixelSize: isNxt ? 18 : 15
+					}
+					color: {
+						var s = parseInt(score);
+						if (isNaN(s)) return colors.clockTileColor;
+						if (s >= 8) return "#4CAF50";
+						if (s >= 6) return "#FFC107";
+						if (s >= 4) return "#FF9800";
+						return "#F44336";
+					}
+				}
+
 				Image {
 					id: forecasticoon
 					source: icoon
+					width: isNxt ? 32 : 24
+					height: isNxt ? 32 : 24
+					fillMode: Image.PreserveAspectFit
 					anchors {
 						top: forecastwind.bottom
 						topMargin: isNxt ? 10 : 8
 						left: forecastdagweek.left
-
 					}
 					cache: false
 				}
@@ -364,7 +389,7 @@ Screen {
         }
 
 	Text {
-		id: buienradarDS2wvtitel
+		id: weerDS2wvtitel
 		text: app.weersverwachtingTitel
 		anchors {
 			baseline: parent.top
@@ -415,8 +440,8 @@ Screen {
 		MouseArea {
 			anchors.fill: parent
 			onClicked: {
-				if (app.buienradarFullWeatherForecastScreen)
-					app.buienradarFullWeatherForecastScreen.show();
+				if (app.weerFullWeatherForecastScreen)
+					app.weerFullWeatherForecastScreen.show();
 			}
 		}
 
@@ -443,9 +468,9 @@ Screen {
 				} else {
 					app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 				}
-				if (app.buienradarActualRadarScreen) {
-					app.buienradarActualRadarScreen.setTitle("Actuele Buienradar");
-					app.buienradarActualRadarScreen.show();
+				if (app.weerActualRadarScreen) {
+					app.weerActualRadarScreen.setTitle("Actuele Weer");
+					app.weerActualRadarScreen.show();
 				}
 			}
 		}

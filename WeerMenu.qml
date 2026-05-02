@@ -4,14 +4,14 @@ import qb.components 1.0
 import qb.base 1.0
 
 MenuItem {
-	property BuienradarApp app;
-	label: "Buienradar"
+	property WeerApp app;
+	label: "Weer"
 	image: "qrc:/tsc/buienradar.png"
 	weight: 200
 
 	onClicked: {
 		if (app) {
-			if (app.buienradarDetailsScreen) app.buienradarDetailsScreen.show();
+			if (app.weerDetailsScreen) app.weerDetailsScreen.show();
 		}
 	}
 }

@@ -1,22 +1,24 @@
 import QtQuick 2.1
 import qb.components 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Tile {
-	id: buienradarTile
-	property string tempVal: (app.indexStation < 0) ? "Even geduld" : BuienradarJS.formatTemp(app.temperatuurGC, app.stationArray[app.indexStation])
-	property string tempWind: BuienradarJS.formatWind(app.windrichting, app.windsnelheidBF)
-	property string tempZin: BuienradarJS.formatZin(app.icoonzin)
-	property string tempLuchtdruk: BuienradarJS.formatLuchtdruk(app.luchtdruk,app.luchtvochtigheid)
-	property string dimTempVal: BuienradarJS.formatDimTemp(app.temperatuurGC)
+	id: weerTile
+	property string tempVal: app.useOpenMeteo
+		? (app.locationName ? WeerJS.formatTemp(app.temperatuurGC, app.locationName) : "Even geduld")
+		: (app.indexStation < 0 ? "Even geduld" : WeerJS.formatTemp(app.temperatuurGC, app.stationArray[app.indexStation]))
+	property string tempWind: WeerJS.formatWind(app.windrichting, app.windsnelheidBF)
+	property string tempZin: WeerJS.formatZin(app.icoonzin)
+	property string tempLuchtdruk: WeerJS.formatLuchtdruk(app.luchtdruk,app.luchtvochtigheid)
+	property string dimTempVal: WeerJS.formatDimTemp(app.temperatuurGC)
 
 	property bool dimState: screenStateController.dimmedColors
 
 	onClicked: {
 		app.radarimagesSmallurl ="http://toon/";  //resetimage
 		app.radarimagesSmallurl ="https://api.buienradar.nl/image/1.0/RadarMapNL?width=180&height=180";
-		if (app.buienradarDetailsScreen)
-			app.buienradarDetailsScreen.show();
+		if (app.weerDetailsScreen)
+			app.weerDetailsScreen.show();
 	}
 
 
@@ -51,7 +53,7 @@ Tile {
 
 
 	Text {
-		id: buienradarTileTitleText2
+		id: weerTileTitleText2
 		text: tempVal
 		anchors {
 			baseline: parent.top
@@ -67,7 +69,7 @@ Tile {
 	}
 
 	Text {                                                                                 
-                id: buienradarTileTitleText3
+                id: weerTileTitleText3
                 text: tempZin
                 anchors {
                         baseline: parent.top
@@ -83,7 +85,7 @@ Tile {
        }
 
 	Text {                                                                                 
-                id: buienradarTileGevoelstempText4
+                id: weerTileGevoelstempText4
                 text: "gevoelstemperatuur: " + i18n.number( Number( app.gevoelstemperatuur), 1 ) + "°"
                 anchors {
                         baseline: parent.top
@@ -99,11 +101,11 @@ Tile {
         }
 
 	Text {
-		id: buienradarTileWindsnelheidText
+		id: weerTileWindsnelheidText
 		text: tempWind
 		anchors {
-			baseline: buienradarTileLuchtdrukText4.top
-			baselineOffset: isNxt ? -5 : -4
+			bottom: weerTileLuchtdrukText4.top
+			bottomMargin: isNxt ? 5 : 4
 			horizontalCenter: parent.horizontalCenter
 		}
 		font {
@@ -116,7 +118,7 @@ Tile {
 	}
 
 	Text {                                                                                 
-                id: buienradarTileLuchtdrukText4
+                id: weerTileLuchtdrukText4
                 text: tempLuchtdruk
                 anchors {
 			baseline: parent.bottom

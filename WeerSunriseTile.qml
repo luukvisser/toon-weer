@@ -1,23 +1,23 @@
 import QtQuick 2.1
 import qb.components 1.0
-import "buienradar.js" as BuienradarJS
+import "weer.js" as WeerJS
 
 Tile {
-	id: buienradarTile
+	id: weerTile
 
 	property bool dimState: screenStateController.dimmedColors
 
 	onClicked: {
 		app.radarimagesSmallurl ="http://toon/";  //resetimage
 		app.radarimagesSmallurl ="https://api.buienradar.nl/image/1.0/RadarMapNL?w=180&h=180";
-		if (app.buienradarDetailsScreen)
-			app.buienradarDetailsScreen.show();
+		if (app.weerDetailsScreen)
+			app.weerDetailsScreen.show();
 	}
 
 
 	Text {
 		id: weatherSunrise
-		text: app.zonopkomst.substr(11,5)
+		text: app.zonopkomst ? app.zonopkomst.substr(11, 5) : ""
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 70 : 55
@@ -47,11 +47,11 @@ Tile {
 
 	Text {
 		id: weatherSunset
-		text: app.zononder.substr(11,5)
+		text: app.zononder ? app.zononder.substr(11, 5) : ""
 		anchors {
 			left: weatherSunrise.left
-			topMargin: isNxt ? 20 : 16
-			top: weatherSunrise.bottom
+			top: weatherSunsetText.bottom
+			topMargin: isNxt ? 4 : 3
 		}
 		font {
 			family: qfont.regular.name

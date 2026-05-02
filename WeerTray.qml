@@ -3,10 +3,10 @@ import qb.components 1.0
 import qb.base 1.0
 
 SystrayIcon {
-	id: buienradarSystrayIcon
+	id: weerSystrayIcon
 	visible: true
 	posIndex: 9000
-        property string objectName: "buienradarSystrayIcon"
+        property string objectName: "weerSystrayIcon"
 
 	onClicked: {
 		app.radarimagesurl ="http://toon/";  //resetimage
@@ -15,9 +15,9 @@ SystrayIcon {
 		} else {
 			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?w=400&h=400";
 		}
-		if (app.buienradarActualRadarScreen) {
-			app.buienradarActualRadarScreen.setTitle("Actuele Buienradar");
-			app.buienradarActualRadarScreen.show();
+		if (app.weerActualRadarScreen) {
+			app.weerActualRadarScreen.setTitle("Actuele Weer");
+			app.weerActualRadarScreen.show();
 		}
 	}
 
