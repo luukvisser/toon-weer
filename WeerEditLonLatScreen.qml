@@ -13,7 +13,6 @@ Screen {
 	function saveLon(text) {
 		if (text) {
 			app.lon = parseFloat(text.replace(",", ".")).toFixed(4);
-			lonLabel.inputText = app.lon;
 			app.saveSettings();
 		}
 	}
@@ -21,7 +20,6 @@ Screen {
 	function saveLat(text) {
 		if (text) {
 			app.lat = parseFloat(text.replace(",", ".")).toFixed(4);
-			latLabel.inputText = app.lat;
 			app.saveSettings();
 			if (!app.useOpenMeteo) findNearestWeatherStation();
 		}
@@ -39,8 +37,6 @@ Screen {
 	onShown: {
 		addCustomTopRightButton("Opslaan");
 		if (app.indexStation > -1) stationLabel.inputText = app.stationArray[app.indexStation];
-		lonLabel.inputText = app.lon;
-		latLabel.inputText = app.lat;
 	}
 	
 	function toRad(x) {
@@ -109,6 +105,7 @@ Screen {
 		height: isNxt ? 45 : 35
 		leftText: "Lengtegraad:"
 		leftTextAvailableWidth: isNxt ?  175 : 140
+		inputText: app.lon
 
 		anchors {
 			left: parent.left
@@ -146,6 +143,7 @@ Screen {
 		height: isNxt ? 45 : 35
 		leftText: "Breedtegraad:"
 		leftTextAvailableWidth: isNxt ?  175 : 140
+		inputText: app.lat
 
 		anchors {
 			left: lonLabel.left
@@ -174,6 +172,24 @@ Screen {
 		onClicked: {
 			qnumKeyboard.open("Breedtegraad", latLabel.inputText, app.lat, 1 , saveLat, validateCoordinate);
 		}
+	}
+
+	Text {
+		id: resolvedLocationText
+		text: app.locationName !== "" ? app.locationName : (app.lat + ", " + app.lon)
+		visible: app.useOpenMeteo
+		height: isNxt ? 45 : 35
+		verticalAlignment: Text.AlignVCenter
+		anchors {
+			left: lonLabel.left
+			top: latLabel.bottom
+			topMargin: 6
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
 	}
 
 	EditTextLabel4421 {
