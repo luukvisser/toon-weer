@@ -1,420 +1,408 @@
 function addStationName(inputarray, index, name) {
-		inputarray[index] = name;
-		return inputarray;
+	inputarray[index] = name;
+	return inputarray;
 }
 
-function addMinutes(time/*"hh:mm"*/, minsToAdd/*"N"*/) {
-  function z(n){
-    return (n<10? '0':'') + n;
-  }
-  var bits = time.split(':');
-  var mins = bits[0]*60 + (+bits[1]) + (+minsToAdd);
+function addMinutes(time /*"hh:mm"*/, minsToAdd /*"N"*/) {
+	function z(n) {
+		return (n < 10 ? "0" : "") + n;
+	}
+	var bits = time.split(":");
+	var mins = bits[0] * 60 + +bits[1] + +minsToAdd;
 
-  return z(mins%(24*60)/60 | 0) + ':' + z(mins%60);  
+	return z(((mins % (24 * 60)) / 60) | 0) + ":" + z(mins % 60);
 }
 
 function formatScale(maxRegen, yScale) {
-    if (yScale === 0) {
-	return 72 / maxRegen;
-    } else {
-	return 72 / yScale;
-    }
+	if (yScale === 0) {
+		return 72 / maxRegen;
+	} else {
+		return 72 / yScale;
+	}
 }
 
 function formatTemp(tempValue, locationName) {
-//adapted to reflect locale settings
-	if (locationName) return locationName + ": " + i18n.number( Number( tempValue ), 1 ) + " °C";
-	return "Even geduld..."
+	//adapted to reflect locale settings
+	if (locationName) return locationName + ": " + i18n.number(Number(tempValue), 1) + " °C";
+	return "Even geduld...";
 }
 
-
-function dateFormat( dateStr ) {
-    return  dateStr.substring(0, 10) + " " + dateStr.substring(11,16);
+function dateFormat(dateStr) {
+	return dateStr.substring(0, 10) + " " + dateStr.substring(11, 16);
 }
 
+function formatDimTemp(tempValue) {
+	//adapted to reflect locale settings
 
-function formatDimTemp( tempValue ) {
-//adapted to reflect locale settings
-
-	return i18n.number( Number( tempValue ), 1 )  + " °C";
+	return i18n.number(Number(tempValue), 1) + " °C";
 }
-
 
 function formatWind(richting, bf) {
 	return "wind: " + bf + " BFT, " + richting;
 }
 
-
 function formatWind2(richting, bf) {
 	return bf + " " + richting;
 }
 
-
 function formatZin(zin) {
 	if (zin.length > 21) {
-	return zin.substring(0,21) + "...";
+		return zin.substring(0, 21) + "...";
 	} else {
 		return zin;
 	}
 }
 
-
-function determineNight (tijdnu, zonop, zononder) {
-	var zonoptimestr = zonop.substring(11,16);
-	var zonondertimestr = zononder.substring(11,16);
-	if (tijdnu.length == 4)
-		tijdnu = "0" + tijdnu;
-	var isTodayDay = ((tijdnu <= zonondertimestr) && (tijdnu >= zonoptimestr));
+function determineNight(tijdnu, zonop, zononder) {
+	var zonoptimestr = zonop.substring(11, 16);
+	var zonondertimestr = zononder.substring(11, 16);
+	if (tijdnu.length == 4) tijdnu = "0" + tijdnu;
+	var isTodayDay = tijdnu <= zonondertimestr && tijdnu >= zonoptimestr;
 	return !isTodayDay;
 }
 
-
-	
 function formatLuchtdruk(ld, humidity) {
 	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa; lv: " + humidity + " %";
 }
 
-
 function lineTemp(tempValue) {
-	return i18n.number( Number( tempValue ), 1 ) + " °C";
+	return i18n.number(Number(tempValue), 1) + " °C";
 }
-
 
 function lineZonOpOnder(zonop, zononder) {
-	return zonop.substr(11,5) + " / " + zononder.substr(11,5);
+	return zonop.substr(11, 5) + " / " + zononder.substr(11, 5);
 }
-
 
 function lineWindsnelheid(bf) {
 	return bf + " BFT";
 }
 
-
 function lineLuchtvochtigheid(lv) {
 	return lv + " %";
 }
-
 
 function lineLuchtdruk(ld) {
 	return i18n.number(ld, 0, i18n.general_rounding, 0) + " hPa";
 }
 
-
 function lineZichtmeters(zm) {
 	return zm + " m";
 }
-
 
 function lineWindstotenMS(ws) {
 	return "Windstoten:       " + ws + " m/s";
 }
 
-
 /**
-* @brief Calculate a filename to choose weather icons, distinquishing day and night icons. If later than 16:00 local time a night icon will be chosen.
-* @param forceDay : Boolean
-*	 If set to true, choice of day icon is forced.
-* @param sourceFileName : String
-*	 This is the first part of the filename including the path.
-* @param weatherId : String
-*	 A string that holds an Id coming from buienradar.nl. This is the basis of the decision what icon to pick.
-* @param weatherText : String
-*	 If weatherId is "0", the icon is chosen on the basis of this string.
-* @return relative path to weather icon as string
-*/
+ * @brief Calculate a filename to choose weather icons, distinquishing day and night icons. If later than 16:00 local time a night icon will be chosen.
+ * @param forceDay : Boolean
+ *	 If set to true, choice of day icon is forced.
+ * @param sourceFileName : String
+ *	 This is the first part of the filename including the path.
+ * @param weatherId : String
+ *	 A string that holds an Id coming from buienradar.nl. This is the basis of the decision what icon to pick.
+ * @param weatherText : String
+ *	 If weatherId is "0", the icon is chosen on the basis of this string.
+ * @return relative path to weather icon as string
+ */
 
 function wmoCodeToDescription(wmoCode) {
-    if (wmoCode === 0)  return "Helder";
-    if (wmoCode === 1)  return "Overwegend helder";
-    if (wmoCode === 2)  return "Gedeeltelijk bewolkt";
-    if (wmoCode === 3)  return "Bewolkt";
-    if (wmoCode === 45) return "Mist";
-    if (wmoCode === 48) return "Rijpmist";
-    if (wmoCode === 51) return "Lichte motregen";
-    if (wmoCode === 53) return "Matige motregen";
-    if (wmoCode === 55) return "Dichte motregen";
-    if (wmoCode === 56) return "Lichte ijzel";
-    if (wmoCode === 57) return "Zware ijzel";
-    if (wmoCode === 61) return "Lichte regen";
-    if (wmoCode === 63) return "Matige regen";
-    if (wmoCode === 65) return "Zware regen";
-    if (wmoCode === 66) return "Lichte ijsregen";
-    if (wmoCode === 67) return "Zware ijsregen";
-    if (wmoCode === 71) return "Lichte sneeuwval";
-    if (wmoCode === 73) return "Matige sneeuwval";
-    if (wmoCode === 75) return "Zware sneeuwval";
-    if (wmoCode === 77) return "Sneeuwkorrels";
-    if (wmoCode === 80) return "Lichte regenbuien";
-    if (wmoCode === 81) return "Matige regenbuien";
-    if (wmoCode === 82) return "Hevige regenbuien";
-    if (wmoCode === 85) return "Lichte sneeuwbuien";
-    if (wmoCode === 86) return "Zware sneeuwbuien";
-    if (wmoCode === 95) return "Onweer";
-    if (wmoCode === 96) return "Onweer met hagel";
-    if (wmoCode === 99) return "Onweer met zware hagel";
-    return "";
+	if (wmoCode === 0) return "Helder";
+	if (wmoCode === 1) return "Overwegend helder";
+	if (wmoCode === 2) return "Gedeeltelijk bewolkt";
+	if (wmoCode === 3) return "Bewolkt";
+	if (wmoCode === 45) return "Mist";
+	if (wmoCode === 48) return "Rijpmist";
+	if (wmoCode === 51) return "Lichte motregen";
+	if (wmoCode === 53) return "Matige motregen";
+	if (wmoCode === 55) return "Dichte motregen";
+	if (wmoCode === 56) return "Lichte ijzel";
+	if (wmoCode === 57) return "Zware ijzel";
+	if (wmoCode === 61) return "Lichte regen";
+	if (wmoCode === 63) return "Matige regen";
+	if (wmoCode === 65) return "Zware regen";
+	if (wmoCode === 66) return "Lichte ijsregen";
+	if (wmoCode === 67) return "Zware ijsregen";
+	if (wmoCode === 71) return "Lichte sneeuwval";
+	if (wmoCode === 73) return "Matige sneeuwval";
+	if (wmoCode === 75) return "Zware sneeuwval";
+	if (wmoCode === 77) return "Sneeuwkorrels";
+	if (wmoCode === 80) return "Lichte regenbuien";
+	if (wmoCode === 81) return "Matige regenbuien";
+	if (wmoCode === 82) return "Hevige regenbuien";
+	if (wmoCode === 85) return "Lichte sneeuwbuien";
+	if (wmoCode === 86) return "Zware sneeuwbuien";
+	if (wmoCode === 95) return "Onweer";
+	if (wmoCode === 96) return "Onweer met hagel";
+	if (wmoCode === 99) return "Onweer met zware hagel";
+	return "";
 }
-
 
 function wmoCodeToIconId(wmoCode) {
-    if (wmoCode === 0) return 'a';
-    if (wmoCode <= 2) return 'b';
-    if (wmoCode === 3) return 'c';
-    if (wmoCode <= 48) return 'd';
-    if (wmoCode <= 55) return 'm';
-    if (wmoCode <= 57) return 'w';
-    if (wmoCode === 61) return 'f';
-    if (wmoCode <= 65) return 'k';
-    if (wmoCode <= 67) return 'w';
-    if (wmoCode <= 73) return 'u';
-    if (wmoCode <= 77) return 'v';
-    if (wmoCode === 80) return 'f';
-    if (wmoCode <= 82) return 'k';
-    if (wmoCode <= 86) return 'u';
-    if (wmoCode === 95) return 'g';
-    return 'h';
+	if (wmoCode === 0) return "a";
+	if (wmoCode <= 2) return "b";
+	if (wmoCode === 3) return "c";
+	if (wmoCode <= 48) return "d";
+	if (wmoCode <= 55) return "m";
+	if (wmoCode <= 57) return "w";
+	if (wmoCode === 61) return "f";
+	if (wmoCode <= 65) return "k";
+	if (wmoCode <= 67) return "w";
+	if (wmoCode <= 73) return "u";
+	if (wmoCode <= 77) return "v";
+	if (wmoCode === 80) return "f";
+	if (wmoCode <= 82) return "k";
+	if (wmoCode <= 86) return "u";
+	if (wmoCode === 95) return "g";
+	return "h";
 }
-
 
 function degreesToWindDir(degrees) {
-    var dirs = ['N', 'NNO', 'NO', 'ONO', 'O', 'OZO', 'ZO', 'ZZO', 'Z', 'ZZW', 'ZW', 'WZW', 'W', 'WNW', 'NW', 'NNW'];
-    return dirs[Math.round(degrees / 22.5) % 16];
+	var dirs = ["N", "NNO", "NO", "ONO", "O", "OZO", "ZO", "ZZO", "Z", "ZZW", "ZW", "WZW", "W", "WNW", "NW", "NNW"];
+	return dirs[Math.round(degrees / 22.5) % 16];
 }
-
 
 function kmhToBft(kmh) {
-    if (kmh < 1) return 0;
-    if (kmh < 6) return 1;
-    if (kmh < 12) return 2;
-    if (kmh < 20) return 3;
-    if (kmh < 29) return 4;
-    if (kmh < 39) return 5;
-    if (kmh < 50) return 6;
-    if (kmh < 62) return 7;
-    if (kmh < 75) return 8;
-    if (kmh < 89) return 9;
-    if (kmh < 103) return 10;
-    if (kmh < 118) return 11;
-    return 12;
+	if (kmh < 1) return 0;
+	if (kmh < 6) return 1;
+	if (kmh < 12) return 2;
+	if (kmh < 20) return 3;
+	if (kmh < 29) return 4;
+	if (kmh < 39) return 5;
+	if (kmh < 50) return 6;
+	if (kmh < 62) return 7;
+	if (kmh < 75) return 8;
+	if (kmh < 89) return 9;
+	if (kmh < 103) return 10;
+	if (kmh < 118) return 11;
+	return 12;
 }
 
-
 function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText, zonop, zononder, tijdnu) {
-
 	var isTodayNight = forceDay ? false : determineNight(tijdnu, zonop, zononder);
 
-    switch (weatherId) {
-    case 'a': sourceFileName += isTodayNight ? "ClearNight" : "Sunny";
-	break;
-    case 'b':
-    case 'o':
-	sourceFileName += isTodayNight ? "CloudedNight" : "SunnyIntervals";
-	break;
-    case 'f':
-	sourceFileName += isTodayNight ? "LightRainNight" : "LightRainDay";
-	break;
-    case 'k':
-	sourceFileName += isTodayNight ? "RainNight" : "RainDay";
-	break;
-    case 'h':
-    case 'i':
-	sourceFileName += isTodayNight ? "RainHailNight" : "RainHailDay";
-	break;
-    case 'g':
-	sourceFileName += isTodayNight ? "ThunderNight" : "ThunderDay";
-	break;
-    case 'u':
-	sourceFileName += isTodayNight ? "LightSnowNight" : "LightSnowDay";
-	break;
-    case 'd':
-	sourceFileName += isTodayNight ? "FogNight" : "FogDay";
-	break;
-	//symbols with moon
-    case 'aa':
-	sourceFileName += "ClearNight";
-	break;
-    case 'bb':
-    case 'oo':
-	sourceFileName += "CloudedNight";
-	break;
-    case 'ff':
-	sourceFileName += "LightRainNight";
-	break;
-    case 'kk':
-	sourceFileName += "RainNight";
-	break;
-    case 'hh':
-    case 'ii':
-	sourceFileName += "RainHailNight";
-	break;
-    case 'gg':
-	sourceFileName += "ThunderNight";
-	break;
-    case 'uu':
-	sourceFileName += "LightSnowNight";
-	break;
-    case 'dd':
-	sourceFileName += "FogNight";
-	break;
-	//just clouds
-    case 'c':
-    case 'p':
-    case 'cc':
-    case 'pp':
-	sourceFileName += "Clouded";
-	break;
-    case 'm':
-    case 'mm':
-	sourceFileName += "LightRain";
-	break;
-    case 'l':
-    case 'll':
-    case 'q':
-    case 'qq':
-	sourceFileName += "Rain";
-	break;
-    case 'w':
-    case 'ww':
-	sourceFileName += "Sleet";
-	break;
-    case 's':
-    case 'ss':
-	sourceFileName += "Thunder";
-	break;
-    case 'v':
-    case 'vv':
-    case 'y':
-    case 'yy':
-	sourceFileName += "LightSnow";
-	break;
-    case '1':
-    case '11':
-    case 't':
-    case 'tt':
-    case 'x':
-    case 'xx':
-    case 'z':
-    case 'zz':
-	sourceFileName += "Snow";
-	break;
-    case 'e':
-    case 'ee':
-	sourceFileName += "Fog";
-	break;
-    case 'n':
-    case 'nn':
-	sourceFileName += "SlipRisk";
-	break;
-    case '0':
-// hairy code, maybe clean up with switch .. case?
-	if (weatherText !== "")
-	{
-	    if (weatherText === "zonnig") {
-		sourceFileName += "Sunny";
-	    } else if (weatherText === "zonnig en bewolkt") {
-		sourceFileName += "SunnyIntervals";
-	    } else if (weatherText === "zonnig met lichte regen" || weatherText == "zonnig, bewolkt en lichte regen") {
-		sourceFileName += "LightRainDay";
-	    } else if (weatherText === "zonnig met lichte sneeuwval" || weatherText == "zonnig, bewolkt en lichte sneeuwval") {
-		sourceFileName += "LightSnowDay";
-	    } else if (weatherText === "heldere nacht") {
-		sourceFileName += "ClearNight";
-	    } else if (weatherText === "heldere lucht en hier en daar bewolkt") {
-		sourceFileName += "SunnyIntervals";
-	    } else if (weatherText === "bewolkt") {
-		sourceFileName += "Clouded";
-	    } else if (weatherText === "bewolkt en lichte regen" || weatherText == "bewolkt met lichte regen" || weatherText == "bewolkt, mistig en lichte regen" || weatherText == "bewolkt, mistig met lichte regen") {
-		sourceFileName += "LightRain";
-	    } else if (weatherText === "bewolkt en regen" || weatherText == "bewolkt met regen") {
-		sourceFileName += "Rain";
-	    } else if (weatherText === "bewolkt met sneeuwval" || weatherText == "bewolkt en sneeuwval" || weatherText == "bewolkt en lichte sneeuwval") {
-		sourceFileName += "Snow";
-	    } else if (weatherText === "mistig") {
-		sourceFileName += "Fog";
-	    } else {
-		sourceFileName += "SunnyIntervals";
-	    }
+	switch (weatherId) {
+		case "a":
+			sourceFileName += isTodayNight ? "ClearNight" : "Sunny";
+			break;
+		case "b":
+		case "o":
+			sourceFileName += isTodayNight ? "CloudedNight" : "SunnyIntervals";
+			break;
+		case "f":
+			sourceFileName += isTodayNight ? "LightRainNight" : "LightRainDay";
+			break;
+		case "k":
+			sourceFileName += isTodayNight ? "RainNight" : "RainDay";
+			break;
+		case "h":
+		case "i":
+			sourceFileName += isTodayNight ? "RainHailNight" : "RainHailDay";
+			break;
+		case "g":
+			sourceFileName += isTodayNight ? "ThunderNight" : "ThunderDay";
+			break;
+		case "u":
+			sourceFileName += isTodayNight ? "LightSnowNight" : "LightSnowDay";
+			break;
+		case "d":
+			sourceFileName += isTodayNight ? "FogNight" : "FogDay";
+			break;
+		//symbols with moon
+		case "aa":
+			sourceFileName += "ClearNight";
+			break;
+		case "bb":
+		case "oo":
+			sourceFileName += "CloudedNight";
+			break;
+		case "ff":
+			sourceFileName += "LightRainNight";
+			break;
+		case "kk":
+			sourceFileName += "RainNight";
+			break;
+		case "hh":
+		case "ii":
+			sourceFileName += "RainHailNight";
+			break;
+		case "gg":
+			sourceFileName += "ThunderNight";
+			break;
+		case "uu":
+			sourceFileName += "LightSnowNight";
+			break;
+		case "dd":
+			sourceFileName += "FogNight";
+			break;
+		//just clouds
+		case "c":
+		case "p":
+		case "cc":
+		case "pp":
+			sourceFileName += "Clouded";
+			break;
+		case "m":
+		case "mm":
+			sourceFileName += "LightRain";
+			break;
+		case "l":
+		case "ll":
+		case "q":
+		case "qq":
+			sourceFileName += "Rain";
+			break;
+		case "w":
+		case "ww":
+			sourceFileName += "Sleet";
+			break;
+		case "s":
+		case "ss":
+			sourceFileName += "Thunder";
+			break;
+		case "v":
+		case "vv":
+		case "y":
+		case "yy":
+			sourceFileName += "LightSnow";
+			break;
+		case "1":
+		case "11":
+		case "t":
+		case "tt":
+		case "x":
+		case "xx":
+		case "z":
+		case "zz":
+			sourceFileName += "Snow";
+			break;
+		case "e":
+		case "ee":
+			sourceFileName += "Fog";
+			break;
+		case "n":
+		case "nn":
+			sourceFileName += "SlipRisk";
+			break;
+		case "0":
+			// hairy code, maybe clean up with switch .. case?
+			if (weatherText !== "") {
+				if (weatherText === "zonnig") {
+					sourceFileName += "Sunny";
+				} else if (weatherText === "zonnig en bewolkt") {
+					sourceFileName += "SunnyIntervals";
+				} else if (
+					weatherText === "zonnig met lichte regen" ||
+					weatherText == "zonnig, bewolkt en lichte regen"
+				) {
+					sourceFileName += "LightRainDay";
+				} else if (
+					weatherText === "zonnig met lichte sneeuwval" ||
+					weatherText == "zonnig, bewolkt en lichte sneeuwval"
+				) {
+					sourceFileName += "LightSnowDay";
+				} else if (weatherText === "heldere nacht") {
+					sourceFileName += "ClearNight";
+				} else if (weatherText === "heldere lucht en hier en daar bewolkt") {
+					sourceFileName += "SunnyIntervals";
+				} else if (weatherText === "bewolkt") {
+					sourceFileName += "Clouded";
+				} else if (
+					weatherText === "bewolkt en lichte regen" ||
+					weatherText == "bewolkt met lichte regen" ||
+					weatherText == "bewolkt, mistig en lichte regen" ||
+					weatherText == "bewolkt, mistig met lichte regen"
+				) {
+					sourceFileName += "LightRain";
+				} else if (weatherText === "bewolkt en regen" || weatherText == "bewolkt met regen") {
+					sourceFileName += "Rain";
+				} else if (
+					weatherText === "bewolkt met sneeuwval" ||
+					weatherText == "bewolkt en sneeuwval" ||
+					weatherText == "bewolkt en lichte sneeuwval"
+				) {
+					sourceFileName += "Snow";
+				} else if (weatherText === "mistig") {
+					sourceFileName += "Fog";
+				} else {
+					sourceFileName += "SunnyIntervals";
+				}
+			}
+			break;
+		default:
+			sourceFileName += "Cross";
 	}
-	break;
-    default:
-	sourceFileName += "Cross";
-    }
-    
-    return sourceFileName += ".png"
+
+	return (sourceFileName += ".png");
 }
 
 // Derive approximate sun/rain percentages from a WMO weather code (Open-Meteo).
 function wmoCodeToSunRainPct(code) {
-    if (code === 0)  return { sun: 100, rain:   0 };
-    if (code === 1)  return { sun:  85, rain:   0 };
-    if (code === 2)  return { sun:  55, rain:   5 };
-    if (code === 3)  return { sun:  10, rain:  15 };
-    if (code <= 48)  return { sun:   5, rain:   0 };  // fog
-    if (code <= 55)  return { sun:   5, rain:  55 };  // drizzle
-    if (code <= 57)  return { sun:   0, rain:  70 };  // freezing drizzle
-    if (code === 61) return { sun:   0, rain:  65 };
-    if (code <= 67)  return { sun:   0, rain:  90 };  // rain / freezing rain
-    if (code <= 77)  return { sun:   5, rain:  75 };  // snow
-    if (code === 80) return { sun:  15, rain:  70 };
-    if (code <= 82)  return { sun:  10, rain:  85 };  // showers
-    if (code <= 86)  return { sun:  10, rain:  75 };  // snow showers
-    return { sun: 0, rain: 100 };                      // thunder
+	if (code === 0) return { sun: 100, rain: 0 };
+	if (code === 1) return { sun: 85, rain: 0 };
+	if (code === 2) return { sun: 55, rain: 5 };
+	if (code === 3) return { sun: 10, rain: 15 };
+	if (code <= 48) return { sun: 5, rain: 0 }; // fog
+	if (code <= 55) return { sun: 5, rain: 55 }; // drizzle
+	if (code <= 57) return { sun: 0, rain: 70 }; // freezing drizzle
+	if (code === 61) return { sun: 0, rain: 65 };
+	if (code <= 67) return { sun: 0, rain: 90 }; // rain / freezing rain
+	if (code <= 77) return { sun: 5, rain: 75 }; // snow
+	if (code === 80) return { sun: 15, rain: 70 };
+	if (code <= 82) return { sun: 10, rain: 85 }; // showers
+	if (code <= 86) return { sun: 10, rain: 75 }; // snow showers
+	return { sun: 0, rain: 100 }; // thunder
 }
 
 // Derive approximate sun/rain percentages from a Buienradar icon id.
 function iconIdToSunRainPct(id) {
-    if (id === 'a')                               return { sun: 100, rain:  0 };
-    if (id === 'b' || id === 'o')                return { sun:  65, rain:  5 };
-    if (id === 'c' || id === 'p')                return { sun:  15, rain: 15 };
-    if (id === 'd' || id === 'e')                return { sun:   5, rain:  0 };
-    if (id === 'f')                               return { sun:  20, rain: 65 };
-    if (id === 'm')                               return { sun:   5, rain: 50 };
-    if (id === 'k' || id === 'l' || id === 'q') return { sun:   0, rain: 90 };
-    if (id === 'g' || id === 's')                return { sun:   0, rain:100 };
-    if (id === 'h' || id === 'i')                return { sun:   0, rain:100 };
-    if (id === 'u' || id === 'v' || id === 'y') return { sun:   5, rain: 75 };
-    if (id === 'w')                               return { sun:   0, rain: 75 };
-    if (id === 'n')                               return { sun:   5, rain: 40 };
-    return { sun: 50, rain: 30 };
+	if (id === "a") return { sun: 100, rain: 0 };
+	if (id === "b" || id === "o") return { sun: 65, rain: 5 };
+	if (id === "c" || id === "p") return { sun: 15, rain: 15 };
+	if (id === "d" || id === "e") return { sun: 5, rain: 0 };
+	if (id === "f") return { sun: 20, rain: 65 };
+	if (id === "m") return { sun: 5, rain: 50 };
+	if (id === "k" || id === "l" || id === "q") return { sun: 0, rain: 90 };
+	if (id === "g" || id === "s") return { sun: 0, rain: 100 };
+	if (id === "h" || id === "i") return { sun: 0, rain: 100 };
+	if (id === "u" || id === "v" || id === "y") return { sun: 5, rain: 75 };
+	if (id === "w") return { sun: 0, rain: 75 };
+	if (id === "n") return { sun: 5, rain: 40 };
+	return { sun: 50, rain: 30 };
 }
 
 function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
-    var tmax = parseFloat(maxtemp) || 15;
+	var tmax = parseFloat(maxtemp) || 15;
 
-    // Temperature score — sweet spot 20-24 °C for Netherlands context
-    var tempScore;
-    if (tmax >= 20 && tmax <= 24) {
-        tempScore = 10;
-    } else if (tmax > 24 && tmax <= 28) {
-        tempScore = 10 - (tmax - 24) * 0.3;
-    } else if (tmax > 28) {
-        tempScore = Math.max(1, 8.8 - (tmax - 28) * 0.6);
-    } else if (tmax >= 15) {
-        tempScore = 10 - (20 - tmax) * 0.5;
-    } else if (tmax >= 10) {
-        tempScore = 7.5 - (15 - tmax) * 0.4;
-    } else if (tmax >= 5) {
-        tempScore = 5.5 - (10 - tmax) * 0.4;
-    } else {
-        tempScore = Math.max(1, 3.5 + tmax * 0.1);
-    }
+	// Temperature score — sweet spot 20-24 °C for Netherlands context
+	var tempScore;
+	if (tmax >= 20 && tmax <= 24) {
+		tempScore = 10;
+	} else if (tmax > 24 && tmax <= 28) {
+		tempScore = 10 - (tmax - 24) * 0.3;
+	} else if (tmax > 28) {
+		tempScore = Math.max(1, 8.8 - (tmax - 28) * 0.6);
+	} else if (tmax >= 15) {
+		tempScore = 10 - (20 - tmax) * 0.5;
+	} else if (tmax >= 10) {
+		tempScore = 7.5 - (15 - tmax) * 0.4;
+	} else if (tmax >= 5) {
+		tempScore = 5.5 - (10 - tmax) * 0.4;
+	} else {
+		tempScore = Math.max(1, 3.5 + tmax * 0.1);
+	}
 
-    // Sun score: linear 0-100 % → 0-10
-    var sunScore = parseFloat(kanszon) / 10;
+	// Sun score: linear 0-100 % → 0-10
+	var sunScore = parseFloat(kanszon) / 10;
 
-    // Rain score: inverse linear 0-100 % → 10-0
-    var rainScore = (100 - parseFloat(kansregen)) / 10;
+	// Rain score: inverse linear 0-100 % → 10-0
+	var rainScore = (100 - parseFloat(kansregen)) / 10;
 
-    // Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
-    var parts = windStr.toString().trim().split(/\s+/);
-    var bft = parseInt(parts[parts.length - 1]) || 0;
-    var windScore = bft <= 2 ? 10
-                  : bft === 3 ? 8
-                  : bft === 4 ? 6
-                  : bft === 5 ? 4
-                  : bft === 6 ? 2 : 0;
+	// Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
+	var parts = windStr.toString().trim().split(/\s+/);
+	var bft = parseInt(parts[parts.length - 1]) || 0;
+	var windScore = bft <= 2 ? 10 : bft === 3 ? 8 : bft === 4 ? 6 : bft === 5 ? 4 : bft === 6 ? 2 : 0;
 
-    var raw = 0.30 * tempScore + 0.30 * sunScore + 0.30 * rainScore + 0.10 * windScore;
-    return Math.min(10, Math.max(1, Math.round(raw)));
+	var raw = 0.3 * tempScore + 0.3 * sunScore + 0.3 * rainScore + 0.1 * windScore;
+	return Math.min(10, Math.max(1, Math.round(raw)));
 }
-

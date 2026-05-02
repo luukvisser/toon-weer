@@ -23,7 +23,7 @@ Screen {
 
 		rightNow = new Date();
 		todayStr = rightNow.toISOString().slice(0,10).replace(/-/g,"");
-		todayStrFormatted = todayStr.substring(0,4) + "-" + todayStr.substring(4,6) + "-" + todayStr.substring(6,8) 
+		todayStrFormatted = todayStr.substring(0,4) + "-" + todayStr.substring(4,6) + "-" + todayStr.substring(6,8)
 		currentHours = rightNow.getHours();
 		if (currentHours < 10)  currentHours = '0' + currentHours;
 	}
@@ -49,7 +49,7 @@ Screen {
 			leftMargin: 50
 		}
 		height: isNxt ? 494 : 380    // original: 820 x 988
-		width: isNxt ? 410 : 315 
+		width: isNxt ? 410 : 315
 		visible: false
 	}
 
@@ -138,7 +138,7 @@ Screen {
 			stillRadarImage.visible = true;
 			bigRadarImage.visible = false;
 			app.stillImagesUrl = "https://processing-cdn.buienradar.nl/processing/nl/weathermaps/Temperature/default/" + todayStr + currentHours + "00.png";
-			setTitle("Actuele temperatuur op  " + todayStrFormatted + "  " + currentHours + ":00"); 
+			setTitle("Actuele temperatuur op  " + todayStrFormatted + "  " + currentHours + ":00");
 		}
 	}
 
@@ -155,7 +155,7 @@ Screen {
 			stillRadarImage.visible = true;
 			bigRadarImage.visible = false;
 			app.stillImagesUrl = "https://processing-cdn.buienradar.nl/processing/nl/weathermaps/Mintemperature/default/" + todayStr + currentHours + "00.png";
-			setTitle("Minimum temperatuur vandaag"); 
+			setTitle("Minimum temperatuur vandaag");
 		}
 	}
 
@@ -174,7 +174,7 @@ Screen {
 			bigRadarImage.visible = false;
 			app.stillImagesUrl = "https://processing-cdn.buienradar.nl/processing/nl/weathermaps/Maxtemperature/default/" + todayStr + currentHours + "00.png";
 			console.log ("****** Buienrader:  " + "https://processing-cdn.buienradar.nl/processing/nl/weathermaps/Maxtemperature/default/" + todayStr + currentHours + "00.png")
-			setTitle("Maximum temperatuur vandaag"); 
+			setTitle("Maximum temperatuur vandaag");
 		}
 	}
 
@@ -191,7 +191,7 @@ Screen {
 			stillRadarImage.visible = true;
 			bigRadarImage.visible = false;
 			app.stillImagesUrl = "https://processing-cdn.buienradar.nl/processing/nl/weathermaps/WindspeedBft/default/" + todayStr + currentHours + "00.png";
-			setTitle("Actuele windkracht op  " + todayStrFormatted + "  " + currentHours + ":00"); 
+			setTitle("Actuele windkracht op  " + todayStrFormatted + "  " + currentHours + ":00");
 		}
 	}
 

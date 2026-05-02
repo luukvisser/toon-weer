@@ -25,6 +25,10 @@ Screen {
 		for (var i = 0; i < app.actualWeather.length; i++) {
 			actualWeatherModel.append(app.actualWeather[i]);
 		}
+		hourlyForecastModel.clear();
+		for (var i = 0; i < app.hourlyForecast.length; i++) {
+			hourlyForecastModel.append(app.hourlyForecast[i]);
+		}
 	}
 
 //selected weatherstation data
@@ -64,7 +68,7 @@ Screen {
 			left: backgroundRect.left
 		}
 	}
-	
+
 
 //weatherforecast data for selected weather station
 
@@ -268,7 +272,7 @@ Screen {
 					}
 					color: colors.clockTileColor
 				}
-	
+
 				Text {
 					id: forecastkanszon
 					text: kanszon
@@ -418,6 +422,7 @@ Screen {
 
 	       Flickable {
 	            id: flickArea
+	            visible: !app.useOpenMeteo
 	             anchors.fill: parent
 	             contentWidth: backgroundRect3.width; contentHeight: backgroundRect3.height
 	             flickableDirection: Flickable.VerticalFlick
@@ -437,6 +442,83 @@ Screen {
 	                   text:  app.forecastText
 	            }
 	      }
+
+		ListView {
+			id: hourlyStrip
+			visible: app.useOpenMeteo
+			anchors.fill: parent
+			anchors.margins: isNxt ? 8 : 6
+			model: hourlyForecastModel
+			orientation: ListView.Horizontal
+			interactive: false
+			clip: true
+			spacing: 0
+
+			delegate: Item {
+				width: hourlyStrip.width / Math.max(hourlyForecastModel.count, 1)
+				height: hourlyStrip.height
+
+				Text {
+					id: hourLbl
+					text: hour
+					anchors.horizontalCenter: parent.horizontalCenter
+					anchors.top: parent.top
+					font {
+						family: qfont.bold.name
+						pixelSize: isNxt ? 18 : 14
+					}
+					color: colors.clockTileColor
+				}
+
+				Image {
+					id: hourIcon
+					source: icoon
+					width: isNxt ? 48 : 32
+					height: isNxt ? 48 : 32
+					fillMode: Image.PreserveAspectFit
+					anchors.horizontalCenter: parent.horizontalCenter
+					anchors.top: hourLbl.bottom
+					anchors.topMargin: isNxt ? 8 : 4
+					cache: false
+				}
+
+				Text {
+					id: hourTemp
+					text: temp
+					anchors.horizontalCenter: parent.horizontalCenter
+					anchors.top: hourIcon.bottom
+					anchors.topMargin: isNxt ? 8 : 4
+					font {
+						family: qfont.bold.name
+						pixelSize: isNxt ? 20 : 16
+					}
+					color: colors.clockTileColor
+				}
+
+				Text {
+					text: rainPct
+					anchors.horizontalCenter: parent.horizontalCenter
+					anchors.top: hourTemp.bottom
+					anchors.topMargin: isNxt ? 4 : 2
+					font {
+						family: qfont.regular.name
+						pixelSize: isNxt ? 16 : 13
+					}
+					color: {
+						var p = parseInt(rainPct);
+						if (isNaN(p)) return colors.clockTileColor;
+						if (p >= 60) return "#1976D2";
+						if (p >= 30) return "#64B5F6";
+						return colors.clockTileColor;
+					}
+				}
+			}
+		}
+
+		ListModel {
+			id: hourlyForecastModel
+		}
+
 		MouseArea {
 			anchors.fill: parent
 			onClicked: {
