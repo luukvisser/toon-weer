@@ -22,7 +22,7 @@ Rectangle
 			app.location = app.locationArray[index];
 			app.indexStation = index;
 			app.saveSettings();
-			app.updateWeer();
+			app.updateWeather();
 			hide();
 		}
 	}

@@ -8,38 +8,31 @@ App {
 	id: weerApp
 	objectName: "WeerApp"
 
-		// default weerstation after cold boot if no saved location exists	
-	property string location : "6344";
-		// default coordinates voor 2-uurs regenradardata if no saved location exists
-	property string lat : "52.21"
-	property string lon : "4.53"
+	// --- Data source config ---
+	property bool   useOpenMeteo: false
+	property int    summaryHours: 18
+	property int    rainHours: 6
+	property string location: "6344"
+	property string lat: "52.21"
+	property string lon: "4.53"
 
-	property url tileUrl : "WeerTile.qml"
-	property url tileUrlRegen : "WeerRegenTile.qml"
-	property url tileSunrise : "WeerSunriseTile.qml"
-	property url tileSummary : "WeerSummaryTile.qml"
+	// --- App assets ---
+	property url tileUrl: "WeerTile.qml"
+	property url tileUrlRegen: "WeerRegenTile.qml"
+	property url tileSunrise: "WeerSunriseTile.qml"
+	property url tileSummary: "WeerSummaryTile.qml"
 	property url thumbnailIcon: "qrc:/tsc/weer.png"
 	property WeerDetailsScreen weerDetailsScreen
 	property WeerStationScreen weerStationScreen
 	property WeerActualRadarScreen weerActualRadarScreen
 	property WeerEditLonLatScreen weerEditLonLatScreen
 	property WeerFullWeatherForecastScreen weerFullWeatherForecastScreen
-	property url menuUrl : "WeerMenu.qml"
-	property url trayUrl : "WeerTray.qml";
+	property url menuUrl: "WeerMenu.qml"
+	property url trayUrl: "WeerTray.qml"
 	property string timeStr
 
+	// --- Current conditions ---
 	property string locationName
-	property variant regenVerwachting : []
-	property string regenVerwachtingVanaf
-	property string regenVerwachtingMidden
-	property string regenVerwachtingTot
-	property real regenMaxValue
-	property bool showRain : false
-	property variant stationArray : []
-	property variant locationArray : []
-	property int indexStation
-	property variant latArray : []
-	property variant lonArray : []
 	property string temperatuurGC
 	property string gevoelstemperatuur
 	property string windsnelheidBF
@@ -53,34 +46,45 @@ App {
 	property string luchtvochtigheid
 	property string luchtdruk
 	property string zichtmeters
-	property string weersverwachtingTitel
-	property string weersverwachtingTekst
-	property string datumupdate
-	property string stillimagesurl
-	property string radarimagesurl
-	property string radarimagesSmallurl
 	property string zonopkomst
 	property string zononder
+	property int    uvNow: -1
 
+	// --- Forecast & station data ---
+	property variant stationArray: []
+	property variant locationArray: []
+	property int     indexStation
+	property variant latArray: []
+	property variant lonArray: []
+	property variant fivedayforecast: []
+	property variant actualweather: []
+	property string  firstdayForecast: "  "
+	property string  weersverwachtingTitel
+	property string  weersverwachtingTekst
+	property string  datumupdate
+	property string  stillimagesurl
+	property string  radarimagesurl
+	property string  radarimagesSmallurl
+	property string  scoreToday: ""
+
+	// --- Summary tile ---
 	property string minTempSummary: ""
 	property string maxTempSummary: ""
-	property int    uvNow: -1
 	property int    maxUVSummary: 0
 	property real   totalRegenSummary: 0
 	property string maxWindBftSummary: ""
 	property string maxWindDirSummary: ""
-	property string scoreToday: ""
 	property string scoreNow: ""
 	property string scoreSummary: ""
-	property int    summaryHours: 18
-	property int    rainHours: 6
-	property real   yaxisScale: 0
 
-	property variant fivedayforecast: []
-	property variant actualweather: []
-	property string firstdayForecast: "  "
-
-	property bool useOpenMeteo: false
+	// --- Rain tile ---
+	property variant regenVerwachting: []
+	property string  regenVerwachtingVanaf
+	property string  regenVerwachtingMidden
+	property string  regenVerwachtingTot
+	property real    regenMaxValue
+	property bool    showRain: false
+	property real    yaxisScale: 0
 
 	FileIO {
 		id: weerSettingsFile
@@ -153,7 +157,21 @@ App {
    		doc3.send(JSON.stringify(tmpUserSettingsJson ));
 	}
 
-	function updateWeer() {
+	// --- Public API ---
+
+	function updateWeather() {
+		if (useOpenMeteo) fetchOpenMeteoWeather();
+		else              fetchBuienradarWeather();
+	}
+
+	function updateRain() {
+		if (useOpenMeteo) fetchOpenMeteoRain();
+		else              fetchBuienradarRain();
+	}
+
+	// --- Buienradar data fetchers ---
+
+	function fetchBuienradarWeather() {
 		
   		var weekday = new Array(7);
   		weekday[0] = "Zo";
@@ -342,7 +360,9 @@ App {
 		xmlhttp.send();
 	}
 
-	function updateOpenMeteo() {
+	// --- Open-Meteo data fetchers ---
+
+	function fetchOpenMeteoWeather() {
 
 		var weekday = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
 		var now = new Date().getTime();
@@ -563,7 +583,9 @@ App {
 	}
 
 
-	function updateRegenkans() {
+	// --- Buienradar rain fetcher ---
+
+	function fetchBuienradarRain() {
 		var xmlhttp = new XMLHttpRequest();
 		var newArray = [];
 		var mmRegen = 0;
@@ -630,22 +652,14 @@ App {
 		xmlhttp.send();
 	}
 
-	
-	Timer {
-		id: datetimeTimer
-		interval: 600000
-		triggeredOnStart: true
-		running: true
-		repeat: true
-		onTriggered: useOpenMeteo ? updateOpenMeteo() : updateWeer()
-	}
 
+	// --- Open-Meteo rain fetcher ---
 
 	// Combined rain forecast: Buienradar 5-min data for the first 2 hours +
 	// Open-Meteo hourly data for the remaining hours up to rainHours. The
 	// resulting array uses 5-min resolution throughout (rainHours * 12 slots);
 	// each Open-Meteo hourly value is repeated across its 12 5-min slots.
-	function updateOpenMeteoRain() {
+	function fetchOpenMeteoRain() {
 		var totalSlots = rainHours * 12;
 		var combined = new Array(totalSlots);
 		for (var k = 0; k < totalSlots; k++) combined[k] = 0;
@@ -780,12 +794,23 @@ App {
 		brHttp.send();
 	}
 
+	// --- Timers ---
+
 	Timer {
-		id: datetimeTimer2
+		id: weatherTimer
+		interval: 600000
+		triggeredOnStart: true
+		running: true
+		repeat: true
+		onTriggered: updateWeather()
+	}
+
+	Timer {
+		id: rainTimer
 		interval: 300000
 		triggeredOnStart: true
 		running: true
 		repeat: true
-		onTriggered: useOpenMeteo ? updateOpenMeteoRain() : updateRegenkans()
+		onTriggered: updateRain()
 	}
 }

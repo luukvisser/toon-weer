@@ -71,14 +71,14 @@ Screen {
 		app.location = nearestStation;
 		app.indexStation = app.locationArray.indexOf(parseInt(app.location))
 		app.saveSettings();
-		app.updateWeer();
-		stationLabel.inputText = app.stationArray[app.indexStation]; 
+		app.updateWeather();
+		stationLabel.inputText = app.stationArray[app.indexStation];
 		qdialog.showDialog(qdialog.SizeLarge, "Weer mededeling", "Op basis van de ingevoerde lat/lon coordinaten is het volgende dichtsbijzijnde weerstation geselekteerd:\n\nStation: " + app.stationArray[app.indexStation] + "\nAfstand : " + (Math.round(nearestDistance * 100) / 100) + " km", "Sluiten");
 	}
 
 	onCustomButtonClicked: {
 		app.saveSettings();
-		app.updateRegenkans();
+		app.updateRain();
 		hide();
 	}
 
@@ -294,11 +294,7 @@ Screen {
 			onClicked: {
 				app.useOpenMeteo = !app.useOpenMeteo;
 				app.saveSettings();
-				if (app.useOpenMeteo) {
-					app.updateOpenMeteo();
-				} else {
-					app.updateWeer();
-				}
+				app.updateWeather();
 			}
 		}
 	}
@@ -365,8 +361,7 @@ Screen {
 				if (app.summaryHours > 1) {
 					app.summaryHours = app.summaryHours - 1;
 					app.saveSettings();
-					if (app.useOpenMeteo) app.updateOpenMeteo();
-					else app.updateWeer();
+					app.updateWeather();
 				}
 			}
 		}
@@ -415,8 +410,7 @@ Screen {
 				if (app.summaryHours < 24) {
 					app.summaryHours = app.summaryHours + 1;
 					app.saveSettings();
-					if (app.useOpenMeteo) app.updateOpenMeteo();
-					else app.updateWeer();
+					app.updateWeather();
 				}
 			}
 		}
@@ -484,7 +478,7 @@ Screen {
 				if (app.rainHours > 2) {
 					app.rainHours = app.rainHours - 1;
 					app.saveSettings();
-					app.updateOpenMeteoRain();
+					app.updateRain();
 				}
 			}
 		}
@@ -535,7 +529,7 @@ Screen {
 				if (app.rainHours < 24) {
 					app.rainHours = app.rainHours + 1;
 					app.saveSettings();
-					app.updateOpenMeteoRain();
+					app.updateRain();
 				}
 			}
 		}
