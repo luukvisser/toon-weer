@@ -343,11 +343,41 @@ function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText,
     return sourceFileName += ".png"
 }
 
-/**
- * Score the "niceness" of a forecast day on a 1-10 scale.
- * Inputs: kanszon (0-100), kansregen (0-100), maxtemp (°C),
- *         windStr e.g. "ZW 3"  (last token = Beaufort number)
- */
+// Derive approximate sun/rain percentages from a WMO weather code (Open-Meteo).
+function wmoCodeToSunRainPct(code) {
+    if (code === 0)  return { sun: 100, rain:   0 };
+    if (code === 1)  return { sun:  85, rain:   0 };
+    if (code === 2)  return { sun:  55, rain:   5 };
+    if (code === 3)  return { sun:  10, rain:  15 };
+    if (code <= 48)  return { sun:   5, rain:   0 };  // fog
+    if (code <= 55)  return { sun:   5, rain:  55 };  // drizzle
+    if (code <= 57)  return { sun:   0, rain:  70 };  // freezing drizzle
+    if (code === 61) return { sun:   0, rain:  65 };
+    if (code <= 67)  return { sun:   0, rain:  90 };  // rain / freezing rain
+    if (code <= 77)  return { sun:   5, rain:  75 };  // snow
+    if (code === 80) return { sun:  15, rain:  70 };
+    if (code <= 82)  return { sun:  10, rain:  85 };  // showers
+    if (code <= 86)  return { sun:  10, rain:  75 };  // snow showers
+    return { sun: 0, rain: 100 };                      // thunder
+}
+
+// Derive approximate sun/rain percentages from a Buienradar icon id.
+function iconIdToSunRainPct(id) {
+    if (id === 'a')                               return { sun: 100, rain:  0 };
+    if (id === 'b' || id === 'o')                return { sun:  65, rain:  5 };
+    if (id === 'c' || id === 'p')                return { sun:  15, rain: 15 };
+    if (id === 'd' || id === 'e')                return { sun:   5, rain:  0 };
+    if (id === 'f')                               return { sun:  20, rain: 65 };
+    if (id === 'm')                               return { sun:   5, rain: 50 };
+    if (id === 'k' || id === 'l' || id === 'q') return { sun:   0, rain: 90 };
+    if (id === 'g' || id === 's')                return { sun:   0, rain:100 };
+    if (id === 'h' || id === 'i')                return { sun:   0, rain:100 };
+    if (id === 'u' || id === 'v' || id === 'y') return { sun:   5, rain: 75 };
+    if (id === 'w')                               return { sun:   0, rain: 75 };
+    if (id === 'n')                               return { sun:   5, rain: 40 };
+    return { sun: 50, rain: 30 };
+}
+
 function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
     var tmax = parseFloat(maxtemp) || 15;
 

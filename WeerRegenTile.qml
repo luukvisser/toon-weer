@@ -183,7 +183,11 @@ Tile {
 		visible: app.showRain
 	}
 
-	/// horizontal Repeater representing 10 minutes markers
+	/// horizontal markers along the x-axis. In Open-Meteo combined mode the
+	/// graph spans rainHours hours (rainHours * 12 5-min slots); we draw a
+	/// 10-min tick over the high-resolution Buienradar window (first 2 hours)
+	/// and a 1-hour tick over the Open-Meteo extension. In Buienradar-only
+	/// mode the original 13-tick / 10-minute layout is used.
 
 	Row {
 		id: xLegendRow
@@ -193,22 +197,39 @@ Tile {
 
 		Repeater {
 			id: xLegendRepeater
-			model: 13
+			// Total 5-min slots in the model: 24 for Buienradar-only, rainHours*12 for combined
+			model: app.useOpenMeteo ? (app.rainHours * 12 + 1) : 13
 			Item {
 				height: isNxt ? 10 : 8
-				width: brgraphItem.width / 12
+				width: app.useOpenMeteo
+					? (brgraphItem.width / (app.rainHours * 12))
+					: (brgraphItem.width / 12)
 
 				Rectangle {
 					id: linexaxisMarker
 					color: colors.graphTileRect
-					height: (index === 6) || (index === 0) || (index ===12) ? 6 : 3
+					height: {
+						if (app.useOpenMeteo) {
+							var brSlots = Math.min(24, app.rainHours * 12);
+							var midSlot = Math.floor(app.rainHours / 2) * 12;
+							var endSlot = app.rainHours * 12;
+							// Tall tick at start, middle, end
+							if (index === 0 || index === midSlot || index === endSlot) return 6;
+							// Buienradar window (first 2 hours): 10-min ticks
+							if (index < brSlots && index % 2 === 0) return 3;
+							// Open-Meteo window (after 2 hours): hourly ticks
+							if (index >= brSlots && index % 12 === 0) return 3;
+							return 0;
+						}
+						return (index === 0 || index === 6 || index === 12) ? 6 : 3
+					}
 					width: 1
 
 					anchors {
 						baseline: parent.top
 						left: parent.left
 					}
-					visible: app.showRain
+					visible: app.showRain && height > 0
 				}
 			}
 		}

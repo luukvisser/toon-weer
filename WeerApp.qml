@@ -64,12 +64,16 @@ App {
 
 	property string minTempSummary: ""
 	property string maxTempSummary: ""
+	property int    uvNow: -1
 	property int    maxUVSummary: 0
 	property real   totalRegenSummary: 0
 	property string maxWindBftSummary: ""
 	property string maxWindDirSummary: ""
 	property string scoreToday: ""
+	property string scoreNow: ""
+	property string scoreSummary: ""
 	property int    summaryHours: 18
+	property int    rainHours: 6
 	property real   yaxisScale: 0
 
 	property variant fivedayforecast: []
@@ -124,6 +128,10 @@ App {
 				var sh = parseInt(s['summaryHours']);
 				if (!isNaN(sh) && sh >= 1 && sh <= 24) summaryHours = sh;
 			}
+			if (s['rainHours'] !== undefined) {
+				var rh = parseInt(s['rainHours']);
+				if (!isNaN(rh) && rh >= 2 && rh <= 24) rainHours = rh;
+			}
 		} catch(e) {
 		}
 	}
@@ -136,7 +144,8 @@ App {
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
 			"useOpenMeteo": useOpenMeteo,
-			"summaryHours": summaryHours
+			"summaryHours": summaryHours,
+			"rainHours": rainHours
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -202,6 +211,13 @@ App {
 							var tmpUrl = rawIconUrl.split("/");
 							icoonid = tmpUrl[tmpUrl.length - 1].substring(0, tmpUrl[tmpUrl.length - 1].length - 4);
 							icoonlink = "file:///qmf/qml/apps/weer/drawables/" + icoonid + ".png";
+						}
+						if (icoonid) {
+							var srNow2 = WeerJS.iconIdToSunRainPct(icoonid);
+							scoreNow = WeerJS.calcWeatherScore(
+								srNow2.sun.toString(), srNow2.rain.toString(),
+								temperatuurGC, windrichting + " " + windsnelheidBF
+							).toString();
 						}
 
 							// fill model for grid of weather station data on detail screen
@@ -273,7 +289,10 @@ App {
 						var fcWindDir  = brJson['forecast']['fivedayforecast'][i]['windDirection'];
 						var fcWind     = (fcWindDir ? fcWindDir.toUpperCase() : "") + " " + brJson['forecast']['fivedayforecast'][i]['wind'].toString();
 						var fcScore    = WeerJS.calcWeatherScore(fcKanszon, fcKansregen, fcMaxtemp, fcWind).toString();
-						if (i === 0) scoreToday = fcScore;
+						if (i === 0) {
+							scoreToday = fcScore;
+							scoreSummary = fcScore;
+						}
 						tmpForecast.push({'dagweek': tmpdagweek,
 							  'kanszon': fcKanszon,
 							  'kansregen': fcKansregen,
@@ -286,6 +305,7 @@ App {
 					fivedayforecast = tmpForecast;
 
 						// summary tile data from today's forecast (Buienradar feed has no hourly weather data)
+					uvNow = -1;
 					var todayFc = brJson['forecast']['fivedayforecast'][0];
 					if (todayFc) {
 						if (todayFc['mintemperatureMin'] !== undefined) minTempSummary = todayFc['mintemperatureMin'].toString();
@@ -334,7 +354,7 @@ App {
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
-			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m"
+			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m,weather_code,precipitation_probability"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
@@ -379,6 +399,11 @@ App {
 					// weather icon mapped from WMO code
 					icoonid = WeerJS.wmoCodeToIconId(current['weather_code']);
 					icoonzin = WeerJS.wmoCodeToDescription(current['weather_code']);
+					var srNow = WeerJS.wmoCodeToSunRainPct(current['weather_code']);
+					scoreNow = WeerJS.calcWeatherScore(
+						srNow.sun.toString(), srNow.rain.toString(),
+						temperatuurGC, windrichting + " " + windsnelheidBF
+					).toString();
 					icoonimageDim   = WeerJS.parseWeatherIdAndText(
 						false, "file:///qmf/qml/apps/weer/drawables/Dim",
 						icoonid, icoonzin, zonopkomst, zononder, timeStr);
@@ -392,6 +417,9 @@ App {
 					var doc2 = new XMLHttpRequest();
 					doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
 					doc2.send(temperatuurGC + ":" + current['time']);
+
+					// current UV index
+					uvNow = current['uv_index'] != null ? Math.round(current['uv_index']) : -1;
 
 					// build actualweather immediately with coordinates, update when geocode resolves
 					var omUvIndex = current['uv_index'] != null ? current['uv_index'].toString() : "-";
@@ -482,10 +510,12 @@ App {
 					totalRegenSummary = 0;
 					maxWindBftSummary = "";
 					maxWindDirSummary = "";
+					scoreSummary = "";
 					if (startHourIdx >= 0) {
 						var endIdx = Math.min(startHourIdx + summaryHours, hourly['time'].length);
 						var minT = null, maxT = null, maxUV = 0, totalRain = 0;
 						var maxWindKmh = -1, maxWindDirDeg = 0;
+						var maxRainProb = 0, clearHourCount = 0;
 						for (var k = startHourIdx; k < endIdx; k++) {
 							var t = hourly['temperature_2m'][k];
 							if (t !== null && t !== undefined) {
@@ -502,6 +532,10 @@ App {
 								var wd = hourly['wind_direction_10m'] ? hourly['wind_direction_10m'][k] : null;
 								if (wd !== null && wd !== undefined) maxWindDirDeg = wd;
 							}
+							var rp = hourly['precipitation_probability'] ? hourly['precipitation_probability'][k] : null;
+							if (rp !== null && rp !== undefined && rp > maxRainProb) maxRainProb = rp;
+							var wc = hourly['weather_code'] ? hourly['weather_code'][k] : null;
+							if (wc !== null && wc !== undefined && wc <= 2) clearHourCount++;
 						}
 						minTempSummary = minT !== null ? Math.round(minT).toString() : "";
 						maxTempSummary = maxT !== null ? Math.round(maxT).toString() : "";
@@ -511,6 +545,11 @@ App {
 							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
 							maxWindDirSummary = WeerJS.degreesToWindDir(maxWindDirDeg);
 						}
+						var sunPct = Math.round(clearHourCount / (endIdx - startHourIdx) * 100);
+						scoreSummary = WeerJS.calcWeatherScore(
+							sunPct.toString(), maxRainProb.toString(),
+							maxTempSummary, maxWindDirSummary + " " + maxWindBftSummary
+						).toString();
 					}
 
 					// no narrative forecast text from Open-Meteo
@@ -602,12 +641,151 @@ App {
 	}
 
 
+	// Combined rain forecast: Buienradar 5-min data for the first 2 hours +
+	// Open-Meteo hourly data for the remaining hours up to rainHours. The
+	// resulting array uses 5-min resolution throughout (rainHours * 12 slots);
+	// each Open-Meteo hourly value is repeated across its 12 5-min slots.
+	function updateOpenMeteoRain() {
+		var totalSlots = rainHours * 12;
+		var combined = new Array(totalSlots);
+		for (var k = 0; k < totalSlots; k++) combined[k] = 0;
+
+		var state = {
+			hasRain: false,
+			maxValue: 0,
+			startTime: null,    // "HH:MM"
+			startDate: null,    // Date of first slot
+			gotBR: false
+		};
+
+		var brHttp = new XMLHttpRequest();
+		brHttp.onreadystatechange = function() {
+			if (brHttp.readyState != 4) return;
+
+			if (brHttp.status == 200 && brHttp.responseText.length > 0) {
+				try {
+					var brJson = JSON.parse(brHttp.responseText);
+					var now = new Date();
+					var startIdx = 0;
+					for (var i = 0; i < brJson['forecasts'].length; i++) {
+						var fcDate = new Date(brJson['forecasts'][i]['datetime']);
+						if (now < fcDate) {
+							startIdx = i;
+							state.startDate = fcDate;
+							break;
+						}
+					}
+					state.startTime = brJson['forecasts'][startIdx]['datetime'].substring(11, 16);
+
+					var maxBrSlots = Math.min(24, totalSlots);
+					for (var j = 0; j < maxBrSlots && (startIdx + j) < brJson['forecasts'].length; j++) {
+						var pr = brJson['forecasts'][startIdx + j]['precipation'] || 0;
+						combined[j] = pr;
+						if (pr > 0) state.hasRain = true;
+						if (pr > state.maxValue) state.maxValue = pr;
+					}
+					state.gotBR = true;
+				} catch (e) {
+				}
+			}
+
+			// Need Open-Meteo if rainHours > 2 (extra hours) or Buienradar failed
+			if (rainHours > 2 || !state.gotBR) {
+				fetchOM();
+			} else {
+				finalize();
+			}
+		}
+
+		function fetchOM() {
+			var lat4 = parseFloat(lat).toFixed(4);
+			var lon4 = parseFloat(lon).toFixed(4);
+			var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
+				+ "&longitude=" + lon4
+				+ "&hourly=precipitation"
+				+ "&timezone=auto&forecast_days=2";
+
+			var omHttp = new XMLHttpRequest();
+			omHttp.onreadystatechange = function() {
+				if (omHttp.readyState != 4) return;
+				if (omHttp.status == 200) {
+					try {
+						var data = JSON.parse(omHttp.responseText);
+						var hourly = data['hourly'];
+
+						var refDate, fillStartSlot, hoursToFill;
+						if (state.gotBR) {
+							refDate = new Date(state.startDate.getTime());
+							refDate.setHours(refDate.getHours() + 2);
+							refDate.setMinutes(0, 0, 0);
+							fillStartSlot = 24;
+							hoursToFill = rainHours - 2;
+						} else {
+							var now = new Date();
+							refDate = new Date(now);
+							refDate.setMinutes(0, 0, 0);
+							fillStartSlot = 0;
+							hoursToFill = rainHours;
+							state.startDate = refDate;
+							state.startTime = ("0" + refDate.getHours()).slice(-2) + ":00";
+						}
+
+						var omTargetStr = refDate.getFullYear() + "-"
+							+ ("0" + (refDate.getMonth() + 1)).slice(-2) + "-"
+							+ ("0" + refDate.getDate()).slice(-2) + "T"
+							+ ("0" + refDate.getHours()).slice(-2) + ":00";
+
+						var omStartIdx = -1;
+						for (var i = 0; i < hourly['time'].length; i++) {
+							if (hourly['time'][i] === omTargetStr) {
+								omStartIdx = i;
+								break;
+							}
+						}
+
+						if (omStartIdx >= 0) {
+							for (var h = 0; h < hoursToFill; h++) {
+								var pr = hourly['precipitation'][omStartIdx + h] || 0;
+								for (var s = 0; s < 12; s++) {
+									var slotIdx = fillStartSlot + h * 12 + s;
+									if (slotIdx < totalSlots) {
+										combined[slotIdx] = pr;
+										if (pr > 0) state.hasRain = true;
+										if (pr > state.maxValue) state.maxValue = pr;
+									}
+								}
+							}
+						}
+					} catch (e) {
+					}
+				}
+				finalize();
+			}
+			omHttp.open("GET", url, true);
+			omHttp.send();
+		}
+
+		function finalize() {
+			regenVerwachting = combined;
+			regenMaxValue = Math.round(state.maxValue + 0.5);
+			showRain = state.hasRain;
+			if (state.startTime) {
+				regenVerwachtingVanaf = state.startTime;
+				regenVerwachtingMidden = WeerJS.addMinutes(state.startTime, Math.floor(rainHours / 2) * 60);
+				regenVerwachtingTot = WeerJS.addMinutes(state.startTime, rainHours * 60);
+			}
+		}
+
+		brHttp.open("GET", "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat=" + lat + "&lon=" + lon, true);
+		brHttp.send();
+	}
+
 	Timer {
 		id: datetimeTimer2
 		interval: 300000
 		triggeredOnStart: true
 		running: true
 		repeat: true
-		onTriggered: updateRegenkans()
+		onTriggered: useOpenMeteo ? updateOpenMeteoRain() : updateRegenkans()
 	}
 }

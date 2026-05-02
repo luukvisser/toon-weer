@@ -57,7 +57,7 @@ Tile {
 
 		Image {
 			id: summaryCurrentIcon
-			source: app.icoonimageNoDim || ""
+			source: app.icoonlink || ""
 			width: isNxt ? 56 : 44
 			height: width
 			fillMode: Image.PreserveAspectFit
@@ -86,9 +86,11 @@ Tile {
 
 	Text {
 		id: summaryWind
-		text: app.maxWindBftSummary !== ""
-			? (app.maxWindDirSummary ? app.maxWindDirSummary + " " : "") + app.maxWindBftSummary + " Bft"
-			: "—"
+		text: {
+			var cur = app.windsnelheidBF !== "" ? app.windsnelheidBF : "—"
+			var max = app.maxWindBftSummary !== "" ? app.maxWindBftSummary : "—"
+			return cur + " → " + max + " Bft"
+		}
 		anchors {
 			baseline: parent.bottom
 			baselineOffset: isNxt ? -36 : -29
@@ -104,7 +106,11 @@ Tile {
 
 	Text {
 		id: summaryScore
-		text: app.scoreToday !== "" ? app.scoreToday + "/10 score" : "—"
+		text: {
+			var nowStr = app.scoreNow !== "" ? app.scoreNow : "—"
+			var sumStr = app.scoreSummary !== "" ? app.scoreSummary : "—"
+			return nowStr + " → " + sumStr + " /10"
+		}
 		anchors {
 			baseline: summaryWind.baseline
 			right: parent.right
@@ -112,7 +118,7 @@ Tile {
 		}
 		font {
 			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			pixelSize: isNxt ? 19 : 15
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -121,7 +127,11 @@ Tile {
 
 	Text {
 		id: summaryUV
-		text: "UV: " + (app.maxUVSummary > 0 ? app.maxUVSummary.toString() : "—")
+		text: {
+			var cur = app.uvNow >= 0 ? app.uvNow.toString() : "—"
+			var max = app.maxUVSummary > 0 ? app.maxUVSummary.toString() : "—"
+			return cur + " → " + max + " UV"
+		}
 		anchors {
 			baseline: parent.bottom
 			baselineOffset: isNxt ? -16 : -13
