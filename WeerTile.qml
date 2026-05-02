@@ -5,18 +5,18 @@ import "weer.js" as WeerJS
 Tile {
 	id: weerTile
 	property string tempVal: app.useOpenMeteo
-		? (app.locationName ? WeerJS.formatTemp(app.temperatuurGC, app.locationName) : "Even geduld")
-		: (app.indexStation < 0 ? "Even geduld" : WeerJS.formatTemp(app.temperatuurGC, app.stationArray[app.indexStation]))
-	property string tempWind: WeerJS.formatWind(app.windrichting, app.windsnelheidBF)
-	property string tempZin: WeerJS.formatZin(app.icoonzin)
-	property string tempLuchtdruk: WeerJS.formatLuchtdruk(app.luchtdruk,app.luchtvochtigheid)
-	property string dimTempVal: WeerJS.formatDimTemp(app.temperatuurGC)
+		? (app.locationName ? WeerJS.formatTemp(app.temperature, app.locationName) : "Even geduld")
+		: (app.stationIndex < 0 ? "Even geduld" : WeerJS.formatTemp(app.temperature, app.stationNames[app.stationIndex]))
+	property string tempWind: WeerJS.formatWind(app.windDirection, app.windSpeedBft)
+	property string tempZin: WeerJS.formatZin(app.weatherDescription)
+	property string tempLuchtdruk: WeerJS.formatLuchtdruk(app.pressure,app.humidity)
+	property string dimTempVal: WeerJS.formatDimTemp(app.temperature)
 
 	property bool dimState: screenStateController.dimmedColors
 
 	onClicked: {
-		app.radarimagesSmallurl ="http://toon/";  //resetimage
-		app.radarimagesSmallurl ="https://api.buienradar.nl/image/1.0/RadarMapNL?width=180&height=180";
+		app.radarImagesSmallUrl ="http://toon/";  //resetimage
+		app.radarImagesSmallUrl ="https://api.buienradar.nl/image/1.0/RadarMapNL?width=180&height=180";
 		if (app.weerDetailsScreen)
 			app.weerDetailsScreen.show();
 	}
@@ -24,7 +24,7 @@ Tile {
 
 	Image {
 		id: weatherTileIconzz
-		source: app.icoonimageDim
+		source: app.iconImageDim
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 100 : 65
@@ -36,7 +36,7 @@ Tile {
 
 	Text {
 		id: weatherTileTemperatureTextzz
-		text: i18n.number( Number( app.temperatuurGC ), 1 ) + "°"
+		text: i18n.number( Number( app.temperature ), 1 ) + "°"
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 70 : 55
@@ -86,7 +86,7 @@ Tile {
 
 	Text {                                                                                 
                 id: weerTileGevoelstempText4
-                text: "gevoelstemperatuur: " + i18n.number( Number( app.gevoelstemperatuur), 1 ) + "°"
+                text: "feelsLikeTemp: " + i18n.number( Number( app.feelsLikeTemp), 1 ) + "°"
                 anchors {
                         baseline: parent.top
                         baselineOffset: isNxt ? 60 : 50
@@ -135,7 +135,7 @@ Tile {
 
 	Image {
 		id: weatherTileIcon
-		source: app.icoonlink
+		source: app.iconUrl
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 96 : 75

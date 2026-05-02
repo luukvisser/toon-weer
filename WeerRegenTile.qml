@@ -6,11 +6,11 @@ import "weer.js" as WeerJS
 Tile {
 	id: root
 	onClicked: {
-		app.radarimagesurl ="http://toon/";  //resetimage
+		app.radarImagesUrl ="http://toon/";  //resetimage
 		if (isNxt) {
-			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=600&height=600";
+			app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=600&height=600";
 		} else {
-			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
+			app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 		}
 
 		if (app.weerActualRadarScreen) {
@@ -68,9 +68,9 @@ Tile {
 			width: parent.width
 			height: parent.height
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
-			yScale: app.yaxisScale ? (height / app.yaxisScale) : (height / app.regenMaxValue)
+			yScale: app.yAxisScale ? (height / app.yAxisScale) : (height / app.rainMaxMm)
 			showNaN: false
-			values: app.regenVerwachting
+			values: app.rainForecast
 		}
 		visible: app.showRain
 		
@@ -89,7 +89,7 @@ Tile {
 			pixelSize: isNxt ? 30 : 24
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.yaxisScale ? app.yaxisScale : app.regenMaxValue
+		text: app.yAxisScale ? app.yAxisScale : app.rainMaxMm
 		visible: app.showRain
 	}
 
@@ -148,7 +148,7 @@ Tile {
 			pixelSize: isNxt ? 25 : 20
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.regenVerwachtingVanaf
+		text: app.rainForecastFrom
 		visible: app.showRain
 	}
 
@@ -164,7 +164,7 @@ Tile {
 			pixelSize: isNxt ? 25 : 20
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.regenVerwachtingMidden
+		text: app.rainForecastMid
 		visible: app.showRain
 	}
 	Text {
@@ -179,7 +179,7 @@ Tile {
 			pixelSize: isNxt ? 25 : 20
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.regenVerwachtingTot
+		text: app.rainForecastTo
 		visible: app.showRain
 	}
 

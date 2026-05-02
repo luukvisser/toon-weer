@@ -18,12 +18,12 @@ Screen {
 	onShown: {
 		addCustomTopRightButton("Locatie");
 		fivedayforecastModel.clear();
-		for (var i = 0; i < app.fivedayforecast.length; i++) {
-			fivedayforecastModel.append(app.fivedayforecast[i]);
+		for (var i = 0; i < app.fiveDayForecast.length; i++) {
+			fivedayforecastModel.append(app.fiveDayForecast[i]);
 		}
 		actualWeatherModel.clear();
-		for (var i = 0; i < app.actualweather.length; i++) {
-			actualWeatherModel.append(app.actualweather[i]);
+		for (var i = 0; i < app.actualWeather.length; i++) {
+			actualWeatherModel.append(app.actualWeather[i]);
 		}
 	}
 
@@ -147,7 +147,7 @@ Screen {
 
 				Text {
 					id: txtwindrichting
-					text: windrichting
+					text: windDirection
 					anchors {
 						top: txtwindsnelheid.bottom
 						topMargin: isNxt ? 5 : 4
@@ -162,7 +162,7 @@ Screen {
 
 				Text {
 					id: txthumidity
-					text: luchtvochtigheid
+					text: humidity
 					anchors {
 						top: txtwindrichting.bottom
 						topMargin: isNxt ? 5 : 4
@@ -177,7 +177,7 @@ Screen {
 
 				Text {
 					id: txtluchtdruk
-					text: luchtdruk
+					text: pressure
 					anchors {
 						top: txthumidity.bottom
 						topMargin: isNxt ? 5 : 4
@@ -390,7 +390,7 @@ Screen {
 
 	Text {
 		id: weerDS2wvtitel
-		text: app.weersverwachtingTitel
+		text: app.forecastTitle
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 270 : 215
@@ -434,7 +434,7 @@ Screen {
 					pixelSize: isNxt ? 18 : 15
 				}
 
-	                   text:  app.weersverwachtingTekst
+	                   text:  app.forecastText
 	            }
 	      }
 		MouseArea {
@@ -457,16 +457,16 @@ Screen {
 			right: parent.right
 			rightMargin: 10
 		}
-    		AnimatedImage { id: animation; source: app.radarimagesSmallurl }
+    		AnimatedImage { id: animation; source: app.radarImagesSmallUrl }
 
 		MouseArea {
 			anchors.fill: parent
 			onClicked: {
-				app.radarimagesurl = "http://toon/";  //resetimage
+				app.radarImagesUrl = "http://toon/";  //resetimage
 				if (isNxt) {
-					app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=600&height=600";
+					app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=600&height=600";
 				} else {
-					app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
+					app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
 				}
 				if (app.weerActualRadarScreen) {
 					app.weerActualRadarScreen.setTitle("Actuele Weer");

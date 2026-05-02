@@ -8,8 +8,8 @@ Tile {
 	property bool dimState: screenStateController.dimmedColors
 
 	onClicked: {
-		app.radarimagesSmallurl ="http://toon/";  //resetimage
-		app.radarimagesSmallurl ="https://api.buienradar.nl/image/1.0/RadarMapNL?w=180&h=180";
+		app.radarImagesSmallUrl ="http://toon/";  //resetimage
+		app.radarImagesSmallUrl ="https://api.buienradar.nl/image/1.0/RadarMapNL?w=180&h=180";
 		if (app.weerDetailsScreen)
 			app.weerDetailsScreen.show();
 	}
@@ -17,7 +17,7 @@ Tile {
 
 	Text {
 		id: weatherSunrise
-		text: app.zonopkomst ? app.zonopkomst.substr(11, 5) : ""
+		text: app.sunrise ? app.sunrise.substr(11, 5) : ""
 		anchors {
 			baseline: parent.top
 			baselineOffset: isNxt ? 70 : 55
@@ -47,7 +47,7 @@ Tile {
 
 	Text {
 		id: weatherSunset
-		text: app.zononder ? app.zononder.substr(11, 5) : ""
+		text: app.sunset ? app.sunset.substr(11, 5) : ""
 		anchors {
 			left: weatherSunrise.left
 			top: weatherSunsetText.bottom

@@ -36,7 +36,7 @@ Screen {
 
 	onShown: {
 		addCustomTopRightButton("Opslaan");
-		if (app.indexStation > -1) stationLabel.inputText = app.stationArray[app.indexStation];
+		if (app.stationIndex > -1) stationLabel.inputText = app.stationNames[app.stationIndex];
 	}
 	
 	function toRad(x) {
@@ -61,19 +61,19 @@ Screen {
 		var nearestDistance = 1000000;	// a random very high number :-)
 		var nearestStation = "";
 		var distance = 0;
-		for (var i = 0; i < app.stationArray.length; i++) {
-			distance = haversineDistance(parseFloat(app.lat), parseFloat(app.lon), parseFloat(app.latArray[i]), parseFloat(app.lonArray[i])); 			
+		for (var i = 0; i < app.stationNames.length; i++) {
+			distance = haversineDistance(parseFloat(app.lat), parseFloat(app.lon), parseFloat(app.stationLats[i]), parseFloat(app.stationLons[i])); 			
 			if (nearestDistance > distance) {
 				nearestDistance = distance;
-				nearestStation = app.locationArray[i];
+				nearestStation = app.stationIds[i];
 			}
 		}
 		app.location = nearestStation;
-		app.indexStation = app.locationArray.indexOf(parseInt(app.location))
+		app.stationIndex = app.stationIds.indexOf(parseInt(app.location))
 		app.saveSettings();
 		app.updateWeather();
-		stationLabel.inputText = app.stationArray[app.indexStation];
-		qdialog.showDialog(qdialog.SizeLarge, "Weer mededeling", "Op basis van de ingevoerde lat/lon coordinaten is het volgende dichtsbijzijnde weerstation geselekteerd:\n\nStation: " + app.stationArray[app.indexStation] + "\nAfstand : " + (Math.round(nearestDistance * 100) / 100) + " km", "Sluiten");
+		stationLabel.inputText = app.stationNames[app.stationIndex];
+		qdialog.showDialog(qdialog.SizeLarge, "Weer mededeling", "Op basis van de ingevoerde lat/lon coordinaten is het volgende dichtsbijzijnde weerstation geselekteerd:\n\nStation: " + app.stationNames[app.stationIndex] + "\nAfstand : " + (Math.round(nearestDistance * 100) / 100) + " km", "Sluiten");
 	}
 
 	onCustomButtonClicked: {

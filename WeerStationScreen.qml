@@ -9,8 +9,8 @@ Screen {
 	onShown: {
 
 		stationFilterModel.clear();
-		for (var i = 0; i < app.stationArray.length; i++) {
-			if (app.stationArray[i].substring (0,11) !== "Zeeplatform") stationFilterModel.append({name: app.stationArray[i]});
+		for (var i = 0; i < app.stationNames.length; i++) {
+			if (app.stationNames[i].substring (0,11) !== "Zeeplatform") stationFilterModel.append({name: app.stationNames[i]});
 		}
 	}
 
