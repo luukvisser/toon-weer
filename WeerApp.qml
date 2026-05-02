@@ -608,61 +608,143 @@ App {
 	}
 
 
+	// Combined rain forecast: Buienradar 5-min data for the first 2 hours +
+	// Open-Meteo hourly data for the remaining hours up to rainHours. The
+	// resulting array uses 5-min resolution throughout (rainHours * 12 slots);
+	// each Open-Meteo hourly value is repeated across its 12 5-min slots.
 	function updateOpenMeteoRain() {
-		var lat4 = parseFloat(lat).toFixed(4);
-		var lon4 = parseFloat(lon).toFixed(4);
-		var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
-			+ "&longitude=" + lon4
-			+ "&hourly=precipitation"
-			+ "&timezone=auto&forecast_days=2";
+		var totalSlots = rainHours * 12;
+		var combined = new Array(totalSlots);
+		for (var k = 0; k < totalSlots; k++) combined[k] = 0;
 
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-				var data = JSON.parse(xmlhttp.responseText);
-				var hourly = data['hourly'];
+		var state = {
+			hasRain: false,
+			maxValue: 0,
+			startTime: null,    // "HH:MM"
+			startDate: null,    // Date of first slot
+			gotBR: false
+		};
 
-				var now = new Date();
-				var currentHourStr = now.getFullYear() + "-"
-					+ ("0" + (now.getMonth() + 1)).slice(-2) + "-"
-					+ ("0" + now.getDate()).slice(-2) + "T"
-					+ ("0" + now.getHours()).slice(-2) + ":00";
+		var brHttp = new XMLHttpRequest();
+		brHttp.onreadystatechange = function() {
+			if (brHttp.readyState != 4) return;
 
-				var startIdx = -1;
-				for (var i = 0; i < hourly['time'].length; i++) {
-					if (hourly['time'][i] === currentHourStr) {
-						startIdx = i;
-						break;
+			if (brHttp.status == 200 && brHttp.responseText.length > 0) {
+				try {
+					var brJson = JSON.parse(brHttp.responseText);
+					var now = new Date();
+					var startIdx = 0;
+					for (var i = 0; i < brJson['forecasts'].length; i++) {
+						var fcDate = new Date(brJson['forecasts'][i]['datetime']);
+						if (now < fcDate) {
+							startIdx = i;
+							state.startDate = fcDate;
+							break;
+						}
 					}
+					state.startTime = brJson['forecasts'][startIdx]['datetime'].substring(11, 16);
+
+					var maxBrSlots = Math.min(24, totalSlots);
+					for (var j = 0; j < maxBrSlots && (startIdx + j) < brJson['forecasts'].length; j++) {
+						var pr = brJson['forecasts'][startIdx + j]['precipation'] || 0;
+						combined[j] = pr;
+						if (pr > 0) state.hasRain = true;
+						if (pr > state.maxValue) state.maxValue = pr;
+					}
+					state.gotBR = true;
+				} catch (e) {
 				}
+			}
 
-				if (startIdx < 0) return;
-
-				var newArray = [];
-				var maxValue = 0;
-				var hasRain = false;
-				var endIdx = Math.min(startIdx + rainHours, hourly['time'].length);
-
-				for (var j = startIdx; j < endIdx; j++) {
-					var pr = hourly['precipitation'][j] || 0;
-					newArray.push(pr);
-					if (pr > 0) hasRain = true;
-					if (pr > maxValue) maxValue = pr;
-				}
-				while (newArray.length < rainHours) newArray.push(0);
-
-				regenVerwachting = newArray;
-				regenMaxValue = Math.round(maxValue + 0.5) || 1;
-				showRain = hasRain;
-
-				var startHour = now.getHours();
-				regenVerwachtingVanaf = ("0" + startHour).slice(-2) + ":00";
-				regenVerwachtingMidden = WeerJS.addMinutes(regenVerwachtingVanaf, Math.floor(rainHours / 2) * 60);
-				regenVerwachtingTot = WeerJS.addMinutes(regenVerwachtingVanaf, rainHours * 60);
+			// Need Open-Meteo if rainHours > 2 (extra hours) or Buienradar failed
+			if (rainHours > 2 || !state.gotBR) {
+				fetchOM();
+			} else {
+				finalize();
 			}
 		}
-		xmlhttp.open("GET", url, true);
-		xmlhttp.send();
+
+		function fetchOM() {
+			var lat4 = parseFloat(lat).toFixed(4);
+			var lon4 = parseFloat(lon).toFixed(4);
+			var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
+				+ "&longitude=" + lon4
+				+ "&hourly=precipitation"
+				+ "&timezone=auto&forecast_days=2";
+
+			var omHttp = new XMLHttpRequest();
+			omHttp.onreadystatechange = function() {
+				if (omHttp.readyState != 4) return;
+				if (omHttp.status == 200) {
+					try {
+						var data = JSON.parse(omHttp.responseText);
+						var hourly = data['hourly'];
+
+						var refDate, fillStartSlot, hoursToFill;
+						if (state.gotBR) {
+							refDate = new Date(state.startDate.getTime());
+							refDate.setHours(refDate.getHours() + 2);
+							refDate.setMinutes(0, 0, 0);
+							fillStartSlot = 24;
+							hoursToFill = rainHours - 2;
+						} else {
+							var now = new Date();
+							refDate = new Date(now);
+							refDate.setMinutes(0, 0, 0);
+							fillStartSlot = 0;
+							hoursToFill = rainHours;
+							state.startDate = refDate;
+							state.startTime = ("0" + refDate.getHours()).slice(-2) + ":00";
+						}
+
+						var omTargetStr = refDate.getFullYear() + "-"
+							+ ("0" + (refDate.getMonth() + 1)).slice(-2) + "-"
+							+ ("0" + refDate.getDate()).slice(-2) + "T"
+							+ ("0" + refDate.getHours()).slice(-2) + ":00";
+
+						var omStartIdx = -1;
+						for (var i = 0; i < hourly['time'].length; i++) {
+							if (hourly['time'][i] === omTargetStr) {
+								omStartIdx = i;
+								break;
+							}
+						}
+
+						if (omStartIdx >= 0) {
+							for (var h = 0; h < hoursToFill; h++) {
+								var pr = hourly['precipitation'][omStartIdx + h] || 0;
+								for (var s = 0; s < 12; s++) {
+									var slotIdx = fillStartSlot + h * 12 + s;
+									if (slotIdx < totalSlots) {
+										combined[slotIdx] = pr;
+										if (pr > 0) state.hasRain = true;
+										if (pr > state.maxValue) state.maxValue = pr;
+									}
+								}
+							}
+						}
+					} catch (e) {
+					}
+				}
+				finalize();
+			}
+			omHttp.open("GET", url, true);
+			omHttp.send();
+		}
+
+		function finalize() {
+			regenVerwachting = combined;
+			regenMaxValue = Math.round(state.maxValue + 0.5);
+			showRain = state.hasRain;
+			if (state.startTime) {
+				regenVerwachtingVanaf = state.startTime;
+				regenVerwachtingMidden = WeerJS.addMinutes(state.startTime, Math.floor(rainHours / 2) * 60);
+				regenVerwachtingTot = WeerJS.addMinutes(state.startTime, rainHours * 60);
+			}
+		}
+
+		brHttp.open("GET", "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat=" + lat + "&lon=" + lon, true);
+		brHttp.send();
 	}
 
 	Timer {
