@@ -128,8 +128,8 @@ Tile {
 	Text {
 		id: summaryUV
 		text: {
-			var cur = app.uvNow >= 0 ? app.uvNow.toString() : "—"
-			var max = app.maxUVSummary > 0 ? app.maxUVSummary.toString() : "—"
+			var cur = app.uvNow >= 0 ? i18n.number(app.uvNow, 1) : "—"
+			var max = app.maxUVSummary > 0 ? i18n.number(app.maxUVSummary, 1) : "—"
 			return cur + " → " + max + " UV"
 		}
 		anchors {
