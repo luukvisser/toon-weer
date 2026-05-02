@@ -48,7 +48,7 @@ App {
 	property string visibilityMeters
 	property string sunrise
 	property string sunset
-	property int    uvNow: -1
+	property real   uvNow: -1
 
 	// --- Forecast & station data ---
 	property variant stationNames: []
@@ -70,7 +70,7 @@ App {
 	// --- Summary tile ---
 	property string minTempSummary: ""
 	property string maxTempSummary: ""
-	property int    maxUVSummary: 0
+	property real   maxUVSummary: 0
 	property real   totalRainSummary: 0
 	property string maxWindBftSummary: ""
 	property string maxWindDirSummary: ""
@@ -326,8 +326,8 @@ App {
 					uvNow = -1;
 					var todayForecast = data['forecast']['fivedayforecast'][0];
 					if (todayForecast) {
-						if (todayForecast['mintemperatureMin'] !== undefined) minTempSummary = todayForecast['mintemperatureMin'].toString();
-						if (todayForecast['maxtemperatureMax'] !== undefined) maxTempSummary = todayForecast['maxtemperatureMax'].toString();
+						if (todayForecast['mintemperatureMin'] !== undefined) minTempSummary = i18n.number(Number(todayForecast['mintemperatureMin']), 1);
+						if (todayForecast['maxtemperatureMax'] !== undefined) maxTempSummary = i18n.number(Number(todayForecast['maxtemperatureMax']), 1);
 						if (todayForecast['uvindex'] !== undefined) maxUVSummary = todayForecast['uvindex'];
 						if (todayForecast['mmRainMax'] !== undefined) totalRainSummary = todayForecast['mmRainMax'];
 					}
@@ -439,7 +439,7 @@ App {
 					tempLogXhr.send(temperature + ":" + current['time']);
 
 					// current UV index
-					uvNow = current['uv_index'] != null ? Math.round(current['uv_index']) : -1;
+					uvNow = current['uv_index'] != null ? Math.round(current['uv_index'] * 10) / 10 : -1;
 
 					// build actualWeather immediately with coordinates, update when geocode resolves
 					var uvIndexStr = current['uv_index'] != null ? current['uv_index'].toString() : "-";
@@ -557,9 +557,9 @@ App {
 							var weatherCode = hourly['weather_code'] ? hourly['weather_code'][k] : null;
 							if (weatherCode !== null && weatherCode !== undefined && weatherCode <= 2) clearHourCount++;
 						}
-						minTempSummary = minTemp !== null ? Math.round(minTemp).toString() : "";
-						maxTempSummary = maxTemp !== null ? Math.round(maxTemp).toString() : "";
-						maxUVSummary = Math.round(maxUV);
+						minTempSummary = minTemp !== null ? i18n.number(minTemp, 1) : "";
+						maxTempSummary = maxTemp !== null ? i18n.number(maxTemp, 1) : "";
+						maxUVSummary = Math.round(maxUV * 10) / 10;
 						totalRainSummary = Math.round(totalRain * 10) / 10;
 						if (maxWindKmh >= 0) {
 							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
