@@ -68,7 +68,7 @@ Tile {
         	visible: !dimState
 	}
 
-	Text {                                                                                 
+	Text {
                 id: weerTileTitleText3
                 text: tempZin
                 anchors {
@@ -84,7 +84,7 @@ Tile {
         	visible: !dimState
        }
 
-	Text {                                                                                 
+	Text {
                 id: weerTileGevoelstempText4
                 text: "feelsLikeTemp: " + i18n.number( Number( app.feelsLikeTemp), 1 ) + "°"
                 anchors {
@@ -117,7 +117,7 @@ Tile {
 
 	}
 
-	Text {                                                                                 
+	Text {
                 id: weerTileLuchtdrukText4
                 text: tempLuchtdruk
                 anchors {

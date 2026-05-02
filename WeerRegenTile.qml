@@ -73,7 +73,7 @@ Tile {
 			values: app.rainForecast
 		}
 		visible: app.showRain
-		
+
 	}
 
 	Text {

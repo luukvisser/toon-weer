@@ -38,11 +38,11 @@ Screen {
 		addCustomTopRightButton("Opslaan");
 		if (app.stationIndex > -1) stationLabel.inputText = app.stationNames[app.stationIndex];
 	}
-	
+
 	function toRad(x) {
     		return x * Math.PI / 180;
   	}
-	
+
 	function haversineDistance(lat1, lon1, lat2, lon2) {
 
 		var R = 6371; // km
@@ -62,7 +62,7 @@ Screen {
 		var nearestStation = "";
 		var distance = 0;
 		for (var i = 0; i < app.stationNames.length; i++) {
-			distance = haversineDistance(parseFloat(app.lat), parseFloat(app.lon), parseFloat(app.stationLats[i]), parseFloat(app.stationLons[i])); 			
+			distance = haversineDistance(parseFloat(app.lat), parseFloat(app.lon), parseFloat(app.stationLats[i]), parseFloat(app.stationLons[i]));
 			if (nearestDistance > distance) {
 				nearestDistance = distance;
 				nearestStation = app.stationIds[i];
