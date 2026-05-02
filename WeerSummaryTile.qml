@@ -86,9 +86,11 @@ Tile {
 
 	Text {
 		id: summaryWind
-		text: app.maxWindBftSummary !== ""
-			? (app.maxWindDirSummary ? app.maxWindDirSummary + " " : "") + app.maxWindBftSummary + " Bft"
-			: "—"
+		text: {
+			var cur = app.windsnelheidBF !== "" ? app.windsnelheidBF : "—"
+			var max = app.maxWindBftSummary !== "" ? app.maxWindBftSummary : "—"
+			return cur + " → " + max + " Bft"
+		}
 		anchors {
 			baseline: parent.bottom
 			baselineOffset: isNxt ? -36 : -29
