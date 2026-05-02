@@ -109,7 +109,7 @@ Tile {
 		text: {
 			var nowStr = app.scoreNow !== "" ? app.scoreNow : "—"
 			var sumStr = app.scoreSummary !== "" ? app.scoreSummary : "—"
-			return "nu: " + nowStr + "  +" + app.summaryHours + "h: " + sumStr
+			return nowStr + " → " + sumStr + " /10"
 		}
 		anchors {
 			baseline: summaryWind.baseline
@@ -127,7 +127,11 @@ Tile {
 
 	Text {
 		id: summaryUV
-		text: "UV: " + (app.maxUVSummary > 0 ? app.maxUVSummary.toString() : "—")
+		text: {
+			var cur = app.uvNow >= 0 ? app.uvNow.toString() : "—"
+			var max = app.maxUVSummary > 0 ? app.maxUVSummary.toString() : "—"
+			return cur + " → " + max + " UV"
+		}
 		anchors {
 			baseline: parent.bottom
 			baselineOffset: isNxt ? -16 : -13

@@ -64,6 +64,7 @@ App {
 
 	property string minTempSummary: ""
 	property string maxTempSummary: ""
+	property int    uvNow: -1
 	property int    maxUVSummary: 0
 	property real   totalRegenSummary: 0
 	property string maxWindBftSummary: ""
@@ -304,6 +305,7 @@ App {
 					fivedayforecast = tmpForecast;
 
 						// summary tile data from today's forecast (Buienradar feed has no hourly weather data)
+					uvNow = -1;
 					var todayFc = brJson['forecast']['fivedayforecast'][0];
 					if (todayFc) {
 						if (todayFc['mintemperatureMin'] !== undefined) minTempSummary = todayFc['mintemperatureMin'].toString();
@@ -415,6 +417,9 @@ App {
 					var doc2 = new XMLHttpRequest();
 					doc2.open("PUT", "file:///var/volatile/tmp/actualWeerTemp.txt");
 					doc2.send(temperatuurGC + ":" + current['time']);
+
+					// current UV index
+					uvNow = current['uv_index'] != null ? Math.round(current['uv_index']) : -1;
 
 					// build actualweather immediately with coordinates, update when geocode resolves
 					var omUvIndex = current['uv_index'] != null ? current['uv_index'].toString() : "-";
