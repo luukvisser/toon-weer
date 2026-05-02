@@ -57,6 +57,7 @@ App {
 	property variant stationLats: []
 	property variant stationLons: []
 	property variant fiveDayForecast: []
+	property variant hourlyForecast: []
 	property variant actualWeather: []
 	property string  firstDayForecast: "  "
 	property string  forecastTitle
@@ -103,12 +104,12 @@ App {
 		property url weerTrayUrl: "WeerTray.qml"
 	}
 
-	
+
 	function init() {
-		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("OM Weer"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "OM Regenverw.", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "OM Zon op/onder", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
-		registry.registerWidget("tile", tileSummary, this, null, {thumbLabel: "OM Vandaag", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("Weer v2"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileUrlRegen, this, null, {thumbLabel: "Regenverw. v2", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileSunrise, this, null, {thumbLabel: "Zon op/onder v2", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", tileSummary, this, null, {thumbLabel: "Vandaag v2", thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", p.weerDetailsScreenUrl, this, "weerDetailsScreen");
 		registry.registerWidget("screen", p.weerStationScreenUrl, this, "weerStationScreen");
 		registry.registerWidget("screen", p.weerActualRadarScreenUrl, this, "weerActualRadarScreen");
@@ -172,7 +173,7 @@ App {
 	// --- Buienradar data fetchers ---
 
 	function fetchBuienradarWeather() {
-		
+
   		var dayNames = new Array(7);
   		dayNames[0] = "Zo";
   		dayNames[1] = "Ma";
@@ -206,8 +207,8 @@ App {
 						// read specific selected location weather data
 
 					if ( stationIndex > -1 ) {
- 
-	
+
+
 						// save actual temp for use in TemperatureLogger app
 
    						var tempLogXhr = new XMLHttpRequest();
@@ -239,8 +240,8 @@ App {
 						}
 
 							// fill model for grid of weather station data on detail screen
-	
-						var rows = [];	
+
+						var rows = [];
 						rows.push({'location': stationNames[stationIndex],
 							  'temperature': 'Temperatuur:',
 							  'windsnelheid': 'Windsnelheid:',
@@ -259,7 +260,7 @@ App {
 							  'zonoponder': WeerJS.lineZonOpOnder(data['actual']['sunrise'], data['actual']['sunset'])});
 						actualWeather = rows;
 
-				
+
 						sunrise = data['actual']['sunrise']
 						sunset = data['actual']['sunset']
 
@@ -271,7 +272,7 @@ App {
 					var date = new Date(data['forecast']['fivedayforecast'][0]['day']);
 					var dayName = dayNames[date.getDay()];
 
-					var forecast = [];	
+					var forecast = [];
 					forecast.push({'kanszon': 'zon %',
 							  'kansregen': 'regen %',
 							  'mintemp': 'min',
@@ -572,8 +573,38 @@ App {
 						).toString();
 					}
 
+					// hourly strip: next 12 hours starting at the current hour
+					var hourlyRows = [];
+					if (startHourIdx >= 0) {
+						var hourlyEnd = Math.min(startHourIdx + 12, hourly['time'].length);
+						for (var h = startHourIdx; h < hourlyEnd; h++) {
+							var ht = hourly['time'][h];
+							var hourLabel = ht.substring(11, 13) + ":00";
+							var hourDate = ht.substring(0, 10);
+							var dayIdx = daily['time'].indexOf(hourDate);
+							if (dayIdx < 0) dayIdx = 0;
+							var hSunrise = daily['sunrise'][dayIdx];
+							var hSunset  = daily['sunset'][dayIdx];
+							var hTimeStr = ht.substring(11, 16);
+							var hIsNight = WeerJS.determineNight(hTimeStr, hSunrise, hSunset);
+							var hIconId = WeerJS.wmoCodeToIconId(hourly['weather_code'][h]);
+							var hIconPath = "file:///qmf/qml/apps/weer/drawables/"
+								+ (hIsNight ? hIconId + hIconId : hIconId) + ".png";
+							var hTemp = hourly['temperature_2m'][h];
+							var hRainProb = hourly['precipitation_probability']
+								? (hourly['precipitation_probability'][h] || 0) : 0;
+							hourlyRows.push({
+								'hour': hourLabel,
+								'icoon': hIconPath,
+								'temp': (hTemp !== null && hTemp !== undefined) ? Math.round(hTemp) + "°" : "",
+								'rainPct': hRainProb + "%"
+							});
+						}
+					}
+					hourlyForecast = hourlyRows;
+
 					// no narrative forecast text from Open-Meteo
-					forecastTitle = "Open-Meteo GPS";
+					forecastTitle = "Komende 12 uur";
 					forecastText = "";
 				}
 			}
@@ -615,7 +646,7 @@ App {
 						}
 
       			       			rainForecastFrom = data['forecasts'][brStartIdx]['datetime'].substring(11,16);
- 
+
 							// fill array with the next 24 values
 
 						for (var i = brStartIdx; i < data['forecasts'].length ; i++) {
@@ -640,8 +671,8 @@ App {
        			       			rainForecastMid = WeerJS.addMinutes(rainForecastFrom, 60);
        		          			rainForecastTo = WeerJS.addMinutes(rainForecastFrom, 120);
 						rainForecast = forecast;
-							
-						rainMaxMm = Math.round(maxPrecip + 0.5); 
+
+						rainMaxMm = Math.round(maxPrecip + 0.5);
 					}
 				}
 			}
