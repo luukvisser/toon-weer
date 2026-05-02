@@ -422,4 +422,124 @@ Screen {
 		}
 		color: colors.rbTitle
 	}
+
+	// Rain prediction window: number of hours shown in the rain tile (2-24), Open-Meteo mode only
+
+	Text {
+		id: rainHoursLabel
+		text: "Regen tegel uren:"
+		visible: app.useOpenMeteo
+		anchors {
+			left: lonLabel.left
+			top: summaryHoursLabel.bottom
+			topMargin: isNxt ? 32 : 26
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: rainHoursMinus
+		width: isNxt ? 36 : 28
+		height: width
+		radius: 4
+		color: "#888888"
+		visible: app.useOpenMeteo
+		anchors {
+			left: rainHoursLabel.right
+			leftMargin: 12
+			verticalCenter: rainHoursLabel.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "−"
+			color: "white"
+			font {
+				family: qfont.bold.name
+				pixelSize: isNxt ? 24 : 20
+			}
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.rainHours > 2) {
+					app.rainHours = app.rainHours - 1;
+					app.saveSettings();
+					app.updateOpenMeteoRain();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: rainHoursValue
+		text: app.rainHours + " uur"
+		width: isNxt ? 70 : 56
+		horizontalAlignment: Text.AlignHCenter
+		visible: app.useOpenMeteo
+		anchors {
+			left: rainHoursMinus.right
+			leftMargin: 8
+			verticalCenter: rainHoursMinus.verticalCenter
+		}
+		font {
+			family: qfont.bold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: rainHoursPlus
+		width: rainHoursMinus.width
+		height: rainHoursMinus.height
+		radius: 4
+		color: "#888888"
+		visible: app.useOpenMeteo
+		anchors {
+			left: rainHoursValue.right
+			leftMargin: 8
+			verticalCenter: rainHoursMinus.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "+"
+			color: "white"
+			font {
+				family: qfont.bold.name
+				pixelSize: isNxt ? 24 : 20
+			}
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.rainHours < 24) {
+					app.rainHours = app.rainHours + 1;
+					app.saveSettings();
+					app.updateOpenMeteoRain();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: rainHoursUitleg
+		text: "Aantal uren vooruit in de regenverwachting tegel (Open-Meteo modus)."
+		width: isNxt ? 480 : 370
+		wrapMode: Text.WordWrap
+		visible: app.useOpenMeteo
+		anchors {
+			left: rainHoursPlus.right
+			leftMargin: 16
+			verticalCenter: rainHoursPlus.verticalCenter
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 18 : 14
+		}
+		color: colors.rbTitle
+	}
 }

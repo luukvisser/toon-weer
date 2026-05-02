@@ -183,7 +183,7 @@ Tile {
 		visible: app.showRain
 	}
 
-	/// horizontal Repeater representing 10 minutes markers
+	/// horizontal markers along the x-axis
 
 	Row {
 		id: xLegendRow
@@ -193,15 +193,17 @@ Tile {
 
 		Repeater {
 			id: xLegendRepeater
-			model: 13
+			model: app.useOpenMeteo ? (app.rainHours + 1) : 13
 			Item {
 				height: isNxt ? 10 : 8
-				width: brgraphItem.width / 12
+				width: brgraphItem.width / (app.useOpenMeteo ? app.rainHours : 12)
 
 				Rectangle {
 					id: linexaxisMarker
 					color: colors.graphTileRect
-					height: (index === 6) || (index === 0) || (index ===12) ? 6 : 3
+					height: app.useOpenMeteo
+						? ((index === 0 || index === app.rainHours || index === Math.floor(app.rainHours / 2)) ? 6 : 3)
+						: ((index === 0 || index === 6 || index === 12) ? 6 : 3)
 					width: 1
 
 					anchors {

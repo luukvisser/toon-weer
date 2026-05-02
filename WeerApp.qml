@@ -70,6 +70,7 @@ App {
 	property string maxWindDirSummary: ""
 	property string scoreToday: ""
 	property int    summaryHours: 18
+	property int    rainHours: 6
 	property real   yaxisScale: 0
 
 	property variant fivedayforecast: []
@@ -124,6 +125,10 @@ App {
 				var sh = parseInt(s['summaryHours']);
 				if (!isNaN(sh) && sh >= 1 && sh <= 24) summaryHours = sh;
 			}
+			if (s['rainHours'] !== undefined) {
+				var rh = parseInt(s['rainHours']);
+				if (!isNaN(rh) && rh >= 2 && rh <= 24) rainHours = rh;
+			}
 		} catch(e) {
 		}
 	}
@@ -136,7 +141,8 @@ App {
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
 			"useOpenMeteo": useOpenMeteo,
-			"summaryHours": summaryHours
+			"summaryHours": summaryHours,
+			"rainHours": rainHours
 		}
 
   		var doc3 = new XMLHttpRequest();
@@ -602,12 +608,69 @@ App {
 	}
 
 
+	function updateOpenMeteoRain() {
+		var lat4 = parseFloat(lat).toFixed(4);
+		var lon4 = parseFloat(lon).toFixed(4);
+		var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4
+			+ "&longitude=" + lon4
+			+ "&hourly=precipitation"
+			+ "&timezone=auto&forecast_days=2";
+
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				var data = JSON.parse(xmlhttp.responseText);
+				var hourly = data['hourly'];
+
+				var now = new Date();
+				var currentHourStr = now.getFullYear() + "-"
+					+ ("0" + (now.getMonth() + 1)).slice(-2) + "-"
+					+ ("0" + now.getDate()).slice(-2) + "T"
+					+ ("0" + now.getHours()).slice(-2) + ":00";
+
+				var startIdx = -1;
+				for (var i = 0; i < hourly['time'].length; i++) {
+					if (hourly['time'][i] === currentHourStr) {
+						startIdx = i;
+						break;
+					}
+				}
+
+				if (startIdx < 0) return;
+
+				var newArray = [];
+				var maxValue = 0;
+				var hasRain = false;
+				var endIdx = Math.min(startIdx + rainHours, hourly['time'].length);
+
+				for (var j = startIdx; j < endIdx; j++) {
+					var pr = hourly['precipitation'][j] || 0;
+					newArray.push(pr);
+					if (pr > 0) hasRain = true;
+					if (pr > maxValue) maxValue = pr;
+				}
+				while (newArray.length < rainHours) newArray.push(0);
+
+				regenVerwachting = newArray;
+				regenMaxValue = Math.round(maxValue + 0.5) || 1;
+				showRain = hasRain;
+
+				var startHour = now.getHours();
+				regenVerwachtingVanaf = ("0" + startHour).slice(-2) + ":00";
+				regenVerwachtingMidden = WeerJS.addMinutes(regenVerwachtingVanaf, Math.floor(rainHours / 2) * 60);
+				regenVerwachtingTot = WeerJS.addMinutes(regenVerwachtingVanaf, rainHours * 60);
+			}
+		}
+		xmlhttp.open("GET", url, true);
+		xmlhttp.send();
+	}
+
 	Timer {
 		id: datetimeTimer2
 		interval: 300000
 		triggeredOnStart: true
 		running: true
 		repeat: true
-		onTriggered: updateRegenkans()
+		onTriggered: useOpenMeteo ? updateOpenMeteoRain() : updateRegenkans()
 	}
 }
