@@ -19,10 +19,10 @@ Rectangle
 		fontPixelSize: isNxt ? 18 : 15
 
 		onClicked: {
-			app.location = app.locationArray[index];
-			app.indexStation = index;
+			app.location = app.stationIds[index];
+			app.stationIndex = index;
 			app.saveSettings();
-			app.updateWeer();
+			app.updateWeather();
 			hide();
 		}
 	}

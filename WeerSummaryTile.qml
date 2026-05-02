@@ -57,7 +57,7 @@ Tile {
 
 		Image {
 			id: summaryCurrentIcon
-			source: app.icoonlink || ""
+			source: app.iconUrl || ""
 			width: isNxt ? 56 : 44
 			height: width
 			fillMode: Image.PreserveAspectFit
@@ -68,7 +68,7 @@ Tile {
 
 		Text {
 			id: summaryCurrentTemp
-			text: i18n.number(Number(app.temperatuurGC), 1) + "°"
+			text: i18n.number(Number(app.temperature), 1) + "°"
 			anchors {
 				verticalCenter: parent.verticalCenter
 				left: summaryCurrentIcon.visible ? summaryCurrentIcon.right : parent.left
@@ -87,7 +87,7 @@ Tile {
 	Text {
 		id: summaryWind
 		text: {
-			var cur = app.windsnelheidBF !== "" ? app.windsnelheidBF : "—"
+			var cur = app.windSpeedBft !== "" ? app.windSpeedBft : "—"
 			var max = app.maxWindBftSummary !== "" ? app.maxWindBftSummary : "—"
 			return cur + " → " + max + " Bft"
 		}
@@ -147,7 +147,7 @@ Tile {
 
 	Text {
 		id: summaryPrecip
-		text: (app.totalRegenSummary > 0 ? i18n.number(app.totalRegenSummary, 1) : "0") + " mm"
+		text: (app.totalRainSummary > 0 ? i18n.number(app.totalRainSummary, 1) : "0") + " mm"
 		anchors {
 			baseline: summaryUV.baseline
 			right: parent.right

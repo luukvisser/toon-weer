@@ -9,11 +9,11 @@ SystrayIcon {
         property string objectName: "weerSystrayIcon"
 
 	onClicked: {
-		app.radarimagesurl ="http://toon/";  //resetimage
+		app.radarImagesUrl ="http://toon/";  //resetimage
 		if (isNxt) {
-			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?w=600&h=600";
+			app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?w=600&h=600";
 		} else {
-			app.radarimagesurl = "https://api.buienradar.nl/image/1.0/RadarMapNL?w=400&h=400";
+			app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?w=400&h=400";
 		}
 		if (app.weerActualRadarScreen) {
 			app.weerActualRadarScreen.setTitle("Actuele Weer");

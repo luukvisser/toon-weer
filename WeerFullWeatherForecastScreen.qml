@@ -3,7 +3,7 @@ import qb.components 1.0
 
 Screen {
 	id: weerFullWeatherForecastScreen
-	screenTitle: app.weersverwachtingTitel;
+	screenTitle: app.forecastTitle;
 
 	Rectangle {
 		id: backgroundRect
@@ -37,7 +37,7 @@ Screen {
 					pixelSize: isNxt ? 20 : 15
 				}
 
-	                   text:  app.weersverwachtingTekst
+	                   text:  app.forecastText
 	            }
 	      }
 	}
