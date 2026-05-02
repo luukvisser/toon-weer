@@ -57,7 +57,7 @@ Tile {
 
 		Image {
 			id: summaryCurrentIcon
-			source: app.icoonimageNoDim || ""
+			source: app.icoonlink || ""
 			width: isNxt ? 56 : 44
 			height: width
 			fillMode: Image.PreserveAspectFit
