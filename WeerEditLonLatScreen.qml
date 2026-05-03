@@ -552,4 +552,206 @@ Screen {
 		}
 		color: colors.rbTitle
 	}
+
+	// Weather refresh interval
+
+	Text {
+		id: weatherRefreshLabel
+		text: "Weer verversing:"
+		anchors {
+			left: lonLabel.left
+			top: app.useOpenMeteo ? rainHoursLabel.bottom : summaryHoursLabel.bottom
+			topMargin: isNxt ? 32 : 26
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: weatherRefreshMinus
+		width: isNxt ? 36 : 28
+		height: width
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: weatherRefreshLabel.right
+			leftMargin: 12
+			verticalCenter: weatherRefreshLabel.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "−"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.weatherRefreshMin > 1) {
+					app.weatherRefreshMin = app.weatherRefreshMin - 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: weatherRefreshValue
+		text: app.weatherRefreshMin + " min"
+		width: isNxt ? 70 : 56
+		horizontalAlignment: Text.AlignHCenter
+		anchors {
+			left: weatherRefreshMinus.right
+			leftMargin: 8
+			verticalCenter: weatherRefreshMinus.verticalCenter
+		}
+		font { family: qfont.bold.name; pixelSize: isNxt ? 20 : 16 }
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: weatherRefreshPlus
+		width: weatherRefreshMinus.width
+		height: weatherRefreshMinus.height
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: weatherRefreshValue.right
+			leftMargin: 8
+			verticalCenter: weatherRefreshMinus.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "+"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.weatherRefreshMin < 60) {
+					app.weatherRefreshMin = app.weatherRefreshMin + 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: weatherRefreshUitleg
+		text: "Interval voor het verversen van de weergegevens (1–60 min)."
+		width: isNxt ? 480 : 370
+		wrapMode: Text.WordWrap
+		anchors {
+			left: weatherRefreshPlus.right
+			leftMargin: 16
+			verticalCenter: weatherRefreshPlus.verticalCenter
+		}
+		font { family: qfont.semiBold.name; pixelSize: isNxt ? 18 : 14 }
+		color: colors.rbTitle
+	}
+
+	// Rain refresh interval
+
+	Text {
+		id: rainRefreshLabel
+		text: "Regen verversing:"
+		anchors {
+			left: lonLabel.left
+			top: weatherRefreshLabel.bottom
+			topMargin: isNxt ? 32 : 26
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: rainRefreshMinus
+		width: isNxt ? 36 : 28
+		height: width
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: rainRefreshLabel.right
+			leftMargin: 12
+			verticalCenter: rainRefreshLabel.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "−"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.rainRefreshMin > 1) {
+					app.rainRefreshMin = app.rainRefreshMin - 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: rainRefreshValue
+		text: app.rainRefreshMin + " min"
+		width: isNxt ? 70 : 56
+		horizontalAlignment: Text.AlignHCenter
+		anchors {
+			left: rainRefreshMinus.right
+			leftMargin: 8
+			verticalCenter: rainRefreshMinus.verticalCenter
+		}
+		font { family: qfont.bold.name; pixelSize: isNxt ? 20 : 16 }
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: rainRefreshPlus
+		width: rainRefreshMinus.width
+		height: rainRefreshMinus.height
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: rainRefreshValue.right
+			leftMargin: 8
+			verticalCenter: rainRefreshMinus.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "+"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.rainRefreshMin < 30) {
+					app.rainRefreshMin = app.rainRefreshMin + 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: rainRefreshUitleg
+		text: "Interval voor het verversen van de regenverwachting (1–30 min)."
+		width: isNxt ? 480 : 370
+		wrapMode: Text.WordWrap
+		anchors {
+			left: rainRefreshPlus.right
+			leftMargin: 16
+			verticalCenter: rainRefreshPlus.verticalCenter
+		}
+		font { family: qfont.semiBold.name; pixelSize: isNxt ? 18 : 14 }
+		color: colors.rbTitle
+	}
 }

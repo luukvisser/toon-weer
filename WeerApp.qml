@@ -12,6 +12,8 @@ App {
 	property bool   useOpenMeteo: false
 	property int    summaryHours: 18
 	property int    rainHours: 6
+	property int    weatherRefreshMin: 10
+	property int    rainRefreshMin: 5
 	property string location: "6344"
 	property string lat: "52.21"
 	property string lon: "4.53"
@@ -137,6 +139,14 @@ App {
 				var parsedHours = parseInt(settings['rainHours']);
 				if (!isNaN(parsedHours) && parsedHours >= 2 && parsedHours <= 24) rainHours = parsedHours;
 			}
+			if (settings['weatherRefreshMin'] !== undefined) {
+				var parsedHours = parseInt(settings['weatherRefreshMin']);
+				if (!isNaN(parsedHours) && parsedHours >= 1 && parsedHours <= 60) weatherRefreshMin = parsedHours;
+			}
+			if (settings['rainRefreshMin'] !== undefined) {
+				var parsedHours = parseInt(settings['rainRefreshMin']);
+				if (!isNaN(parsedHours) && parsedHours >= 1 && parsedHours <= 30) rainRefreshMin = parsedHours;
+			}
 		} catch(e) {
 		}
 	}
@@ -150,7 +160,9 @@ App {
 			"selectedLatitude": lat,
 			"useOpenMeteo": useOpenMeteo,
 			"summaryHours": summaryHours,
-			"rainHours": rainHours
+			"rainHours": rainHours,
+			"weatherRefreshMin": weatherRefreshMin,
+			"rainRefreshMin": rainRefreshMin
 		}
 
   		var xhr = new XMLHttpRequest();
@@ -828,7 +840,7 @@ App {
 
 	Timer {
 		id: weatherTimer
-		interval: 600000
+		interval: weatherRefreshMin * 60000
 		triggeredOnStart: true
 		running: true
 		repeat: true
@@ -837,7 +849,7 @@ App {
 
 	Timer {
 		id: rainTimer
-		interval: 300000
+		interval: rainRefreshMin * 60000
 		triggeredOnStart: true
 		running: true
 		repeat: true
