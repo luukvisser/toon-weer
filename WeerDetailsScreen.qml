@@ -308,13 +308,12 @@ Screen {
 				}
 
 				Text {
-					id: forecastmintemp
-					text: mintemp
+					id: forecasttemprange
+					text: tempRange
 					anchors {
 						top: forecastkansregen.bottom
 						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
-
 					}
 					font {
 						family: (index == 0) ? qfont.bold.name : qfont.regular.name
@@ -324,13 +323,12 @@ Screen {
 				}
 
 				Text {
-					id: forecastmaxtemp
-					text: maxtemp
+					id: forecastprecip
+					text: precip
 					anchors {
-						top: forecastmintemp.bottom
+						top: forecasttemprange.bottom
 						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
-
 					}
 					font {
 						family: (index == 0) ? qfont.bold.name : qfont.regular.name
@@ -343,7 +341,7 @@ Screen {
 					id: forecastwind
 					text: wind
 					anchors {
-						top: forecastmaxtemp.bottom
+						top: forecastprecip.bottom
 						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
 

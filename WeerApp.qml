@@ -287,8 +287,8 @@ App {
 					var forecast = [];
 					forecast.push({'kanszon': 'zon %',
 							  'kansregen': 'regen %',
-							  'mintemp': 'min',
-							  'maxtemp': 'max',
+							  'tempRange': 'temp °C',
+							  'precip': 'neerslag',
 							  'wind': 'wind',
 							  'score': 'score'});
 
@@ -324,11 +324,15 @@ App {
 							scoreToday = score;
 							scoreSummary = score;
 						}
+						var minTempBR = Math.round(Number(data['forecast']['fivedayforecast'][i]['mintemperatureMin']));
+						var maxTempBR = Math.round(Number(maxTemp));
+						var precipBR  = data['forecast']['fivedayforecast'][i]['mmRainMax'] !== undefined
+							? i18n.number(data['forecast']['fivedayforecast'][i]['mmRainMax'], 1) + " mm" : "—";
 						forecast.push({'dagweek': dayName,
 							  'kanszon': sunChance,
 							  'kansregen': rainChance,
-							  'mintemp': data['forecast']['fivedayforecast'][i]['mintemperatureMin'].toString(),
-							  'maxtemp': maxTemp,
+							  'tempRange': minTempBR + " - " + maxTempBR,
+							  'precip': precipBR,
 							  'wind': wind,
 							  'score': score,
 							  'icoon': dayIconPath});
@@ -503,8 +507,8 @@ App {
 					var forecast = [];
 					forecast.push({'kanszon': 'zon %',
 						'kansregen': 'regen %',
-						'mintemp': 'min °C',
-						'maxtemp': 'max °C',
+						'tempRange': 'temp °C',
+						'precip': 'neerslag',
 						'wind': 'wind',
 						'score': 'score'});
 
@@ -526,12 +530,16 @@ App {
 						var score    = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind).toString();
 						if (i === 0) scoreToday = score;
 						dateToScore[daily['time'][i]] = score;
+						var minTempOM  = Math.round(daily['temperature_2m_min'][i]);
+						var maxTempOM  = Math.round(daily['temperature_2m_max'][i]);
+						var precipOM   = daily['precipitation_sum'] && daily['precipitation_sum'][i] !== null
+							? i18n.number(daily['precipitation_sum'][i], 1) + " mm" : "—";
 						forecast.push({
 							'dagweek': dayName,
 							'kanszon': sunChance,
 							'kansregen': rainChance,
-							'mintemp': daily['temperature_2m_min'][i].toString(),
-							'maxtemp': maxTemp,
+							'tempRange': minTempOM + " - " + maxTempOM,
+							'precip': precipOM,
 							'wind': wind,
 							'score': score,
 							'icoon': dayIconPath});
