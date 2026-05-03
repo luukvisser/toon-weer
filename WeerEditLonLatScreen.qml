@@ -754,4 +754,108 @@ Screen {
 		font { family: qfont.semiBold.name; pixelSize: isNxt ? 18 : 14 }
 		color: colors.rbTitle
 	}
+
+	// Day offset: hour at which the summary tile switches to tomorrow's data
+
+	Text {
+		id: dayOffsetLabel
+		text: "Omschakeling morgen:"
+		anchors {
+			left: lonLabel.left
+			top: rainRefreshLabel.bottom
+			topMargin: isNxt ? 32 : 26
+		}
+		font {
+			family: qfont.semiBold.name
+			pixelSize: isNxt ? 20 : 16
+		}
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: dayOffsetMinus
+		width: isNxt ? 36 : 28
+		height: width
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: dayOffsetLabel.right
+			leftMargin: 12
+			verticalCenter: dayOffsetLabel.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "−"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.dayOffsetHour > -12) {
+					app.dayOffsetHour = app.dayOffsetHour - 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: dayOffsetValue
+		text: {
+			var h = ((24 + app.dayOffsetHour) % 24);
+			return (h < 10 ? "0" : "") + h + ":00";
+		}
+		width: isNxt ? 70 : 56
+		horizontalAlignment: Text.AlignHCenter
+		anchors {
+			left: dayOffsetMinus.right
+			leftMargin: 8
+			verticalCenter: dayOffsetMinus.verticalCenter
+		}
+		font { family: qfont.bold.name; pixelSize: isNxt ? 20 : 16 }
+		color: colors.rbTitle
+	}
+
+	Rectangle {
+		id: dayOffsetPlus
+		width: dayOffsetMinus.width
+		height: dayOffsetMinus.height
+		radius: 4
+		color: "#888888"
+		anchors {
+			left: dayOffsetValue.right
+			leftMargin: 8
+			verticalCenter: dayOffsetMinus.verticalCenter
+		}
+		Text {
+			anchors.centerIn: parent
+			text: "+"
+			color: "white"
+			font { family: qfont.bold.name; pixelSize: isNxt ? 24 : 20 }
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				if (app.dayOffsetHour < 12) {
+					app.dayOffsetHour = app.dayOffsetHour + 1;
+					app.saveSettings();
+				}
+			}
+		}
+	}
+
+	Text {
+		id: dayOffsetUitleg
+		text: "Tijdstip waarop de samenvatting omschakelt naar het weer van morgen (−12 t/m +12 uur)."
+		width: isNxt ? 480 : 370
+		wrapMode: Text.WordWrap
+		anchors {
+			left: dayOffsetPlus.right
+			leftMargin: 16
+			verticalCenter: dayOffsetPlus.verticalCenter
+		}
+		font { family: qfont.semiBold.name; pixelSize: isNxt ? 18 : 14 }
+		color: colors.rbTitle
+	}
 }

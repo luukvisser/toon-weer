@@ -14,6 +14,7 @@ App {
 	property int    rainHours: 6
 	property int    weatherRefreshMin: 10
 	property int    rainRefreshMin: 5
+	property int    dayOffsetHour: -6
 	property string location: "6344"
 	property string lat: "52.21"
 	property string lon: "4.53"
@@ -71,14 +72,31 @@ App {
 	property string  scoreToday: ""
 
 	// --- Summary tile ---
-	property string minTempSummary: ""
-	property string maxTempSummary: ""
-	property real   maxUVSummary: 0
-	property real   totalRainSummary: 0
-	property string maxWindBftSummary: ""
-	property string maxWindDirSummary: ""
 	property string scoreNow: ""
-	property string scoreSummary: ""
+
+	property string dayMinTempToday: ""
+	property string dayMinTempTomorrow: ""
+	property string dayMaxTempToday: ""
+	property string dayMaxTempTomorrow: ""
+	property real   dayMaxUVToday: 0
+	property real   dayMaxUVTomorrow: 0
+	property real   dayTotalRainToday: 0
+	property real   dayTotalRainTomorrow: 0
+	property string dayMaxWindBftToday: ""
+	property string dayMaxWindBftTomorrow: ""
+	property string dayScoreTomorrow: ""
+
+	// Switches to tomorrow's values once the current hour reaches (24 + dayOffsetHour) % 24
+	property bool   showTomorrow: {
+		var dummy = timeStr;
+		return new Date().getHours() >= ((24 + dayOffsetHour) % 24);
+	}
+	property string minTempSummary:    showTomorrow ? dayMinTempTomorrow    : dayMinTempToday
+	property string maxTempSummary:    showTomorrow ? dayMaxTempTomorrow    : dayMaxTempToday
+	property real   maxUVSummary:      showTomorrow ? dayMaxUVTomorrow      : dayMaxUVToday
+	property real   totalRainSummary:  showTomorrow ? dayTotalRainTomorrow  : dayTotalRainToday
+	property string maxWindBftSummary: showTomorrow ? dayMaxWindBftTomorrow : dayMaxWindBftToday
+	property string scoreSummary:      showTomorrow ? dayScoreTomorrow      : scoreToday
 
 	// --- Rain tile ---
 	property variant rainForecast: []
@@ -147,6 +165,10 @@ App {
 				var parsedHours = parseInt(settings['rainRefreshMin']);
 				if (!isNaN(parsedHours) && parsedHours >= 1 && parsedHours <= 30) rainRefreshMin = parsedHours;
 			}
+			if (settings['dayOffsetHour'] !== undefined) {
+				var parsed = parseInt(settings['dayOffsetHour']);
+				if (!isNaN(parsed) && parsed >= -12 && parsed <= 12) dayOffsetHour = parsed;
+			}
 		} catch(e) {
 		}
 	}
@@ -162,7 +184,8 @@ App {
 			"summaryHours": summaryHours,
 			"rainHours": rainHours,
 			"weatherRefreshMin": weatherRefreshMin,
-			"rainRefreshMin": rainRefreshMin
+			"rainRefreshMin": rainRefreshMin,
+			"dayOffsetHour": dayOffsetHour
 		}
 
   		var xhr = new XMLHttpRequest();
@@ -320,10 +343,8 @@ App {
 						var windDir  = data['forecast']['fivedayforecast'][i]['windDirection'];
 						var wind     = (windDir ? windDir.toUpperCase() : "") + " " + data['forecast']['fivedayforecast'][i]['wind'].toString();
 						var score    = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind).toString();
-						if (i === 0) {
-							scoreToday = score;
-							scoreSummary = score;
-						}
+						if (i === 0) scoreToday = score;
+						if (i === 1) dayScoreTomorrow = score;
 						var minTempBR = Math.round(Number(data['forecast']['fivedayforecast'][i]['mintemperatureMin']));
 						var maxTempBR = Math.round(Number(maxTemp));
 						var precipBR  = data['forecast']['fivedayforecast'][i]['mmRainMax'] !== undefined
@@ -339,17 +360,24 @@ App {
 					}
 					fiveDayForecast = forecast;
 
-						// summary tile data from today's forecast (Buienradar feed has no hourly weather data)
+						// summary tile data: today and tomorrow from fivedayforecast
 					uvNow = -1;
-					var todayForecast = data['forecast']['fivedayforecast'][0];
-					if (todayForecast) {
-						if (todayForecast['mintemperatureMin'] !== undefined) minTempSummary = i18n.number(Number(todayForecast['mintemperatureMin']), 1);
-						if (todayForecast['maxtemperatureMax'] !== undefined) maxTempSummary = i18n.number(Number(todayForecast['maxtemperatureMax']), 1);
-						if (todayForecast['uvindex'] !== undefined) maxUVSummary = todayForecast['uvindex'];
-						if (todayForecast['mmRainMax'] !== undefined) totalRainSummary = todayForecast['mmRainMax'];
+					var todayForecastBR = data['forecast']['fivedayforecast'][0];
+					var tomorrowForecastBR = data['forecast']['fivedayforecast'][1];
+					if (todayForecastBR) {
+						dayMinTempToday = todayForecastBR['mintemperatureMin'] !== undefined ? i18n.number(Number(todayForecastBR['mintemperatureMin']), 1) : "";
+						dayMaxTempToday = todayForecastBR['maxtemperatureMax'] !== undefined ? i18n.number(Number(todayForecastBR['maxtemperatureMax']), 1) : "";
+						dayMaxUVToday   = 0;
+						dayTotalRainToday    = todayForecastBR['mmRainMax'] !== undefined ? todayForecastBR['mmRainMax'] : 0;
+						dayMaxWindBftToday   = todayForecastBR['wind'] !== undefined ? todayForecastBR['wind'].toString() : windSpeedBft;
 					}
-					maxWindBftSummary = windSpeedBft;
-					maxWindDirSummary = windDirection;
+					if (tomorrowForecastBR) {
+						dayMinTempTomorrow = tomorrowForecastBR['mintemperatureMin'] !== undefined ? i18n.number(Number(tomorrowForecastBR['mintemperatureMin']), 1) : "";
+						dayMaxTempTomorrow = tomorrowForecastBR['maxtemperatureMax'] !== undefined ? i18n.number(Number(tomorrowForecastBR['maxtemperatureMax']), 1) : "";
+						dayMaxUVTomorrow   = 0;
+						dayTotalRainTomorrow  = tomorrowForecastBR['mmRainMax'] !== undefined ? tomorrowForecastBR['mmRainMax'] : 0;
+						dayMaxWindBftTomorrow = tomorrowForecastBR['wind'] !== undefined ? tomorrowForecastBR['wind'].toString() : "";
+					}
 
 						//forecast title and text, remove special characters
 
@@ -529,6 +557,7 @@ App {
 						var wind     = windDir + " " + windBft;
 						var score    = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind).toString();
 						if (i === 0) scoreToday = score;
+						if (i === 1) dayScoreTomorrow = score;
 						dateToScore[daily['time'][i]] = score;
 						var minTempOM  = Math.round(daily['temperature_2m_min'][i]);
 						var maxTempOM  = Math.round(daily['temperature_2m_max'][i]);
@@ -546,62 +575,18 @@ App {
 					}
 					fiveDayForecast = forecast;
 
-					// summary tile data: aggregate the next summaryHours hourly slots starting at the current hour
-					minTempSummary = "";
-					maxTempSummary = "";
-					maxUVSummary = 0;
-					totalRainSummary = 0;
-					maxWindBftSummary = "";
-					maxWindDirSummary = "";
-					scoreSummary = "";
-					if (startHourIdx >= 0) {
-						var endHourIdx = Math.min(startHourIdx + summaryHours, hourly['time'].length);
-						var minTemp = null, maxTemp = null, maxUV = 0, totalRain = 0;
-						var maxWindKmh = -1, maxWindDirDeg = 0;
-						var maxRainProb = 0, clearHourCount = 0;
-						for (var k = startHourIdx; k < endHourIdx; k++) {
-							var temp = hourly['temperature_2m'][k];
-							if (temp !== null && temp !== undefined) {
-								if (minTemp === null || temp < minTemp) minTemp = temp;
-								if (maxTemp === null || temp > maxTemp) maxTemp = temp;
-							}
-							var uvVal = hourly['uv_index'] ? hourly['uv_index'][k] : null;
-							if (uvVal !== null && uvVal !== undefined && uvVal > maxUV) maxUV = uvVal;
-							var precip = hourly['precipitation'] ? hourly['precipitation'][k] : null;
-							if (precip !== null && precip !== undefined) totalRain += precip;
-							var windSpeedKmh = hourly['wind_speed_10m'] ? hourly['wind_speed_10m'][k] : null;
-							if (windSpeedKmh !== null && windSpeedKmh !== undefined && windSpeedKmh > maxWindKmh) {
-								maxWindKmh = windSpeedKmh;
-								var windDirDeg = hourly['wind_direction_10m'] ? hourly['wind_direction_10m'][k] : null;
-								if (windDirDeg !== null && windDirDeg !== undefined) maxWindDirDeg = windDirDeg;
-							}
-							var rainProb = hourly['precipitation_probability'] ? hourly['precipitation_probability'][k] : null;
-							if (rainProb !== null && rainProb !== undefined && rainProb > maxRainProb) maxRainProb = rainProb;
-							var weatherCode = hourly['weather_code'] ? hourly['weather_code'][k] : null;
-							if (weatherCode !== null && weatherCode !== undefined && weatherCode <= 2) clearHourCount++;
-						}
-						minTempSummary = minTemp !== null ? i18n.number(minTemp, 1) : "";
-						maxTempSummary = maxTemp !== null ? i18n.number(maxTemp, 1) : "";
-						maxUVSummary = Math.round(maxUV * 10) / 10;
-						totalRainSummary = Math.round(totalRain * 10) / 10;
-						if (maxWindKmh >= 0) {
-							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
-							maxWindDirSummary = WeerJS.degreesToWindDir(maxWindDirDeg);
-						}
-						// Find which calendar day covers the most hours in the window
-						var dayCounts = {};
-						for (var k = startHourIdx; k < endHourIdx; k++) {
-							var dayKey = hourly['time'][k].substring(0, 10);
-							dayCounts[dayKey] = (dayCounts[dayKey] || 0) + 1;
-						}
-						var dominantDay = null, dominantCount = 0;
-						for (var dayKey in dayCounts) {
-							if (dayCounts[dayKey] > dominantCount) {
-								dominantCount = dayCounts[dayKey];
-								dominantDay = dayKey;
-							}
-						}
-						scoreSummary = (dominantDay && dateToScore[dominantDay]) ? dateToScore[dominantDay] : "";
+					// summary tile: today and tomorrow from daily data
+					dayMinTempToday  = i18n.number(daily['temperature_2m_min'][0], 1);
+					dayMaxTempToday  = i18n.number(daily['temperature_2m_max'][0], 1);
+					dayMaxUVToday    = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][0] || 0) * 10) / 10 : 0;
+					dayTotalRainToday   = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][0] || 0) * 10) / 10 : 0;
+					dayMaxWindBftToday  = WeerJS.kmhToBft(daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][0] || 0) : 0).toString();
+					if (daily['time'].length > 1) {
+						dayMinTempTomorrow  = i18n.number(daily['temperature_2m_min'][1], 1);
+						dayMaxTempTomorrow  = i18n.number(daily['temperature_2m_max'][1], 1);
+						dayMaxUVTomorrow    = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][1] || 0) * 10) / 10 : 0;
+						dayTotalRainTomorrow   = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][1] || 0) * 10) / 10 : 0;
+						dayMaxWindBftTomorrow  = WeerJS.kmhToBft(daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][1] || 0) : 0).toString();
 					}
 
 					// hourly strip: next 12 hours starting at the current hour
