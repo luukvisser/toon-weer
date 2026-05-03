@@ -508,6 +508,7 @@ App {
 						'wind': 'wind',
 						'score': 'score'});
 
+					var dateToScore = {};
 					for (var i = 0; i < 5; i++) {
 						var date = new Date(daily['time'][i]);
 						var dayName = dayNames[date.getDay()];
@@ -524,6 +525,7 @@ App {
 						var wind     = windDir + " " + windBft;
 						var score    = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind).toString();
 						if (i === 0) scoreToday = score;
+						dateToScore[daily['time'][i]] = score;
 						forecast.push({
 							'dagweek': dayName,
 							'kanszon': sunChance,
@@ -578,11 +580,20 @@ App {
 							maxWindBftSummary = WeerJS.kmhToBft(maxWindKmh);
 							maxWindDirSummary = WeerJS.degreesToWindDir(maxWindDirDeg);
 						}
-						var summarySunPct = Math.round(clearHourCount / (endHourIdx - startHourIdx) * 100);
-						scoreSummary = WeerJS.calcWeatherScore(
-							summarySunPct.toString(), maxRainProb.toString(),
-							maxTempSummary, maxWindDirSummary + " " + maxWindBftSummary
-						).toString();
+						// Find which calendar day covers the most hours in the window
+						var dayCounts = {};
+						for (var k = startHourIdx; k < endHourIdx; k++) {
+							var dayKey = hourly['time'][k].substring(0, 10);
+							dayCounts[dayKey] = (dayCounts[dayKey] || 0) + 1;
+						}
+						var dominantDay = null, dominantCount = 0;
+						for (var dayKey in dayCounts) {
+							if (dayCounts[dayKey] > dominantCount) {
+								dominantCount = dayCounts[dayKey];
+								dominantDay = dayKey;
+							}
+						}
+						scoreSummary = (dominantDay && dateToScore[dominantDay]) ? dateToScore[dominantDay] : "";
 					}
 
 					// hourly strip: next 12 hours starting at the current hour
