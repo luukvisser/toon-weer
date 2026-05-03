@@ -147,7 +147,12 @@ Tile {
 
 	Text {
 		id: summaryPrecip
-		text: (app.totalRainSummary > 0 ? i18n.number(app.totalRainSummary, 1) : "0") + " mm"
+		text: {
+			var cur = (app.rainForecast && app.rainForecast.length > 0)
+				? i18n.number(app.rainForecast[0], 1) : "0"
+			var total = app.totalRainSummary > 0 ? i18n.number(app.totalRainSummary, 1) : "0"
+			return cur + " | " + total + " mm"
+		}
 		anchors {
 			baseline: summaryUV.baseline
 			right: parent.right
