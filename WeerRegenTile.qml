@@ -112,7 +112,7 @@ Tile {
 
 	Rectangle {
 		id: lineYaxis
-		color: colors.graphTileRect
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
 		height: isNxt ? 90 : 72
 		width: 1
 		anchors {
@@ -125,7 +125,7 @@ Tile {
 
 	Rectangle {
 		id: lineYaxisTopMarker1
-		color: colors.graphTileRect
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
 		height: 1
 		width: 6
 		anchors {
@@ -207,7 +207,7 @@ Tile {
 
 				Rectangle {
 					id: linexaxisMarker
-					color: colors.graphTileRect
+					color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
 					height: {
 						if (app.useOpenMeteo) {
 							var brSlots = Math.min(24, app.rainHours * 12);
