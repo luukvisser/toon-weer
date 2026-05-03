@@ -318,121 +318,6 @@ Screen {
 		color: colors.rbTitle
 	}
 
-	// Summary tile window: number of hours used for the summary tile aggregates (1-24)
-
-	Text {
-		id: summaryHoursLabel
-		text: "Samenvatting tegel uren:"
-		anchors {
-			left: lonLabel.left
-			top: openMeteoLabel.bottom
-			topMargin: isNxt ? 32 : 26
-		}
-		font {
-			family: qfont.semiBold.name
-			pixelSize: isNxt ? 20 : 16
-		}
-		color: colors.rbTitle
-	}
-
-	Rectangle {
-		id: summaryHoursMinus
-		width: isNxt ? 36 : 28
-		height: width
-		radius: 4
-		color: "#888888"
-		anchors {
-			left: summaryHoursLabel.right
-			leftMargin: 12
-			verticalCenter: summaryHoursLabel.verticalCenter
-		}
-		Text {
-			anchors.centerIn: parent
-			text: "−"
-			color: "white"
-			font {
-				family: qfont.bold.name
-				pixelSize: isNxt ? 24 : 20
-			}
-		}
-		MouseArea {
-			anchors.fill: parent
-			onClicked: {
-				if (app.summaryHours > 1) {
-					app.summaryHours = app.summaryHours - 1;
-					app.saveSettings();
-					app.updateWeather();
-				}
-			}
-		}
-	}
-
-	Text {
-		id: summaryHoursValue
-		text: app.summaryHours + " uur"
-		width: isNxt ? 70 : 56
-		horizontalAlignment: Text.AlignHCenter
-		anchors {
-			left: summaryHoursMinus.right
-			leftMargin: 8
-			verticalCenter: summaryHoursMinus.verticalCenter
-		}
-		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 20 : 16
-		}
-		color: colors.rbTitle
-	}
-
-	Rectangle {
-		id: summaryHoursPlus
-		width: summaryHoursMinus.width
-		height: summaryHoursMinus.height
-		radius: 4
-		color: "#888888"
-		anchors {
-			left: summaryHoursValue.right
-			leftMargin: 8
-			verticalCenter: summaryHoursMinus.verticalCenter
-		}
-		Text {
-			anchors.centerIn: parent
-			text: "+"
-			color: "white"
-			font {
-				family: qfont.bold.name
-				pixelSize: isNxt ? 24 : 20
-			}
-		}
-		MouseArea {
-			anchors.fill: parent
-			onClicked: {
-				if (app.summaryHours < 24) {
-					app.summaryHours = app.summaryHours + 1;
-					app.saveSettings();
-					app.updateWeather();
-				}
-			}
-		}
-	}
-
-	Text {
-		id: summaryHoursUitleg
-		text: "Aantal uren vooruit gebruikt voor de samenvattingstegel."
-		width: isNxt ? 480 : 370
-		wrapMode: Text.WordWrap
-		anchors {
-			left: summaryHoursPlus.right
-			leftMargin: 16
-			verticalCenter: summaryHoursPlus.verticalCenter
-		}
-		font {
-			family: qfont.semiBold.name
-			pixelSize: isNxt ? 18 : 14
-		}
-		color: colors.rbTitle
-	}
-
 	// Rain prediction window: number of hours shown in the rain tile (2-24), Open-Meteo mode only
 
 	Text {
@@ -441,7 +326,7 @@ Screen {
 		visible: app.useOpenMeteo
 		anchors {
 			left: lonLabel.left
-			top: summaryHoursLabel.bottom
+			top: openMeteoLabel.bottom
 			topMargin: isNxt ? 32 : 26
 		}
 		font {
@@ -560,7 +445,7 @@ Screen {
 		text: "Weer verversing:"
 		anchors {
 			left: lonLabel.left
-			top: app.useOpenMeteo ? rainHoursLabel.bottom : summaryHoursLabel.bottom
+			top: app.useOpenMeteo ? rainHoursLabel.bottom : openMeteoLabel.bottom
 			topMargin: isNxt ? 32 : 26
 		}
 		font {

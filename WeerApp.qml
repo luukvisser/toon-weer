@@ -10,7 +10,6 @@ App {
 
 	// --- Data source config ---
 	property bool   useOpenMeteo: false
-	property int    summaryHours: 18
 	property int    rainHours: 6
 	property int    weatherRefreshMin: 10
 	property int    rainRefreshMin: 5
@@ -149,10 +148,6 @@ App {
 			if (settings['selectedLongitude']) lon = settings['selectedLongitude'];
 			if (settings['selectedLatitude']) lat = settings['selectedLatitude'];
 			if (settings['useOpenMeteo'] !== undefined) useOpenMeteo = settings['useOpenMeteo'];
-			if (settings['summaryHours'] !== undefined) {
-				var parsedHours = parseInt(settings['summaryHours']);
-				if (!isNaN(parsedHours) && parsedHours >= 1 && parsedHours <= 24) summaryHours = parsedHours;
-			}
 			if (settings['rainHours'] !== undefined) {
 				var parsedHours = parseInt(settings['rainHours']);
 				if (!isNaN(parsedHours) && parsedHours >= 2 && parsedHours <= 24) rainHours = parsedHours;
@@ -181,7 +176,6 @@ App {
 			"selectedLongitude": lon,
 			"selectedLatitude": lat,
 			"useOpenMeteo": useOpenMeteo,
-			"summaryHours": summaryHours,
 			"rainHours": rainHours,
 			"weatherRefreshMin": weatherRefreshMin,
 			"rainRefreshMin": rainRefreshMin,
