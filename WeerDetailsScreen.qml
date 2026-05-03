@@ -35,7 +35,7 @@ Screen {
 
 	Rectangle {
 		id: backgroundRect
-		height: isNxt ? 240 : 190
+		height: isNxt ? 265 : 210
 		width: isNxt ? 345 : 275
 		anchors {
 			baseline: parent.top
@@ -48,7 +48,7 @@ Screen {
 
 	Rectangle {
 		id: backgroundRect2
-		height: isNxt ? 240 : 190
+		height: isNxt ? 265 : 210
 		width:  isNxt ? 655 : 500
 		anchors {
 			baseline: parent.top
@@ -382,8 +382,8 @@ Screen {
 					height: isNxt ? 32 : 24
 					fillMode: Image.PreserveAspectFit
 					anchors {
-						top: forecastwind.bottom
-						topMargin: isNxt ? 10 : 8
+						top: forecastscore.bottom
+						topMargin: isNxt ? 5 : 4
 						left: forecastdagweek.left
 					}
 					cache: false
@@ -397,7 +397,7 @@ Screen {
 		text: app.forecastTitle
 		anchors {
 			baseline: parent.top
-			baselineOffset: isNxt ? 270 : 215
+			baselineOffset: isNxt ? 290 : 235
 			left: parent.left
 			leftMargin: 10
 		}
@@ -414,7 +414,7 @@ Screen {
 		width: isNxt ? 800 : 580
 		anchors {
 			baseline: parent.top
-			baselineOffset: isNxt ? 280 : 225
+			baselineOffset: isNxt ? 290 : 235
 			left: parent.left
 			leftMargin: 10
 		}
@@ -535,7 +535,7 @@ Screen {
 		width: 180
 		anchors {
 			baseline: parent.top
-			baselineOffset: isNxt ? 280 : 225
+			baselineOffset: isNxt ? 290 : 235
 			right: parent.right
 			rightMargin: 10
 		}
