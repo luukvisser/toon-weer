@@ -21,8 +21,8 @@ Tile {
 			leftMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -37,8 +37,8 @@ Tile {
 			rightMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -75,7 +75,7 @@ Tile {
 				leftMargin: summaryCurrentIcon.visible ? (isNxt ? 8 : 6) : 0
 			}
 			font {
-				family: qfont.bold.name
+				family: qfont.regular.name
 				pixelSize: isNxt ? 50 : 40
 			}
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
@@ -98,8 +98,8 @@ Tile {
 			leftMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -117,8 +117,8 @@ Tile {
 			rightMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 19 : 15
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -139,8 +139,8 @@ Tile {
 			leftMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
@@ -159,8 +159,8 @@ Tile {
 			rightMargin: isNxt ? 14 : 11
 		}
 		font {
-			family: qfont.bold.name
-			pixelSize: isNxt ? 23 : 18
+			family: qfont.regular.name
+			pixelSize: isNxt ? 22 : 17
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
