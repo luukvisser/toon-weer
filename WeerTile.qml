@@ -86,7 +86,7 @@ Tile {
 
 	Text {                                                                                 
                 id: weerTileGevoelstempText4
-                text: "feelsLikeTemp: " + i18n.number( Number( app.feelsLikeTemp), 1 ) + "°"
+                text: "gevoelstemperatuur: " + i18n.number( Number( app.feelsLikeTemp), 1 ) + "°"
                 anchors {
                         baseline: parent.top
                         baselineOffset: isNxt ? 60 : 50
