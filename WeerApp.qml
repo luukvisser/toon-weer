@@ -387,7 +387,7 @@ App {
 			+ "&longitude=" + lon4
 			+ "&current=temperature_2m,apparent_temperature,relative_humidity_2m"
 			+ ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index"
-			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m,weather_code,precipitation_probability"
+			+ "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m,weather_code,precipitation_probability,sunshine_duration"
 			+ "&daily=weather_code,temperature_2m_max,temperature_2m_min"
 			+ ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max"
 			+ ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max"
@@ -616,11 +616,18 @@ App {
 							var hTemp = hourly['temperature_2m'][h];
 							var hRainProb = hourly['precipitation_probability']
 								? (hourly['precipitation_probability'][h] || 0) : 0;
+							var hSunPct = (hourly['sunshine_duration'] && hourly['sunshine_duration'][h] !== undefined)
+								? Math.round(hourly['sunshine_duration'][h] / 36) : 50;
+							var hWindKmh = hourly['wind_speed_10m'] ? (hourly['wind_speed_10m'][h] || 0) : 0;
+							var hWindDir = hourly['wind_direction_10m'] ? WeerJS.degreesToWindDir(hourly['wind_direction_10m'][h]) : "";
+							var hWindBft = WeerJS.kmhToBft(hWindKmh);
+							var hScore = WeerJS.calcWeatherScore(hSunPct, hRainProb, hTemp !== null ? hTemp : 15, hWindDir + " " + hWindBft).toString();
 							hourlyRows.push({
 								'hour': hourLabel,
 								'icoon': hIconPath,
 								'temp': (hTemp !== null && hTemp !== undefined) ? Math.round(hTemp) + "°" : "",
-								'rainPct': hRainProb + "%"
+								'rainPct': hRainProb + "%",
+								'score': hScore
 							});
 						}
 					}

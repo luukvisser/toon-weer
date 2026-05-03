@@ -496,6 +496,7 @@ Screen {
 				}
 
 				Text {
+					id: hourRainPct
 					text: rainPct
 					anchors.horizontalCenter: parent.horizontalCenter
 					anchors.top: hourTemp.bottom
@@ -510,6 +511,25 @@ Screen {
 						if (p >= 60) return "#1976D2";
 						if (p >= 30) return "#64B5F6";
 						return colors.clockTileColor;
+					}
+				}
+
+				Text {
+					text: score
+					anchors.horizontalCenter: parent.horizontalCenter
+					anchors.top: hourRainPct.bottom
+					anchors.topMargin: isNxt ? 4 : 2
+					font {
+						family: qfont.bold.name
+						pixelSize: isNxt ? 16 : 13
+					}
+					color: {
+						var s = parseInt(score);
+						if (isNaN(s)) return colors.clockTileColor;
+						if (s >= 8) return "#4CAF50";
+						if (s >= 6) return "#FFC107";
+						if (s >= 4) return "#FF9800";
+						return "#F44336";
 					}
 				}
 			}
