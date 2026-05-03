@@ -76,7 +76,7 @@ Tile {
 			}
 			font {
 				family: qfont.regular.name
-				pixelSize: isNxt ? 53 : 42
+				pixelSize: isNxt ? 56 : 44
 			}
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		}
@@ -89,7 +89,7 @@ Tile {
 		text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
 		anchors {
 			top: summaryCenterRow.bottom
-			topMargin: isNxt ? 4 : 3
+			topMargin: isNxt ? 2 : 1
 			horizontalCenter: parent.horizontalCenter
 		}
 		font {
