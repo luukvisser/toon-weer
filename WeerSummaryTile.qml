@@ -82,6 +82,23 @@ Tile {
 		}
 	}
 
+	// Label below temperature: indicates whether second values are today or tomorrow
+
+	Text {
+		id: summaryDayLabel
+		text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
+		anchors {
+			top: summaryCenterRow.bottom
+			topMargin: isNxt ? 4 : 3
+			horizontalCenter: parent.horizontalCenter
+		}
+		font {
+			family: qfont.regular.name
+			pixelSize: isNxt ? 18 : 14
+		}
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+	}
+
 	// Mid-low row: max wind (left) and weather score (right)
 
 	Text {
