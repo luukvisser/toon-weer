@@ -89,7 +89,7 @@ Tile {
 		text: {
 			var cur = app.windSpeedBft !== "" ? app.windSpeedBft : "—"
 			var max = app.maxWindBftSummary !== "" ? app.maxWindBftSummary : "—"
-			return cur + " -> " + max + " Bft"
+			return cur + " | " + max + " Bft"
 		}
 		anchors {
 			baseline: parent.bottom
@@ -109,7 +109,7 @@ Tile {
 		text: {
 			var nowStr = app.scoreNow !== "" ? app.scoreNow : "—"
 			var sumStr = app.scoreSummary !== "" ? app.scoreSummary : "—"
-			return nowStr + " -> " + sumStr + " /10"
+			return nowStr + " | " + sumStr + " /10"
 		}
 		anchors {
 			baseline: summaryWind.baseline
@@ -130,7 +130,7 @@ Tile {
 		text: {
 			var cur = app.uvNow >= 0 ? i18n.number(app.uvNow, 1) : "—"
 			var max = app.maxUVSummary > 0 ? i18n.number(app.maxUVSummary, 1) : "—"
-			return cur + " -> " + max + " UV"
+			return cur + " | " + max + " UV"
 		}
 		anchors {
 			baseline: parent.bottom
