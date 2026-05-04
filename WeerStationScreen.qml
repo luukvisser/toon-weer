@@ -1,45 +1,47 @@
 import QtQuick 2.1
 import qb.components 1.0
-import BasicUIControls 1.0;
+import BasicUIControls 1.0
 
 Screen {
-	id: weerStationScreen
-	screenTitle: "Selecteer weerstation"
+    id: weerStationScreen
+    screenTitle: "Selecteer weerstation"
 
-	onShown: {
+    onShown: {
+        stationFilterModel.clear();
+        for (var i = 0; i < app.stationNames.length; i++) {
+            if (app.stationNames[i].substring(0, 11) !== "Zeeplatform")
+                stationFilterModel.append({
+                    name: app.stationNames[i]
+                });
+        }
+    }
 
-		stationFilterModel.clear();
-		for (var i = 0; i < app.stationNames.length; i++) {
-			if (app.stationNames[i].substring (0,11) !== "Zeeplatform") stationFilterModel.append({name: app.stationNames[i]});
-		}
-	}
+    ControlGroup {
+        id: stationFilterGroup
+        exclusive: false
+    }
 
-	ControlGroup {
-		id: stationFilterGroup
-		exclusive: false
-	}
+    GridView {
+        id: stationGridView
 
-	GridView {
-		id: stationGridView
+        model: stationFilterModel
+        delegate: StationFilterDelegate {}
 
-		model: stationFilterModel
-		delegate: StationFilterDelegate {}
+        interactive: false
+        flow: GridView.TopToBottom
+        cellWidth: isNxt ? 320 : 250
+        cellHeight: isNxt ? 30 : 24
 
-		interactive: false
-		flow: GridView.TopToBottom
-		cellWidth: isNxt ? 320 : 250
-		cellHeight: isNxt ? 30 : 24
+        anchors {
+            fill: parent
+            top: parent.top
+            left: parent.left
+            topMargin: 5
+            leftMargin: 40
+        }
+    }
 
-		anchors {
-			fill: parent
-			top: parent.top
-			left: parent.left
-			topMargin: 5
-			leftMargin: 40
-		}
-	}
-
-	ListModel {
-		id: stationFilterModel
-	}
+    ListModel {
+        id: stationFilterModel
+    }
 }
