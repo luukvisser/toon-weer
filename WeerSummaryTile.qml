@@ -43,14 +43,30 @@ Tile {
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
 
-	// Center row: current weather icon + current temperature (nudged up to leave room below)
+	// Label below min/max row: indicates whether second values are today or tomorrow
+
+	Text {
+		id: summaryDayLabel
+		text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
+		anchors {
+			top: summaryMinTemp.bottom
+			topMargin: isNxt ? 4 : 3
+			horizontalCenter: parent.horizontalCenter
+		}
+		font {
+			family: qfont.regular.name
+			pixelSize: isNxt ? 19 : 15
+		}
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+	}
+
+	// Center: current weather icon + current temperature, vertically centered
 
 	Item {
 		id: summaryCenterRow
 		anchors {
 			horizontalCenter: parent.horizontalCenter
 			verticalCenter: parent.verticalCenter
-			verticalCenterOffset: isNxt ? -10 : -8
 		}
 		width: summaryCurrentIcon.width + summaryCurrentTemp.width + (isNxt ? 8 : 6)
 		height: Math.max(summaryCurrentIcon.height, summaryCurrentTemp.height)
@@ -80,23 +96,6 @@ Tile {
 			}
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		}
-	}
-
-	// Label below temperature: indicates whether second values are today or tomorrow
-
-	Text {
-		id: summaryDayLabel
-		text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
-		anchors {
-			top: summaryCenterRow.bottom
-			topMargin: isNxt ? 2 : 1
-			horizontalCenter: parent.horizontalCenter
-		}
-		font {
-			family: qfont.regular.name
-			pixelSize: isNxt ? 19 : 15
-		}
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 	}
 
 	// Mid-low row: max wind (left) and weather score (right)
