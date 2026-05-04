@@ -32,19 +32,18 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: "Regenverwachting"
-		visible: app.showRain
 	}
 
 	Text {
 		id: weerRegenTileTitleText2
 		anchors {
 			baseline: parent.top
-			baselineOffset: isNxt ? 110 : 90
+			baselineOffset: isNxt ? 58 : 46
 			horizontalCenter: parent.horizontalCenter
 		}
 		font {
 			family: qfont.regular.name
-			pixelSize: isNxt ? 20 : 16
+			pixelSize: isNxt ? 16 : 13
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: "Geen neerslag verwacht"
@@ -68,12 +67,10 @@ Tile {
 			width: parent.width
 			height: parent.height
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
-			yScale: app.yAxisScale ? (height / app.yAxisScale) : (height / app.rainMaxMm)
+			yScale: app.yAxisScale ? (height / app.yAxisScale) : (height / Math.max(1, app.rainMaxMm))
 			showNaN: false
 			values: app.rainForecast
 		}
-		visible: app.showRain
-		
 	}
 
 	Text {
@@ -89,8 +86,7 @@ Tile {
 			pixelSize: isNxt ? 30 : 24
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.yAxisScale ? app.yAxisScale : app.rainMaxMm
-		visible: app.showRain
+		text: app.yAxisScale ? app.yAxisScale : Math.max(1, app.rainMaxMm)
 	}
 
 	Text {
@@ -106,7 +102,6 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: "mm"
-		visible: app.showRain
 	}
 
 
@@ -120,7 +115,6 @@ Tile {
 			bottomMargin: isNxt ? 52 : 42
 			left: brgraphItem.left
 		}
-		visible: app.showRain
 	}
 
 	Rectangle {
@@ -133,7 +127,6 @@ Tile {
 			bottomMargin: isNxt ? 143 : 113
 			left: lineYaxis.left
 		}
-		visible: app.showRain
 	}
 
 	Text {
@@ -149,7 +142,6 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: app.rainForecastFrom
-		visible: app.showRain
 	}
 
 	Text {
@@ -165,8 +157,8 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: app.rainForecastMid
-		visible: app.showRain
 	}
+
 	Text {
 		id: rightTimeText
 		anchors {
@@ -180,7 +172,6 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: app.rainForecastTo
-		visible: app.showRain
 	}
 
 	/// horizontal markers along the x-axis. In Open-Meteo combined mode the
@@ -229,7 +220,7 @@ Tile {
 						baseline: parent.top
 						left: parent.left
 					}
-					visible: app.showRain && height > 0
+					visible: height > 0
 				}
 			}
 		}
