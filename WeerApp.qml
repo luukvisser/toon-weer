@@ -806,13 +806,16 @@ App {
 
 						if (startHourIdx >= 0) {
 							for (var h = 0; h < hoursToFill; h++) {
-								var precip = hourly['precipitation'][startHourIdx + h] || 0;
+								var precipA = hourly['precipitation'][startHourIdx + h] || 0;
+								var precipB = (startHourIdx + h + 1 < hourly['precipitation'].length)
+									? (hourly['precipitation'][startHourIdx + h + 1] || 0) : 0;
 								for (var slot = 0; slot < 12; slot++) {
 									var slotIdx = fillStartSlot + h * 12 + slot;
 									if (slotIdx < totalSlots) {
-										precipSlots[slotIdx] = precip;
-										if (precip > 0) state.hasRain = true;
-										if (precip > state.maxPrecip) state.maxPrecip = precip;
+										var v = precipA + (precipB - precipA) * slot / 12;
+										precipSlots[slotIdx] = v;
+										if (v > 0) state.hasRain = true;
+										if (v > state.maxPrecip) state.maxPrecip = v;
 									}
 								}
 							}
