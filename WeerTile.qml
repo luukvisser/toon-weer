@@ -136,11 +136,8 @@ Tile {
 	Image {
 		id: weatherTileIcon
 		source: app.iconUrl
-		anchors {
-			baseline: parent.top
-			baselineOffset: isNxt ? 96 : 75
-			horizontalCenter: parent.horizontalCenter
-		}
+		x: (parent.width - width) / 2
+		y: (parent.height - height) / 2
 		cache: false
         	visible: !dimState
 	}
