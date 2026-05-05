@@ -9,14 +9,29 @@ Tile {
 			app.weerDetailsScreen.show();
 	}
 
-	// Top corners: min/max temp over the configured summary window
+	// Top label row: column header
+	Text {
+		id: summaryLabel
+		text: "nu | vandaag"
+		anchors {
+			top: parent.top
+			topMargin: isNxt ? 14 : 11
+			horizontalCenter: parent.horizontalCenter
+		}
+		font {
+			family: qfont.bold.name
+			pixelSize: isNxt ? 23 : 18
+		}
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+	}
 
+	// Second row: min/max temp — baseline spacing matches bottom two rows (20px NXT / 16px non-NXT)
 	Text {
 		id: summaryMinTemp
 		text: "min: " + (app.minTempSummary !== "" ? app.minTempSummary + "°" : "—")
 		anchors {
-			top: parent.top
-			topMargin: isNxt ? 14 : 11
+			top: summaryLabel.top
+			topMargin: isNxt ? 20 : 16
 			left: parent.left
 			leftMargin: isNxt ? 14 : 11
 		}
@@ -31,8 +46,8 @@ Tile {
 		id: summaryMaxTemp
 		text: "max: " + (app.maxTempSummary !== "" ? app.maxTempSummary + "°" : "—")
 		anchors {
-			top: parent.top
-			topMargin: isNxt ? 14 : 11
+			top: summaryLabel.top
+			topMargin: isNxt ? 20 : 16
 			right: parent.right
 			rightMargin: isNxt ? 14 : 11
 		}
