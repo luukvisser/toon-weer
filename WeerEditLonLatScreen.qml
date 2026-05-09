@@ -1,7 +1,6 @@
 import QtQuick 2.1
 import qb.components 1.0
 import BasicUIControls 1.0
-
 import BxtClient 1.0
 import "weer.js" as WeerJS
 
@@ -316,7 +315,6 @@ Screen {
     }
 
     // Rain prediction window: number of hours shown in the rain tile (2-24), Open-Meteo mode only
-
     Text {
         id: rainHoursLabel
         text: "Regen tegel uren:"
@@ -436,7 +434,6 @@ Screen {
     }
 
     // Weather refresh interval
-
     Text {
         id: weatherRefreshLabel
         text: "Weer verversing:"
@@ -549,7 +546,6 @@ Screen {
     }
 
     // Rain refresh interval
-
     Text {
         id: rainRefreshLabel
         text: "Regen verversing:"
@@ -662,7 +658,6 @@ Screen {
     }
 
     // Day offset: hour at which the summary tile switches to tomorrow's data
-
     Text {
         id: dayOffsetLabel
         text: "Omschakeling morgen:"

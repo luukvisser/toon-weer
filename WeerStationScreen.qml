@@ -11,8 +11,8 @@ Screen {
         for (var i = 0; i < app.stationNames.length; i++) {
             if (app.stationNames[i].substring(0, 11) !== "Zeeplatform")
                 stationFilterModel.append({
-                    name: app.stationNames[i]
-                });
+                        "name": app.stationNames[i]
+                    });
         }
     }
 
@@ -25,7 +25,8 @@ Screen {
         id: stationGridView
 
         model: stationFilterModel
-        delegate: StationFilterDelegate {}
+        delegate: StationFilterDelegate {
+        }
 
         interactive: false
         flow: GridView.TopToBottom

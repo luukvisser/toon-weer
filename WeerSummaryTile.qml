@@ -10,7 +10,6 @@ Tile {
     }
 
     // Top corners: min/max temp over the configured summary window
-
     Text {
         id: summaryMinTemp
         text: "min: " + (app.minTempSummary !== "" ? app.minTempSummary + "°" : "—")
@@ -44,7 +43,6 @@ Tile {
     }
 
     // Label below min/max row: indicates whether second values are today or tomorrow
-
     Text {
         id: summaryDayLabel
         text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
@@ -61,7 +59,6 @@ Tile {
     }
 
     // Center: current weather icon + current temperature, vertically centered
-
     Item {
         id: summaryCenterRow
         anchors {
@@ -99,7 +96,6 @@ Tile {
     }
 
     // Mid-low row: max wind (left) and weather score (right)
-
     Text {
         id: summaryWind
         text: {
@@ -140,7 +136,6 @@ Tile {
     }
 
     // Bottom row: max UV and total precipitation over the configured summary window
-
     Text {
         id: summaryUV
         text: {

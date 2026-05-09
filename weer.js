@@ -371,8 +371,11 @@ function iconIdToSunRainPct(id) {
 	return { sun: 50, rain: 30 };
 }
 
-function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
+function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm) {
 	var tmax = parseFloat(maxtemp) || 15;
+	var mm = (rainMm !== undefined && rainMm !== null) ? (parseFloat(rainMm) || 0) : 0;
+	var sunPct = parseFloat(kanszon);
+	var rainChancePct = parseFloat(kansregen);
 
 	// Temperature score — sweet spot 20-24 °C for Netherlands context
 	var tempScore;
@@ -392,17 +395,24 @@ function calcWeatherScore(kanszon, kansregen, maxtemp, windStr) {
 		tempScore = Math.max(1, 3.5 + tmax * 0.1);
 	}
 
-	// Sun score: linear 0-100 % → 0-10
-	var sunScore = parseFloat(kanszon) / 10;
+	// Sun score: sunshine fraction 0–100% → 0–10
+	var sunScore = sunPct / 10;
 
-	// Rain score: inverse linear 0-100 % → 10-0
-	var rainScore = (100 - parseFloat(kansregen)) / 10;
+	// Rain chance score: inverse linear 0–100% → 10–0
+	var rainChanceScore = (100 - rainChancePct) / 10;
+
+	// Rain amount score: 0 mm=10, degrades with increasing precipitation
+	var rainAmountScore = mm <= 0 ? 10 : mm <= 2 ? 10 - mm * 1.5 : mm <= 10 ? 7 - (mm - 2) * 0.5 : Math.max(1, 3 - (mm - 10) * 0.2);
+
+	// Combined rain score: equal weight between chance and amount
+	var rainScore = 0.5 * rainChanceScore + 0.5 * rainAmountScore;
 
 	// Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
 	var parts = windStr.toString().trim().split(/\s+/);
 	var bft = parseInt(parts[parts.length - 1]) || 0;
 	var windScore = bft <= 2 ? 10 : bft === 3 ? 8 : bft === 4 ? 6 : bft === 5 ? 4 : bft === 6 ? 2 : 0;
 
-	var raw = 0.3 * tempScore + 0.3 * sunScore + 0.3 * rainScore + 0.1 * windScore;
+	// Weights: temp 25%, sun 25%, rain (chance+amount) 40%, wind 10%
+	var raw = 0.25 * tempScore + 0.25 * sunScore + 0.4 * rainScore + 0.1 * windScore;
 	return Math.min(10, Math.max(1, Math.round(raw)));
 }

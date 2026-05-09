@@ -12,7 +12,6 @@ Tile {
         } else {
             app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
         }
-
         if (app.weerActualRadarScreen) {
             app.weerActualRadarScreen.setTitle("Actuele Weer");
             app.weerActualRadarScreen.show();
@@ -178,7 +177,6 @@ Tile {
     /// 10-min tick over the high-resolution Buienradar window (first 2 hours)
     /// and a 1-hour tick over the Open-Meteo extension. In Buienradar-only
     /// mode the original 13-tick / 10-minute layout is used.
-
     Row {
         id: xLegendRow
         anchors.top: brgraphItem.bottom

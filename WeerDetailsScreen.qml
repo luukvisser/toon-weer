@@ -34,7 +34,6 @@ Screen {
     }
 
     //selected weatherstation data
-
     Rectangle {
         id: backgroundRect
         height: isNxt ? 265 : 210
@@ -72,7 +71,6 @@ Screen {
     }
 
     //weatherforecast data for selected weather station
-
     GridView {
         id: grid
 
@@ -221,7 +219,6 @@ Screen {
     }
 
     //weatherforecast data per day of week
-
     GridView {
         id: grid2
 
