@@ -89,8 +89,8 @@ Tile {
 			pixelSize: isNxt ? 30 : 24
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-		text: app.yAxisScale ? app.yAxisScale : app.rainMaxMm
-		visible: app.showRain
+		text: app.showRain ? (app.yAxisScale ? app.yAxisScale : app.rainMaxMm) : "0"
+		visible: true
 	}
 
 	Text {
@@ -106,7 +106,7 @@ Tile {
 		}
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
 		text: "mm"
-		visible: app.showRain
+		visible: true
 	}
 
 
