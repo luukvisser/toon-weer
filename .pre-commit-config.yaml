@@ -20,11 +20,13 @@ repos:
           - id: qmlformat
             name: qmlformat
             language: system
-            entry: C:\\Qt\\6.11.0\\mingw_64\\bin\\qmlformat.exe -i
+            entry: /usr/lib/qt6/bin/qmlformat -i
             files: \.qml$
 
-          - id: qmllint
-            name: qmllint
-            language: system
-            entry: C:\\Qt\\6.11.0\\mingw_64\\bin\\qmllint.exe
-            files: \.qml$
+          # qmllint requires Toon-specific QML modules (qb.components, BasicUIControls)
+          # that are only present on the device; run manually on the device if needed.
+          # - id: qmllint
+          #   name: qmllint
+          #   language: system
+          #   entry: /usr/lib/qt6/bin/qmllint
+          #   files: \.qml$

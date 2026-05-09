@@ -373,7 +373,7 @@ function iconIdToSunRainPct(id) {
 
 function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm) {
 	var tmax = parseFloat(maxtemp) || 15;
-	var mm = (rainMm !== undefined && rainMm !== null) ? (parseFloat(rainMm) || 0) : 0;
+	var mm = rainMm !== undefined && rainMm !== null ? parseFloat(rainMm) || 0 : 0;
 	var sunPct = parseFloat(kanszon);
 	var rainChancePct = parseFloat(kansregen);
 
@@ -402,7 +402,8 @@ function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm) {
 	var rainChanceScore = (100 - rainChancePct) / 10;
 
 	// Rain amount score: 0 mm=10, degrades with increasing precipitation
-	var rainAmountScore = mm <= 0 ? 10 : mm <= 2 ? 10 - mm * 1.5 : mm <= 10 ? 7 - (mm - 2) * 0.5 : Math.max(1, 3 - (mm - 10) * 0.2);
+	var rainAmountScore =
+		mm <= 0 ? 10 : mm <= 2 ? 10 - mm * 1.5 : mm <= 10 ? 7 - (mm - 2) * 0.5 : Math.max(1, 3 - (mm - 10) * 0.2);
 
 	// Combined rain score: equal weight between chance and amount
 	var rainScore = 0.5 * rainChanceScore + 0.5 * rainAmountScore;
