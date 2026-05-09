@@ -15,16 +15,16 @@ repos:
           - id: prettier
             files: \.(js|json|md|ya?ml)$
 
-    # - repo: local
-    #   hooks:
-    #     - id: qmlformat
-    #       name: qmlformat
-    #       language: system
-    #       entry: qmlformat -i
-    #       files: \.qml$
+    - repo: local
+      hooks:
+          - id: qmlformat
+            name: qmlformat
+            language: system
+            entry: C:\\Qt\\6.11.0\\mingw_64\\bin\\qmlformat.exe -i
+            files: \.qml$
 
-    #     - id: qmllint
-    #       name: qmllint
-    #       language: system
-    #       entry: qmllint
-    #       files: \.qml$
+          - id: qmllint
+            name: qmllint
+            language: system
+            entry: C:\\Qt\\6.11.0\\mingw_64\\bin\\qmllint.exe
+            files: \.qml$
