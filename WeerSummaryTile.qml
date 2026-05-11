@@ -9,13 +9,29 @@ Tile {
             app.weerDetailsScreen.show();
     }
 
-    // Top corners: min/max temp over the configured summary window
+    // Top label: indicates whether second values are today or tomorrow
+    Text {
+        id: summaryDayLabel
+        text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
+        anchors {
+            top: parent.top
+            topMargin: isNxt ? 14 : 11
+            horizontalCenter: parent.horizontalCenter
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    // Min/max temp row below day label, spaced to match the bottom two text rows
     Text {
         id: summaryMinTemp
         text: "min: " + (app.minTempSummary !== "" ? app.minTempSummary + "°" : "—")
         anchors {
-            top: parent.top
-            topMargin: isNxt ? 14 : 11
+            top: summaryDayLabel.bottom
+            topMargin: 1
             left: parent.left
             leftMargin: isNxt ? 14 : 11
         }
@@ -30,26 +46,10 @@ Tile {
         id: summaryMaxTemp
         text: "max: " + (app.maxTempSummary !== "" ? app.maxTempSummary + "°" : "—")
         anchors {
-            top: parent.top
-            topMargin: isNxt ? 14 : 11
+            top: summaryDayLabel.bottom
+            topMargin: 1
             right: parent.right
             rightMargin: isNxt ? 14 : 11
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 19 : 15
-        }
-        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-    }
-
-    // Label below min/max row: indicates whether second values are today or tomorrow
-    Text {
-        id: summaryDayLabel
-        text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
-        anchors {
-            top: summaryMinTemp.bottom
-            topMargin: isNxt ? 4 : 3
-            horizontalCenter: parent.horizontalCenter
         }
         font {
             family: qfont.regular.name
