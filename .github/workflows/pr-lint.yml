@@ -28,7 +28,7 @@ jobs:
         name: QML format and lint check
         runs-on: ubuntu-latest
         container:
-            image: ubuntu:22.04
+            image: ubuntu:24.04
         env:
             DEBIAN_FRONTEND: noninteractive
 
@@ -36,12 +36,13 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Install Qt declarative tools
+            - name: Install Qt 6 declarative tools
               run: |
                   apt-get update -qq
                   apt-get install -y --no-install-recommends \
-                    qtdeclarative5-dev-tools \
+                    qt6-declarative-dev-tools \
                     git
+                  echo "/usr/lib/qt6/bin" >> $GITHUB_PATH
 
             - name: Check qmlformat
               run: |
@@ -57,4 +58,4 @@ jobs:
               continue-on-error: true
               run: |
                   find . -name "*.qml" -print0 | \
-                    xargs -0 qmllint --bare-file
+                    xargs -0 qmllint --bare
