@@ -300,8 +300,8 @@ App {
                         tempLogXhr.send(data['actual']['stationmeasurements'][stationIndex]['temperature'] + ":" + data['actual']['stationmeasurements'][stationIndex]['timestamp']);
                         if (data['actual']['stationmeasurements'][stationIndex]['windspeed'])
                             windSpeedMs = data['actual']['stationmeasurements'][stationIndex]['windspeed'];
-                        if (data['actual']['stationmeasurements'][stationIndex]['windspeedBft'])
-                            windSpeedBft = data['actual']['stationmeasurements'][stationIndex]['windspeedBft'];
+                        if (data['actual']['stationmeasurements'][stationIndex]['windspeed'])
+                            windSpeedBft = WeerJS.msToBftDecimal(parseFloat(data['actual']['stationmeasurements'][stationIndex]['windspeed']) || 0).toString();
                         if (data['actual']['stationmeasurements'][stationIndex]['winddirection'])
                             windDirection = data['actual']['stationmeasurements'][stationIndex]['winddirection'].toUpperCase();
                         if (data['actual']['stationmeasurements'][stationIndex]['airpressure'])
@@ -323,7 +323,7 @@ App {
                         }
                         if (iconId) {
                             var srPct = WeerJS.iconIdToSunRainPct(iconId);
-                            scoreNow = WeerJS.calcWeatherScore(srPct.sun.toString(), srPct.rain.toString(), temperature, windDirection + " " + windSpeedBft, 0).toString();
+                            scoreNow = WeerJS.calcWeatherScore(srPct.sun.toString(), srPct.rain.toString(), temperature, windDirection + " " + windSpeedBft, 0, humidity).toString();
                         }
 
                         // fill model for grid of weather station data on detail screen
@@ -390,9 +390,9 @@ App {
                         var rainChance = data['forecast']['fivedayforecast'][i]['rainChance'].toString();
                         var maxTemp = data['forecast']['fivedayforecast'][i]['maxtemperatureMax'].toString();
                         var windDir = data['forecast']['fivedayforecast'][i]['windDirection'];
-                        var wind = (windDir ? windDir.toUpperCase() : "") + " " + data['forecast']['fivedayforecast'][i]['wind'].toString();
+                        var wind = (windDir ? windDir.toUpperCase() : "") + " " + WeerJS.msToBftDecimal(WeerJS.bftToMs(parseInt(data['forecast']['fivedayforecast'][i]['wind']) || 0)).toString();
                         var mmRainBR = data['forecast']['fivedayforecast'][i]['mmRainMax'] || 0;
-                        var score = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind, mmRainBR).toString();
+                        var score = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind, mmRainBR, undefined, data['forecast']['fivedayforecast'][i]['uvindex']).toString();
                         if (i === 0)
                             scoreToday = score;
                         if (i === 1)
@@ -422,14 +422,14 @@ App {
                         dayMaxTempToday = todayForecastBR['maxtemperatureMax'] !== undefined ? i18n.number(Number(todayForecastBR['maxtemperatureMax']), 1) : "";
                         dayMaxUVToday = 0;
                         dayTotalRainToday = todayForecastBR['mmRainMax'] !== undefined ? todayForecastBR['mmRainMax'] : 0;
-                        dayMaxWindBftToday = todayForecastBR['wind'] !== undefined ? todayForecastBR['wind'].toString() : windSpeedBft;
+                        dayMaxWindBftToday = todayForecastBR['wind'] !== undefined ? WeerJS.msToBftDecimal(WeerJS.bftToMs(parseInt(todayForecastBR['wind']) || 0)).toString() : windSpeedBft;
                     }
                     if (tomorrowForecastBR) {
                         dayMinTempTomorrow = tomorrowForecastBR['mintemperatureMin'] !== undefined ? i18n.number(Number(tomorrowForecastBR['mintemperatureMin']), 1) : "";
                         dayMaxTempTomorrow = tomorrowForecastBR['maxtemperatureMax'] !== undefined ? i18n.number(Number(tomorrowForecastBR['maxtemperatureMax']), 1) : "";
                         dayMaxUVTomorrow = 0;
                         dayTotalRainTomorrow = tomorrowForecastBR['mmRainMax'] !== undefined ? tomorrowForecastBR['mmRainMax'] : 0;
-                        dayMaxWindBftTomorrow = tomorrowForecastBR['wind'] !== undefined ? tomorrowForecastBR['wind'].toString() : "";
+                        dayMaxWindBftTomorrow = tomorrowForecastBR['wind'] !== undefined ? WeerJS.msToBftDecimal(WeerJS.bftToMs(parseInt(tomorrowForecastBR['wind']) || 0)).toString() : "";
                     }
 
                     //forecast title and text, remove special characters
@@ -485,7 +485,7 @@ App {
                     pressure = current['surface_pressure'];
                     var windKmh = current['wind_speed_10m'];
                     windSpeedMs = (windKmh / 3.6).toFixed(1);
-                    windSpeedBft = WeerJS.kmhToBft(windKmh);
+                    windSpeedBft = WeerJS.msToBftDecimal(windKmh / 3.6).toString();
                     windDirection = WeerJS.degreesToWindDir(current['wind_direction_10m']);
 
                     // visibility from hourly slot matching current time; remember index for summary aggregates
@@ -508,7 +508,7 @@ App {
                     iconId = WeerJS.wmoCodeToIconId(current['weather_code']);
                     weatherDescription = WeerJS.wmoCodeToDescription(current['weather_code']);
                     var srPct = WeerJS.wmoCodeToSunRainPct(current['weather_code']);
-                    scoreNow = WeerJS.calcWeatherScore(srPct.sun.toString(), srPct.rain.toString(), temperature, windDirection + " " + windSpeedBft, current['precipitation'] || 0).toString();
+                    scoreNow = WeerJS.calcWeatherScore(srPct.sun.toString(), srPct.rain.toString(), temperature, windDirection + " " + windSpeedBft, current['precipitation'] || 0, humidity, current['uv_index'] != null ? current['uv_index'] : undefined).toString();
                     iconImageDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Dim", iconId, weatherDescription, sunrise, sunset, timeStr);
                     iconImageNoDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Home", iconId, weatherDescription, sunrise, sunset, timeStr);
                     var isNight = WeerJS.determineNight(timeStr, sunrise, sunset);
@@ -595,7 +595,7 @@ App {
                         var daySunPct = daylightSeconds > 0 ? Math.round(daily['sunshine_duration'][i] / daylightSeconds * 100) : 0;
                         var dayRainPct = daily['precipitation_probability_max'][i] || 0;
                         var windDir = WeerJS.degreesToWindDir(daily['wind_direction_10m_dominant'][i]);
-                        var windBft = WeerJS.kmhToBft(daily['wind_speed_10m_max'][i]);
+                        var windBft = WeerJS.msToBftDecimal(daily['wind_speed_10m_max'][i] / 3.6);
                         var dayIconId = WeerJS.wmoCodeToIconId(daily['weather_code'][i]);
                         var dayIconPath = "file:///qmf/qml/apps/weer/drawables/" + dayIconId + ".png";
                         var sunChance = daySunPct.toString();
@@ -603,7 +603,7 @@ App {
                         var maxTemp = daily['temperature_2m_max'][i].toString();
                         var wind = windDir + " " + windBft;
                         var mmRainOM = daily['precipitation_sum'] ? (daily['precipitation_sum'][i] || 0) : 0;
-                        var score = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind, mmRainOM).toString();
+                        var score = WeerJS.calcWeatherScore(sunChance, rainChance, maxTemp, wind, mmRainOM, undefined, daily['uv_index_max'] ? daily['uv_index_max'][i] : undefined).toString();
                         if (i === 0)
                             scoreToday = score;
                         if (i === 1)
@@ -630,13 +630,13 @@ App {
                     dayMaxTempToday = i18n.number(daily['temperature_2m_max'][0], 1);
                     dayMaxUVToday = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][0] || 0) * 10) / 10 : 0;
                     dayTotalRainToday = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][0] || 0) * 10) / 10 : 0;
-                    dayMaxWindBftToday = WeerJS.kmhToBft(daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][0] || 0) : 0).toString();
+                    dayMaxWindBftToday = WeerJS.msToBftDecimal((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][0] || 0) : 0) / 3.6).toString();
                     if (daily['time'].length > 1) {
                         dayMinTempTomorrow = i18n.number(daily['temperature_2m_min'][1], 1);
                         dayMaxTempTomorrow = i18n.number(daily['temperature_2m_max'][1], 1);
                         dayMaxUVTomorrow = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][1] || 0) * 10) / 10 : 0;
                         dayTotalRainTomorrow = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][1] || 0) * 10) / 10 : 0;
-                        dayMaxWindBftTomorrow = WeerJS.kmhToBft(daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][1] || 0) : 0).toString();
+                        dayMaxWindBftTomorrow = WeerJS.msToBftDecimal((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][1] || 0) : 0) / 3.6).toString();
                     }
 
                     // hourly strip: next 12 hours starting at the current hour
@@ -661,9 +661,9 @@ App {
                             var hSunPct = (hourly['sunshine_duration'] && hourly['sunshine_duration'][h] !== undefined) ? Math.round(hourly['sunshine_duration'][h] / 36) : 50;
                             var hWindKmh = hourly['wind_speed_10m'] ? (hourly['wind_speed_10m'][h] || 0) : 0;
                             var hWindDir = hourly['wind_direction_10m'] ? WeerJS.degreesToWindDir(hourly['wind_direction_10m'][h]) : "";
-                            var hWindBft = WeerJS.kmhToBft(hWindKmh);
+                            var hWindBft = WeerJS.msToBftDecimal(hWindKmh / 3.6);
                             var hRainMm = hourly['precipitation'] ? (hourly['precipitation'][h] || 0) : 0;
-                            var hScore = WeerJS.calcWeatherScore(hSunPct, hRainProb, hTemp !== null ? hTemp : 15, hWindDir + " " + hWindBft, hRainMm).toString();
+                            var hScore = WeerJS.calcWeatherScore(hSunPct, hRainProb, hTemp !== null ? hTemp : 15, hWindDir + " " + hWindBft, hRainMm, undefined).toString();
                             hourlyRows.push({
                                 "hour": hourLabel,
                                 "icoon": hIconPath,
@@ -742,6 +742,13 @@ App {
                         rainForecastTo = WeerJS.addMinutes(rainForecastFrom, 120);
                         rainForecast = forecast;
                         rainMaxMm = Math.round(maxPrecip + 0.5);
+                        if (iconId) {
+                            var rainMm30 = 0;
+                            for (var s = 0; s < Math.min(6, rainForecast.length); s++)
+                                rainMm30 += rainForecast[s];
+                            var srPct = WeerJS.iconIdToSunRainPct(iconId);
+                            scoreNow = WeerJS.calcWeatherScore(srPct.sun.toString(), srPct.rain.toString(), temperature, windDirection + " " + windSpeedBft, rainMm30, humidity).toString();
+                        }
                     }
                 }
                 xhr.onreadystatechange = null;
