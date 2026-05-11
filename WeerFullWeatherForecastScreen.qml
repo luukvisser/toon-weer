@@ -2,43 +2,43 @@ import QtQuick 2.1
 import qb.components 1.0
 
 Screen {
-	id: weerFullWeatherForecastScreen
-	screenTitle: app.forecastTitle;
+    id: weerFullWeatherForecastScreen
+    screenTitle: app.forecastTitle
 
-	Rectangle {
-		id: backgroundRect
-		height: parent.height - 20
-		width: parent.width - 20
-		anchors {
-			baseline: parent.top
-			baselineOffset: 10
-			left: parent.left
-			leftMargin: 10
-		}
-		color: colors.addDeviceBackgroundRectangle
+    Rectangle {
+        id: backgroundRect
+        height: parent.height - 20
+        width: parent.width - 20
+        anchors {
+            baseline: parent.top
+            baselineOffset: 10
+            left: parent.left
+            leftMargin: 10
+        }
+        color: colors.addDeviceBackgroundRectangle
 
-	       Flickable {
-	            id: flickArea
-	             anchors.fill: parent
-	             contentWidth: backgroundRect.width;
-		     contentHeight: forecastText.height + 100
-	             flickableDirection: Flickable.VerticalFlick
-	             clip: true
+        Flickable {
+            id: flickArea
+            anchors.fill: parent
+            contentWidth: backgroundRect.width
+            contentHeight: forecastText.height + 100
+            flickableDirection: Flickable.VerticalFlick
+            clip: true
 
-	             TextEdit{
-	                  id: forecastText
-	                   wrapMode: TextEdit.Wrap
-	                   width:backgroundRect.width
-			   textFormat: TextEdit.RichText
+            TextEdit {
+                id: forecastText
+                wrapMode: TextEdit.Wrap
+                width: backgroundRect.width
+                textFormat: TextEdit.RichText
 
-	                   readOnly:true
-				font {
-					family: qfont.regular.name
-					pixelSize: isNxt ? 20 : 15
-				}
+                readOnly: true
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 20 : 15
+                }
 
-	                   text:  app.forecastText
-	            }
-	      }
-	}
+                text: app.forecastText
+            }
+        }
+    }
 }
