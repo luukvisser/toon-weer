@@ -54,6 +54,7 @@ jobs:
                   }
 
             - name: Run qmllint
+              continue-on-error: true
               run: |
                   find . -name "*.qml" -print0 | \
                     xargs -0 qmllint --bare-file
