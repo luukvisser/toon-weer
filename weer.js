@@ -449,7 +449,7 @@ function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm, humidity
 		0.15 * sunScore +
 		0.25 * rainScore +
 		0.15 * windScore +
-		0.10 * humidityScore(rh) +
-		0.10 * uvScore(uvIndex !== undefined ? uvIndex : null);
+		0.1 * humidityScore(rh) +
+		0.1 * uvScore(uvIndex !== undefined ? uvIndex : null);
 	return Math.min(10, Math.max(1.0, Math.round(raw * 10) / 10));
 }

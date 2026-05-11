@@ -1,59 +1,59 @@
 name: PR Lint
 
 on:
-  pull_request:
+    pull_request:
 
 jobs:
-  prettier:
-    name: Prettier check
-    runs-on: ubuntu-latest
-    container:
-      image: node:lts-alpine
+    prettier:
+        name: Prettier check
+        runs-on: ubuntu-latest
+        container:
+            image: node:lts-alpine
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Install prettier
-        run: npm install --global prettier@3.3.3
+            - name: Install prettier
+              run: npm install --global prettier@3.3.3
 
-      - name: Run prettier check
-        run: |
-          prettier --check \
-            --config .prettierrc.json \
-            --ignore-path .prettierignore \
-            "**/*.{js,json,md,yaml,yml}"
+            - name: Run prettier check
+              run: |
+                  prettier --check \
+                    --config .prettierrc.json \
+                    --ignore-path .prettierignore \
+                    "**/*.{js,json,md,yaml,yml}"
 
-  qml-check:
-    name: QML format and lint check
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:22.04
-    env:
-      DEBIAN_FRONTEND: noninteractive
+    qml-check:
+        name: QML format and lint check
+        runs-on: ubuntu-latest
+        container:
+            image: ubuntu:22.04
+        env:
+            DEBIAN_FRONTEND: noninteractive
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Install Qt declarative tools
-        run: |
-          apt-get update -qq
-          apt-get install -y --no-install-recommends \
-            qtdeclarative5-dev-tools \
-            git
+            - name: Install Qt declarative tools
+              run: |
+                  apt-get update -qq
+                  apt-get install -y --no-install-recommends \
+                    qtdeclarative5-dev-tools \
+                    git
 
-      - name: Check qmlformat
-        run: |
-          find . -name "*.qml" -print0 | xargs -0 qmlformat -i
-          git diff --exit-code || {
-            echo ""
-            echo "qmlformat found formatting issues. Run locally to fix:"
-            echo "  find . -name '*.qml' -print0 | xargs -0 qmlformat -i"
-            exit 1
-          }
+            - name: Check qmlformat
+              run: |
+                  find . -name "*.qml" -print0 | xargs -0 qmlformat -i
+                  git diff --exit-code || {
+                    echo ""
+                    echo "qmlformat found formatting issues. Run locally to fix:"
+                    echo "  find . -name '*.qml' -print0 | xargs -0 qmlformat -i"
+                    exit 1
+                  }
 
-      - name: Run qmllint
-        run: |
-          find . -name "*.qml" -print0 | \
-            xargs -0 qmllint --bare-file
+            - name: Run qmllint
+              run: |
+                  find . -name "*.qml" -print0 | \
+                    xargs -0 qmllint --bare-file
