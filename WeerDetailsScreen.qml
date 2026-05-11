@@ -17,6 +17,8 @@ Screen {
 
     onShown: {
         addCustomTopRightButton("Locatie");
+        app.radarImagesSmallUrl = "http://toon/";
+        app.radarImagesSmallUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=180&height=180";
         fivedayforecastModel.clear();
         for (var i = 0; i < app.fiveDayForecast.length; i++) {
             fivedayforecastModel.append(app.fiveDayForecast[i]);
@@ -32,10 +34,9 @@ Screen {
     }
 
     //selected weatherstation data
-
     Rectangle {
         id: backgroundRect
-        height: isNxt ? 240 : 190
+        height: isNxt ? 265 : 210
         width: isNxt ? 345 : 275
         anchors {
             baseline: parent.top
@@ -48,7 +49,7 @@ Screen {
 
     Rectangle {
         id: backgroundRect2
-        height: isNxt ? 240 : 190
+        height: isNxt ? 265 : 210
         width: isNxt ? 655 : 500
         anchors {
             baseline: parent.top
@@ -70,7 +71,6 @@ Screen {
     }
 
     //weatherforecast data for selected weather station
-
     GridView {
         id: grid
 
@@ -219,7 +219,6 @@ Screen {
     }
 
     //weatherforecast data per day of week
-
     GridView {
         id: grid2
 
@@ -297,8 +296,8 @@ Screen {
                 }
 
                 Text {
-                    id: forecastmintemp
-                    text: mintemp
+                    id: forecasttemprange
+                    text: tempRange
                     anchors {
                         top: forecastkansregen.bottom
                         topMargin: isNxt ? 5 : 4
@@ -312,10 +311,10 @@ Screen {
                 }
 
                 Text {
-                    id: forecastmaxtemp
-                    text: maxtemp
+                    id: forecastprecip
+                    text: precip
                     anchors {
-                        top: forecastmintemp.bottom
+                        top: forecasttemprange.bottom
                         topMargin: isNxt ? 5 : 4
                         left: forecastdagweek.left
                     }
@@ -330,7 +329,7 @@ Screen {
                     id: forecastwind
                     text: wind
                     anchors {
-                        top: forecastmaxtemp.bottom
+                        top: forecastprecip.bottom
                         topMargin: isNxt ? 5 : 4
                         left: forecastdagweek.left
                     }
@@ -374,8 +373,8 @@ Screen {
                     height: isNxt ? 32 : 24
                     fillMode: Image.PreserveAspectFit
                     anchors {
-                        top: forecastwind.bottom
-                        topMargin: isNxt ? 10 : 8
+                        top: forecastscore.bottom
+                        topMargin: isNxt ? 5 : 4
                         left: forecastdagweek.left
                     }
                     cache: false
@@ -389,7 +388,7 @@ Screen {
         text: app.forecastTitle
         anchors {
             baseline: parent.top
-            baselineOffset: isNxt ? 270 : 215
+            baselineOffset: isNxt ? 290 : 235
             left: parent.left
             leftMargin: 10
         }
@@ -406,7 +405,7 @@ Screen {
         width: isNxt ? 800 : 580
         anchors {
             baseline: parent.top
-            baselineOffset: isNxt ? 280 : 225
+            baselineOffset: isNxt ? 290 : 235
             left: parent.left
             leftMargin: 10
         }
@@ -489,6 +488,7 @@ Screen {
                 }
 
                 Text {
+                    id: hourRainPct
                     text: rainPct
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: hourTemp.bottom
@@ -506,6 +506,29 @@ Screen {
                         if (p >= 30)
                             return "#64B5F6";
                         return colors.clockTileColor;
+                    }
+                }
+
+                Text {
+                    text: score
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: hourRainPct.bottom
+                    anchors.topMargin: isNxt ? 4 : 2
+                    font {
+                        family: qfont.bold.name
+                        pixelSize: isNxt ? 16 : 13
+                    }
+                    color: {
+                        var s = parseInt(score);
+                        if (isNaN(s))
+                            return colors.clockTileColor;
+                        if (s >= 8)
+                            return "#4CAF50";
+                        if (s >= 6)
+                            return "#FFC107";
+                        if (s >= 4)
+                            return "#FF9800";
+                        return "#F44336";
                     }
                 }
             }
@@ -530,7 +553,7 @@ Screen {
         width: 180
         anchors {
             baseline: parent.top
-            baselineOffset: isNxt ? 280 : 225
+            baselineOffset: isNxt ? 290 : 235
             right: parent.right
             rightMargin: 10
         }

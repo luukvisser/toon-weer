@@ -20,7 +20,6 @@ Screen {
         addCustomTopRightButton("Locatie");
         stillRadarImage.visible = false;
         bigRadarImage.visible = true;
-
         rightNow = new Date();
         todayStr = rightNow.toISOString().slice(0, 10).replace(/-/g, "");
         todayStrFormatted = todayStr.substring(0, 4) + "-" + todayStr.substring(4, 6) + "-" + todayStr.substring(6, 8);

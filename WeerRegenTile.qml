@@ -12,7 +12,6 @@ Tile {
         } else {
             app.radarImagesUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=400&height=400";
         }
-
         if (app.weerActualRadarScreen) {
             app.weerActualRadarScreen.setTitle("Actuele Weer");
             app.weerActualRadarScreen.show();
@@ -32,19 +31,18 @@ Tile {
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: "Regenverwachting"
-        visible: app.showRain
     }
 
     Text {
         id: weerRegenTileTitleText2
         anchors {
             baseline: parent.top
-            baselineOffset: isNxt ? 110 : 90
+            baselineOffset: isNxt ? 58 : 46
             horizontalCenter: parent.horizontalCenter
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 20 : 16
+            pixelSize: isNxt ? 16 : 13
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: "Geen neerslag verwacht"
@@ -68,11 +66,10 @@ Tile {
             width: parent.width
             height: parent.height
             color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
-            yScale: app.yAxisScale ? (height / app.yAxisScale) : (height / app.rainMaxMm)
+            yScale: app.yAxisScale ? (height / app.yAxisScale) : (height / Math.max(1, app.rainMaxMm))
             showNaN: false
             values: app.rainForecast
         }
-        visible: app.showRain
     }
 
     Text {
@@ -88,8 +85,7 @@ Tile {
             pixelSize: isNxt ? 30 : 24
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-        text: app.showRain ? (app.yAxisScale ? app.yAxisScale : app.rainMaxMm) : "0"
-        visible: true
+        text: app.showRain ? (app.yAxisScale ? app.yAxisScale : Math.max(1, app.rainMaxMm)) : "0"
     }
 
     Text {
@@ -105,12 +101,11 @@ Tile {
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: "mm"
-        visible: true
     }
 
     Rectangle {
         id: lineYaxis
-        color: colors.graphTileRect
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
         height: isNxt ? 90 : 72
         width: 1
         anchors {
@@ -118,12 +113,11 @@ Tile {
             bottomMargin: isNxt ? 52 : 42
             left: brgraphItem.left
         }
-        visible: app.showRain
     }
 
     Rectangle {
         id: lineYaxisTopMarker1
-        color: colors.graphTileRect
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
         height: 1
         width: 6
         anchors {
@@ -131,7 +125,6 @@ Tile {
             bottomMargin: isNxt ? 143 : 113
             left: lineYaxis.left
         }
-        visible: app.showRain
     }
 
     Text {
@@ -147,7 +140,6 @@ Tile {
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastFrom
-        visible: app.showRain
     }
 
     Text {
@@ -163,8 +155,8 @@ Tile {
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastMid
-        visible: app.showRain
     }
+
     Text {
         id: rightTimeText
         anchors {
@@ -178,7 +170,6 @@ Tile {
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastTo
-        visible: app.showRain
     }
 
     /// horizontal markers along the x-axis. In Open-Meteo combined mode the
@@ -186,7 +177,6 @@ Tile {
     /// 10-min tick over the high-resolution Buienradar window (first 2 hours)
     /// and a 1-hour tick over the Open-Meteo extension. In Buienradar-only
     /// mode the original 13-tick / 10-minute layout is used.
-
     Row {
         id: xLegendRow
         anchors.top: brgraphItem.bottom
@@ -203,7 +193,7 @@ Tile {
 
                 Rectangle {
                     id: linexaxisMarker
-                    color: colors.graphTileRect
+                    color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
                     height: {
                         if (app.useOpenMeteo) {
                             var brSlots = Math.min(24, app.rainHours * 12);
@@ -228,7 +218,7 @@ Tile {
                         baseline: parent.top
                         left: parent.left
                     }
-                    visible: app.showRain && height > 0
+                    visible: height > 0
                 }
             }
         }

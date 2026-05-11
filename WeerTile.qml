@@ -81,7 +81,7 @@ Tile {
 
     Text {
         id: weerTileGevoelstempText4
-        text: "feelsLikeTemp: " + i18n.number(Number(app.feelsLikeTemp), 1) + "°"
+        text: "gevoelstemperatuur: " + i18n.number(Number(app.feelsLikeTemp), 1) + "°"
         anchors {
             baseline: parent.top
             baselineOffset: isNxt ? 60 : 50
@@ -130,11 +130,8 @@ Tile {
     Image {
         id: weatherTileIcon
         source: app.iconUrl
-        anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 96 : 75
-            horizontalCenter: parent.horizontalCenter
-        }
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
         cache: false
         visible: !dimState
     }
