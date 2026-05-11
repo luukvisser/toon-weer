@@ -178,6 +178,35 @@ function kmhToBft(kmh) {
 	return 12;
 }
 
+function msToBftDecimal(ms) {
+	if (ms <= 0) return 0;
+	return Math.round(Math.pow(ms / 0.836, 2 / 3) * 10) / 10;
+}
+
+function bftToMs(bft) {
+	var mid = [0.0, 0.9, 2.4, 4.4, 6.7, 9.3, 12.3, 15.5, 18.9, 22.6, 26.4, 30.5, 35.0];
+	var i = Math.min(12, Math.max(0, Math.round(bft)));
+	return mid[i];
+}
+
+function humidityScore(rh) {
+	if (rh >= 40 && rh <= 65) return 10;
+	if (rh > 65 && rh <= 80) return 10 - (rh - 65) * 0.27;
+	if (rh > 80) return Math.max(1, 6 - (rh - 80) * 0.25);
+	if (rh >= 25) return 10 - (40 - rh) * 0.2;
+	return Math.max(1, 7 - (25 - rh) * 0.3);
+}
+
+function uvScore(uv) {
+	if (uv == null) return 7;
+	if (uv <= 1) return 5;
+	if (uv <= 3) return 8;
+	if (uv <= 6) return 10;
+	if (uv <= 8) return 8;
+	if (uv <= 10) return 6;
+	return Math.max(1, 6 - (uv - 10));
+}
+
 function parseWeatherIdAndText(forceDay, sourceFileName, weatherId, weatherText, zonop, zononder, tijdnu) {
 	var isTodayNight = forceDay ? false : determineNight(tijdnu, zonop, zononder);
 
@@ -371,28 +400,29 @@ function iconIdToSunRainPct(id) {
 	return { sun: 50, rain: 30 };
 }
 
-function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm) {
+function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm, humidity, uvIndex) {
 	var tmax = parseFloat(maxtemp) || 15;
 	var mm = rainMm !== undefined && rainMm !== null ? parseFloat(rainMm) || 0 : 0;
+	var rh = humidity !== undefined && humidity !== null ? parseFloat(humidity) : 60;
 	var sunPct = parseFloat(kanszon);
 	var rainChancePct = parseFloat(kansregen);
 
-	// Temperature score — sweet spot 20-24 °C for Netherlands context
+	// Temperature score — sweet spot 18-24 °C for Netherlands context
 	var tempScore;
-	if (tmax >= 20 && tmax <= 24) {
+	if (tmax >= 18 && tmax <= 24) {
 		tempScore = 10;
 	} else if (tmax > 24 && tmax <= 28) {
 		tempScore = 10 - (tmax - 24) * 0.3;
 	} else if (tmax > 28) {
 		tempScore = Math.max(1, 8.8 - (tmax - 28) * 0.6);
 	} else if (tmax >= 15) {
-		tempScore = 10 - (20 - tmax) * 0.5;
+		tempScore = 10 - (18 - tmax) * 0.5;
 	} else if (tmax >= 10) {
-		tempScore = 7.5 - (15 - tmax) * 0.4;
+		tempScore = 8.5 - (15 - tmax) * 0.4;
 	} else if (tmax >= 5) {
-		tempScore = 5.5 - (10 - tmax) * 0.4;
+		tempScore = 6.5 - (10 - tmax) * 0.4;
 	} else {
-		tempScore = Math.max(1, 3.5 + tmax * 0.1);
+		tempScore = Math.max(1, 4.5 + tmax * 0.1);
 	}
 
 	// Sun score: sunshine fraction 0–100% → 0–10
@@ -408,12 +438,18 @@ function calcWeatherScore(kanszon, kansregen, maxtemp, windStr, rainMm) {
 	// Combined rain score: equal weight between chance and amount
 	var rainScore = 0.5 * rainChanceScore + 0.5 * rainAmountScore;
 
-	// Wind score: parse Beaufort from trailing token ("ZW 3" → 3)
+	// Wind score: parse Beaufort from trailing token ("ZW 3.2" → 3.2)
 	var parts = windStr.toString().trim().split(/\s+/);
-	var bft = parseInt(parts[parts.length - 1]) || 0;
-	var windScore = bft <= 2 ? 10 : bft === 3 ? 8 : bft === 4 ? 6 : bft === 5 ? 4 : bft === 6 ? 2 : 0;
+	var bft = parseFloat(parts[parts.length - 1]) || 0;
+	var windScore = bft <= 2 ? 10 : bft <= 3 ? 8 : bft <= 4 ? 6 : bft <= 5 ? 4 : bft <= 6 ? 2 : 0;
 
-	// Weights: temp 25%, sun 25%, rain (chance+amount) 40%, wind 10%
-	var raw = 0.25 * tempScore + 0.25 * sunScore + 0.4 * rainScore + 0.1 * windScore;
-	return Math.min(10, Math.max(1, Math.round(raw)));
+	// Weights: temp 25%, sun 15%, rain 25%, wind 15%, humidity 10%, UV 10%
+	var raw =
+		0.25 * tempScore +
+		0.15 * sunScore +
+		0.25 * rainScore +
+		0.15 * windScore +
+		0.1 * humidityScore(rh) +
+		0.1 * uvScore(uvIndex !== undefined ? uvIndex : null);
+	return Math.min(10, Math.max(1.0, Math.round(raw * 10) / 10));
 }
