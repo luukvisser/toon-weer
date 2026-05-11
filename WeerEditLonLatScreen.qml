@@ -1,7 +1,6 @@
 import QtQuick 2.1
 import qb.components 1.0
 import BasicUIControls 1.0
-
 import BxtClient 1.0
 import "weer.js" as WeerJS
 
@@ -315,130 +314,14 @@ Screen {
         color: colors.rbTitle
     }
 
-    // Summary tile window: number of hours used for the summary tile aggregates (1-24)
-
-    Text {
-        id: summaryHoursLabel
-        text: "Samenvatting tegel uren:"
-        anchors {
-            left: lonLabel.left
-            top: openMeteoLabel.bottom
-            topMargin: isNxt ? 32 : 26
-        }
-        font {
-            family: qfont.semiBold.name
-            pixelSize: isNxt ? 20 : 16
-        }
-        color: colors.rbTitle
-    }
-
-    Rectangle {
-        id: summaryHoursMinus
-        width: isNxt ? 36 : 28
-        height: width
-        radius: 4
-        color: "#888888"
-        anchors {
-            left: summaryHoursLabel.right
-            leftMargin: 12
-            verticalCenter: summaryHoursLabel.verticalCenter
-        }
-        Text {
-            anchors.centerIn: parent
-            text: "−"
-            color: "white"
-            font {
-                family: qfont.bold.name
-                pixelSize: isNxt ? 24 : 20
-            }
-        }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if (app.summaryHours > 1) {
-                    app.summaryHours = app.summaryHours - 1;
-                    app.saveSettings();
-                    app.updateWeather();
-                }
-            }
-        }
-    }
-
-    Text {
-        id: summaryHoursValue
-        text: app.summaryHours + " uur"
-        width: isNxt ? 70 : 56
-        horizontalAlignment: Text.AlignHCenter
-        anchors {
-            left: summaryHoursMinus.right
-            leftMargin: 8
-            verticalCenter: summaryHoursMinus.verticalCenter
-        }
-        font {
-            family: qfont.bold.name
-            pixelSize: isNxt ? 20 : 16
-        }
-        color: colors.rbTitle
-    }
-
-    Rectangle {
-        id: summaryHoursPlus
-        width: summaryHoursMinus.width
-        height: summaryHoursMinus.height
-        radius: 4
-        color: "#888888"
-        anchors {
-            left: summaryHoursValue.right
-            leftMargin: 8
-            verticalCenter: summaryHoursMinus.verticalCenter
-        }
-        Text {
-            anchors.centerIn: parent
-            text: "+"
-            color: "white"
-            font {
-                family: qfont.bold.name
-                pixelSize: isNxt ? 24 : 20
-            }
-        }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if (app.summaryHours < 24) {
-                    app.summaryHours = app.summaryHours + 1;
-                    app.saveSettings();
-                    app.updateWeather();
-                }
-            }
-        }
-    }
-
-    Text {
-        id: summaryHoursUitleg
-        text: "Aantal uren vooruit gebruikt voor de samenvattingstegel."
-        width: isNxt ? 480 : 370
-        wrapMode: Text.WordWrap
-        anchors {
-            left: summaryHoursPlus.right
-            leftMargin: 16
-            verticalCenter: summaryHoursPlus.verticalCenter
-        }
-        font {
-            family: qfont.semiBold.name
-            pixelSize: isNxt ? 18 : 14
-        }
-        color: colors.rbTitle
-    }
-
     // Rain prediction window: number of hours shown in the rain tile (2-24), Open-Meteo mode only
-
     Text {
         id: rainHoursLabel
         text: "Regen tegel uren:"
         visible: app.useOpenMeteo
         anchors {
             left: lonLabel.left
-            top: summaryHoursLabel.bottom
+            top: openMeteoLabel.bottom
             topMargin: isNxt ? 32 : 26
         }
         font {
@@ -542,6 +425,345 @@ Screen {
             left: rainHoursPlus.right
             leftMargin: 16
             verticalCenter: rainHoursPlus.verticalCenter
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 18 : 14
+        }
+        color: colors.rbTitle
+    }
+
+    // Weather refresh interval
+    Text {
+        id: weatherRefreshLabel
+        text: "Weer verversing:"
+        anchors {
+            left: lonLabel.left
+            top: app.useOpenMeteo ? rainHoursLabel.bottom : openMeteoLabel.bottom
+            topMargin: isNxt ? 32 : 26
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: weatherRefreshMinus
+        width: isNxt ? 36 : 28
+        height: width
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: weatherRefreshLabel.right
+            leftMargin: 12
+            verticalCenter: weatherRefreshLabel.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "−"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.weatherRefreshMin > 1) {
+                    app.weatherRefreshMin = app.weatherRefreshMin - 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: weatherRefreshValue
+        text: app.weatherRefreshMin + " min"
+        width: isNxt ? 70 : 56
+        horizontalAlignment: Text.AlignHCenter
+        anchors {
+            left: weatherRefreshMinus.right
+            leftMargin: 8
+            verticalCenter: weatherRefreshMinus.verticalCenter
+        }
+        font {
+            family: qfont.bold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: weatherRefreshPlus
+        width: weatherRefreshMinus.width
+        height: weatherRefreshMinus.height
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: weatherRefreshValue.right
+            leftMargin: 8
+            verticalCenter: weatherRefreshMinus.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "+"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.weatherRefreshMin < 60) {
+                    app.weatherRefreshMin = app.weatherRefreshMin + 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: weatherRefreshUitleg
+        text: "Interval voor het verversen van de weergegevens (1–60 min)."
+        width: isNxt ? 480 : 370
+        wrapMode: Text.WordWrap
+        anchors {
+            left: weatherRefreshPlus.right
+            leftMargin: 16
+            verticalCenter: weatherRefreshPlus.verticalCenter
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 18 : 14
+        }
+        color: colors.rbTitle
+    }
+
+    // Rain refresh interval
+    Text {
+        id: rainRefreshLabel
+        text: "Regen verversing:"
+        anchors {
+            left: lonLabel.left
+            top: weatherRefreshLabel.bottom
+            topMargin: isNxt ? 32 : 26
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: rainRefreshMinus
+        width: isNxt ? 36 : 28
+        height: width
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: rainRefreshLabel.right
+            leftMargin: 12
+            verticalCenter: rainRefreshLabel.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "−"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.rainRefreshMin > 1) {
+                    app.rainRefreshMin = app.rainRefreshMin - 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: rainRefreshValue
+        text: app.rainRefreshMin + " min"
+        width: isNxt ? 70 : 56
+        horizontalAlignment: Text.AlignHCenter
+        anchors {
+            left: rainRefreshMinus.right
+            leftMargin: 8
+            verticalCenter: rainRefreshMinus.verticalCenter
+        }
+        font {
+            family: qfont.bold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: rainRefreshPlus
+        width: rainRefreshMinus.width
+        height: rainRefreshMinus.height
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: rainRefreshValue.right
+            leftMargin: 8
+            verticalCenter: rainRefreshMinus.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "+"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.rainRefreshMin < 30) {
+                    app.rainRefreshMin = app.rainRefreshMin + 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: rainRefreshUitleg
+        text: "Interval voor het verversen van de regenverwachting (1–30 min)."
+        width: isNxt ? 480 : 370
+        wrapMode: Text.WordWrap
+        anchors {
+            left: rainRefreshPlus.right
+            leftMargin: 16
+            verticalCenter: rainRefreshPlus.verticalCenter
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 18 : 14
+        }
+        color: colors.rbTitle
+    }
+
+    // Day offset: hour at which the summary tile switches to tomorrow's data
+    Text {
+        id: dayOffsetLabel
+        text: "Omschakeling morgen:"
+        anchors {
+            left: lonLabel.left
+            top: rainRefreshLabel.bottom
+            topMargin: isNxt ? 32 : 26
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: dayOffsetMinus
+        width: isNxt ? 36 : 28
+        height: width
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: dayOffsetLabel.right
+            leftMargin: 12
+            verticalCenter: dayOffsetLabel.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "−"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.dayOffsetHour > -12) {
+                    app.dayOffsetHour = app.dayOffsetHour - 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: dayOffsetValue
+        text: {
+            var h = ((24 + app.dayOffsetHour) % 24);
+            return (h < 10 ? "0" : "") + h + ":00";
+        }
+        width: isNxt ? 70 : 56
+        horizontalAlignment: Text.AlignHCenter
+        anchors {
+            left: dayOffsetMinus.right
+            leftMargin: 8
+            verticalCenter: dayOffsetMinus.verticalCenter
+        }
+        font {
+            family: qfont.bold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+    }
+
+    Rectangle {
+        id: dayOffsetPlus
+        width: dayOffsetMinus.width
+        height: dayOffsetMinus.height
+        radius: 4
+        color: "#888888"
+        anchors {
+            left: dayOffsetValue.right
+            leftMargin: 8
+            verticalCenter: dayOffsetMinus.verticalCenter
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "+"
+            color: "white"
+            font {
+                family: qfont.bold.name
+                pixelSize: isNxt ? 24 : 20
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (app.dayOffsetHour < 12) {
+                    app.dayOffsetHour = app.dayOffsetHour + 1;
+                    app.saveSettings();
+                }
+            }
+        }
+    }
+
+    Text {
+        id: dayOffsetUitleg
+        text: "Tijdstip waarop de samenvatting omschakelt naar het weer van morgen (−12 t/m +12 uur)."
+        width: isNxt ? 480 : 370
+        wrapMode: Text.WordWrap
+        anchors {
+            left: dayOffsetPlus.right
+            leftMargin: 16
+            verticalCenter: dayOffsetPlus.verticalCenter
         }
         font {
             family: qfont.semiBold.name
