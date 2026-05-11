@@ -121,6 +121,21 @@ App {
         property url weerFullWeatherForecastScreenUrl: "WeerFullWeatherForecastScreen.qml"
         property url weerMenuUrl: "WeerMenu.qml"
         property url weerTrayUrl: "WeerTray.qml"
+
+        // In-flight XHR tracking so we can abort previous requests and break
+        // the onreadystatechange closure cycle when timers fire repeatedly.
+        property var weatherXhr: null
+        property var rainXhr: null
+        property var geocodeXhr: null
+    }
+
+    function cancelXhr(xhr) {
+        if (!xhr)
+            return;
+        xhr.onreadystatechange = null;
+        try {
+            xhr.abort();
+        } catch (e) {}
     }
 
     function init() {
@@ -165,6 +180,15 @@ App {
             "weight": 110
         });
         registry.registerWidget("systrayIcon", p.weerTrayUrl, weerApp);
+    }
+
+    Component.onDestruction: {
+        cancelXhr(p.weatherXhr);
+        p.weatherXhr = null;
+        cancelXhr(p.rainXhr);
+        p.rainXhr = null;
+        cancelXhr(p.geocodeXhr);
+        p.geocodeXhr = null;
     }
 
     Component.onCompleted: {
@@ -248,7 +272,9 @@ App {
         dayNames[6] = "Za";
         var now = new Date().getTime();
         timeStr = i18n.dateTime(now, i18n.time_yes);
+        cancelXhr(p.weatherXhr);
         var xhr = new XMLHttpRequest();
+        p.weatherXhr = xhr;
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
@@ -424,6 +450,9 @@ App {
                     iconImageDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Dim", iconId, weatherDescription, sunrise, sunset, timeStr);
                     iconImageNoDim = WeerJS.parseWeatherIdAndText(false, "file:///qmf/qml/apps/weer/drawables/Home", iconId, weatherDescription, sunrise, sunset, timeStr);
                 }
+                xhr.onreadystatechange = null;
+                if (p.weatherXhr === xhr)
+                    p.weatherXhr = null;
             }
         };
         xhr.open("GET", "https://data.buienradar.nl/2.0/feed/json", true);
@@ -438,7 +467,9 @@ App {
         var lat4 = parseFloat(lat).toFixed(4);
         var lon4 = parseFloat(lon).toFixed(4);
         var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4 + "&longitude=" + lon4 + "&current=temperature_2m,apparent_temperature,relative_humidity_2m" + ",wind_speed_10m,wind_direction_10m,surface_pressure,weather_code,uv_index,precipitation" + "&hourly=visibility,temperature_2m,uv_index,precipitation,wind_speed_10m,wind_direction_10m,weather_code,precipitation_probability,sunshine_duration" + "&daily=weather_code,temperature_2m_max,temperature_2m_min" + ",precipitation_sum,precipitation_probability_max,wind_speed_10m_max" + ",wind_direction_10m_dominant,sunshine_duration,sunrise,sunset,uv_index_max" + "&timezone=auto&forecast_days=5";
+        cancelXhr(p.weatherXhr);
         var xhr = new XMLHttpRequest();
+        p.weatherXhr = xhr;
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
@@ -523,17 +554,24 @@ App {
 
                     // reverse-geocode GPS coordinates to city name via BigDataCloud
                     // (free, no API key, no User-Agent requirement — Nominatim rejects header-less QML XHRs)
+                    cancelXhr(p.geocodeXhr);
                     var geocodeXhr = new XMLHttpRequest();
+                    p.geocodeXhr = geocodeXhr;
                     geocodeXhr.onreadystatechange = function () {
-                        if (geocodeXhr.readyState == 4 && geocodeXhr.status == 200) {
-                            try {
-                                var geocodeData = JSON.parse(geocodeXhr.responseText);
-                                var city = geocodeData['city'] || geocodeData['locality'] || geocodeData['principalSubdivision'];
-                                if (city) {
-                                    locationName = city;
-                                    buildActualWeatherOM(locationName);
-                                }
-                            } catch (e) {}
+                        if (geocodeXhr.readyState == 4) {
+                            if (geocodeXhr.status == 200) {
+                                try {
+                                    var geocodeData = JSON.parse(geocodeXhr.responseText);
+                                    var city = geocodeData['city'] || geocodeData['locality'] || geocodeData['principalSubdivision'];
+                                    if (city) {
+                                        locationName = city;
+                                        buildActualWeatherOM(locationName);
+                                    }
+                                } catch (e) {}
+                            }
+                            geocodeXhr.onreadystatechange = null;
+                            if (p.geocodeXhr === geocodeXhr)
+                                p.geocodeXhr = null;
                         }
                     };
                     geocodeXhr.open("GET", "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat4 + "&longitude=" + lon4 + "&localityLanguage=nl", true);
@@ -641,6 +679,9 @@ App {
                     forecastTitle = "Komende 12 uur";
                     forecastText = "";
                 }
+                xhr.onreadystatechange = null;
+                if (p.weatherXhr === xhr)
+                    p.weatherXhr = null;
             }
         };
         xhr.open("GET", url, true);
@@ -649,7 +690,9 @@ App {
 
     // --- Buienradar rain fetcher ---
     function fetchBuienradarRain() {
+        cancelXhr(p.rainXhr);
         var xhr = new XMLHttpRequest();
+        p.rainXhr = xhr;
         var forecast = [];
         var precip = 0;
         var maxPrecip = 0;
@@ -701,6 +744,9 @@ App {
                         rainMaxMm = Math.round(maxPrecip + 0.5);
                     }
                 }
+                xhr.onreadystatechange = null;
+                if (p.rainXhr === xhr)
+                    p.rainXhr = null;
             }
         };
         xhr.open("GET", "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat=" + lat + "&lon=" + lon, true);
@@ -714,6 +760,7 @@ App {
     // resulting array uses 5-min resolution throughout (rainHours * 12 slots);
     // each Open-Meteo hourly value is repeated across its 12 5-min slots.
     function fetchOpenMeteoRain() {
+        cancelXhr(p.rainXhr);
         var totalSlots = rainHours * 12;
         var precipSlots = new Array(totalSlots);
         for (var k = 0; k < totalSlots; k++)
@@ -726,6 +773,7 @@ App {
             "gotBR": false
         };
         var brXhr = new XMLHttpRequest();
+        p.rainXhr = brXhr;
         brXhr.onreadystatechange = function () {
             if (brXhr.readyState != 4)
                 return;
@@ -756,6 +804,11 @@ App {
                 } catch (e) {}
             }
 
+            brXhr.onreadystatechange = null;
+            // only release the slot if no follow-up XHR has taken it
+            if (p.rainXhr === brXhr)
+                p.rainXhr = null;
+
             // Need Open-Meteo if rainHours > 2 (extra hours) or Buienradar failed
             if (rainHours > 2 || !state.gotBR) {
                 fetchHourly();
@@ -768,6 +821,7 @@ App {
             var lon4 = parseFloat(lon).toFixed(4);
             var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4 + "&longitude=" + lon4 + "&hourly=precipitation" + "&timezone=auto&forecast_days=2";
             var omXhr = new XMLHttpRequest();
+            p.rainXhr = omXhr;
             omXhr.onreadystatechange = function () {
                 if (omXhr.readyState != 4)
                     return;
@@ -818,6 +872,9 @@ App {
                         }
                     } catch (e) {}
                 }
+                omXhr.onreadystatechange = null;
+                if (p.rainXhr === omXhr)
+                    p.rainXhr = null;
                 finalize();
             };
             omXhr.open("GET", url, true);
