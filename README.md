@@ -12,14 +12,14 @@ Currently tracking upstream version **9.0.11** (see `version.txt` / `Changelog.t
 
 ## Table of contents
 
--   [What it does](#what-it-does)
--   [Tiles](#tiles)
--   [Screens](#screens)
--   [Data sources](#data-sources)
--   [Settings](#settings)
--   [Comparison with upstream](#comparison-with-upstream)
--   [Repository layout](#repository-layout)
--   [Development](#development)
+- [What it does](#what-it-does)
+- [Tiles](#tiles)
+- [Screens](#screens)
+- [Data sources](#data-sources)
+- [Settings](#settings)
+- [Comparison with upstream](#comparison-with-upstream)
+- [Repository layout](#repository-layout)
+- [Development](#development)
 
 ---
 
@@ -27,21 +27,21 @@ Currently tracking upstream version **9.0.11** (see `version.txt` / `Changelog.t
 
 `toon-weer` adds Dutch weather information to the Toon home screen and tray:
 
--   Current temperature, wind, humidity, air pressure and "gevoelstemperatuur"
-    (feels-like) for a selected KNMI weather station (Buienradar JSON feed).
--   Rain prediction for the next two hours per lon/lat coordinate, plotted as a
-    graph on a tile.
--   A summary tile that combines current conditions with today's or tomorrow's
-    min/max temperature, max wind, max UV, total precipitation and a numeric
-    weather score.
--   Sunrise / sunset tile for the selected location.
--   A 5-day forecast (icons, min/max temperature, precipitation, weather score)
-    on the details screen.
--   A full-screen radar viewer with multiple Buienradar map options (rain,
-    pollen, mosquito, BBQ, EU map, hourly/3-hour/24-hour radar, minimum and
-    maximum temperature maps, current temperature, wind force, minimum ground
-    temperature, motregen).
--   A tray icon that opens the big radar viewer directly.
+- Current temperature, wind, humidity, air pressure and "gevoelstemperatuur"
+  (feels-like) for a selected KNMI weather station (Buienradar JSON feed).
+- Rain prediction for the next two hours per lon/lat coordinate, plotted as a
+  graph on a tile.
+- A summary tile that combines current conditions with today's or tomorrow's
+  min/max temperature, max wind, max UV, total precipitation and a numeric
+  weather score.
+- Sunrise / sunset tile for the selected location.
+- A 5-day forecast (icons, min/max temperature, precipitation, weather score)
+  on the details screen.
+- A full-screen radar viewer with multiple Buienradar map options (rain,
+  pollen, mosquito, BBQ, EU map, hourly/3-hour/24-hour radar, minimum and
+  maximum temperature maps, current temperature, wind force, minimum ground
+  temperature, motregen).
+- A tray icon that opens the big radar viewer directly.
 
 ## Tiles
 
@@ -66,25 +66,25 @@ Currently tracking upstream version **9.0.11** (see `version.txt` / `Changelog.t
 
 ## Data sources
 
--   **Buienradar JSON feed** — current conditions, station list, 5-day forecast,
-    forecast text, radar images.
--   **Buienradar 2-hour rain prediction** — per lon/lat, used for the rain tile
-    and big radar overlays.
--   **Open-Meteo** — hourly precipitation, UV index and additional fields used
-    for the summary tile and weather score. Hourly precipitation is interpolated
-    into 5-minute slots for the rain tile.
+- **Buienradar JSON feed** — current conditions, station list, 5-day forecast,
+  forecast text, radar images.
+- **Buienradar 2-hour rain prediction** — per lon/lat, used for the rain tile
+  and big radar overlays.
+- **Open-Meteo** — hourly precipitation, UV index and additional fields used
+  for the summary tile and weather score. Hourly precipitation is interpolated
+  into 5-minute slots for the rain tile.
 
 ## Settings
 
 Settings stored in `/mnt/data/tsc`:
 
--   Selected weather station (KNMI ID).
--   Longitude / latitude for the rain prediction.
--   Weather refresh interval (configurable).
--   Rain refresh interval (configurable).
--   Rain-prediction hours window (configurable, drives both the tile and the
-    summary aggregates).
--   Show today vs. show tomorrow in the summary tile.
+- Selected weather station (KNMI ID).
+- Longitude / latitude for the rain prediction.
+- Weather refresh interval (configurable).
+- Rain refresh interval (configurable).
+- Rain-prediction hours window (configurable, drives both the tile and the
+  summary aggregates).
+- Show today vs. show tomorrow in the summary tile.
 
 ## Comparison with upstream
 
