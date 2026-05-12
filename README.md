@@ -45,24 +45,24 @@ Currently tracking upstream version **9.0.11** (see `version.txt` / `Changelog.t
 
 ## Tiles
 
-| Tile                  | Source file              | Description |
-|-----------------------|--------------------------|-------------|
-| Weather tile          | `WeerTile.qml`           | Compact tile showing temperature, weather icon, wind (Bft), humidity, air pressure and "gevoelstemperatuur". |
-| Summary tile          | `WeerSummaryTile.qml`    | **New in fork.** "Now \| today" or "now \| tomorrow" view with current temperature + icon, min/max, max wind, current/max UV, current 5-min rain / total rain, and current / day weather score. |
-| Rain prediction tile  | `WeerRegenTile.qml`      | Graph of expected rain over the next N hours (configurable), interpolated from Open-Meteo data into 5-minute slots. |
-| Sunrise / sunset tile | `WeerSunriseTile.qml`    | Sunrise and sunset times for the selected location. |
+| Tile                  | Source file           | Description                                                                                                                                                                                     |
+| --------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Weather tile          | `WeerTile.qml`        | Compact tile showing temperature, weather icon, wind (Bft), humidity, air pressure and "gevoelstemperatuur".                                                                                    |
+| Summary tile          | `WeerSummaryTile.qml` | **New in fork.** "Now \| today" or "now \| tomorrow" view with current temperature + icon, min/max, max wind, current/max UV, current 5-min rain / total rain, and current / day weather score. |
+| Rain prediction tile  | `WeerRegenTile.qml`   | Graph of expected rain over the next N hours (configurable), interpolated from Open-Meteo data into 5-minute slots.                                                                             |
+| Sunrise / sunset tile | `WeerSunriseTile.qml` | Sunrise and sunset times for the selected location.                                                                                                                                             |
 
 ## Screens
 
-| Screen                       | Source file                          | Description |
-|------------------------------|--------------------------------------|-------------|
-| Details                      | `WeerDetailsScreen.qml`              | Current conditions, forecast text, 5-day forecast (icons / min-max / precipitation / score), 12-hour strip with hourly weather score, small radar preview. |
-| Full forecast text           | `WeerFullWeatherForecastScreen.qml`  | Full-screen scrollable weather forecast text. |
-| Weather station picker       | `WeerStationScreen.qml`              | Select a KNMI station from the list. |
-| Lon/Lat editor               | `WeerEditLonLatScreen.qml`           | Set coordinates manually or by tapping the map. |
-| Big radar viewer             | `WeerActualRadarScreen.qml`          | Buienradar radar / specialty maps with the yellow location marker. |
-| Tray icon                    | `WeerTray.qml`                       | Opens the big radar viewer. |
-| Menu entry                   | `WeerMenu.qml`                       | Adds the app to Toon's menu. |
+| Screen                 | Source file                         | Description                                                                                                                                                |
+| ---------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Details                | `WeerDetailsScreen.qml`             | Current conditions, forecast text, 5-day forecast (icons / min-max / precipitation / score), 12-hour strip with hourly weather score, small radar preview. |
+| Full forecast text     | `WeerFullWeatherForecastScreen.qml` | Full-screen scrollable weather forecast text.                                                                                                              |
+| Weather station picker | `WeerStationScreen.qml`             | Select a KNMI station from the list.                                                                                                                       |
+| Lon/Lat editor         | `WeerEditLonLatScreen.qml`          | Set coordinates manually or by tapping the map.                                                                                                            |
+| Big radar viewer       | `WeerActualRadarScreen.qml`         | Buienradar radar / specialty maps with the yellow location marker.                                                                                         |
+| Tray icon              | `WeerTray.qml`                      | Opens the big radar viewer.                                                                                                                                |
+| Menu entry             | `WeerMenu.qml`                      | Adds the app to Toon's menu.                                                                                                                               |
 
 ## Data sources
 
@@ -94,44 +94,44 @@ rows marked **fork-only** below.
 
 ### Feature comparison
 
-| Feature                                              | Upstream `buienradar` | Fork `toon-weer`         |
-|------------------------------------------------------|-----------------------|--------------------------|
-| Weather tile (temp, wind, humidity, air pressure)    | yes                   | yes                      |
-| Sunrise / sunset tile                                | yes                   | yes                      |
-| 2-hour rain prediction tile (Buienradar)             | yes                   | yes, extended            |
-| 5-day forecast on details screen                     | yes                   | yes, redesigned          |
-| Full radar viewer (rain / pollen / muggen / BBQ / EU)| yes                   | yes                      |
-| Tray icon → radar viewer                             | yes                   | yes                      |
-| KNMI station picker + lon/lat editor                 | yes                   | yes                      |
-| **Summary tile** (now \| today / tomorrow combined)  | —                     | **fork-only**            |
-| **Numeric weather score 0–10**                       | —                     | **fork-only**            |
-| **Hourly weather score in 12-hour strip**            | —                     | **fork-only**            |
-| **5-day forecast: combined min/max row + daily mm**  | basic min/max only    | **fork-only redesign**   |
-| **Open-Meteo data feed (UV, hourly precipitation)**  | —                     | **fork-only**            |
-| **Rain tile interpolated to 5-minute slots**         | Buienradar only       | **fork-only (Open-Meteo)** |
-| **Configurable weather refresh interval**            | fixed 10 min          | **fork-only**            |
-| **Configurable rain refresh interval**               | fixed                 | **fork-only**            |
-| **Configurable rain-prediction hours window**        | fixed 2 h             | **fork-only**            |
-| **"gevoelstemperatuur" label** (was "feelsLikeTemp") | feelsLikeTemp         | **fork-only rename**     |
-| **XHR memory-leak fix** (abort + closure cleanup)    | —                     | **fork-only**            |
-| **QML files prefixed `Weer*`** (was `Buienradar*`)   | `Buienradar*`         | **fork-only rename**     |
-| Settings stored in `/mnt/data/tsc`                   | yes (since 8.4.3)     | yes                      |
+| Feature                                               | Upstream `buienradar` | Fork `toon-weer`           |
+| ----------------------------------------------------- | --------------------- | -------------------------- |
+| Weather tile (temp, wind, humidity, air pressure)     | yes                   | yes                        |
+| Sunrise / sunset tile                                 | yes                   | yes                        |
+| 2-hour rain prediction tile (Buienradar)              | yes                   | yes, extended              |
+| 5-day forecast on details screen                      | yes                   | yes, redesigned            |
+| Full radar viewer (rain / pollen / muggen / BBQ / EU) | yes                   | yes                        |
+| Tray icon → radar viewer                              | yes                   | yes                        |
+| KNMI station picker + lon/lat editor                  | yes                   | yes                        |
+| **Summary tile** (now \| today / tomorrow combined)   | —                     | **fork-only**              |
+| **Numeric weather score 0–10**                        | —                     | **fork-only**              |
+| **Hourly weather score in 12-hour strip**             | —                     | **fork-only**              |
+| **5-day forecast: combined min/max row + daily mm**   | basic min/max only    | **fork-only redesign**     |
+| **Open-Meteo data feed (UV, hourly precipitation)**   | —                     | **fork-only**              |
+| **Rain tile interpolated to 5-minute slots**          | Buienradar only       | **fork-only (Open-Meteo)** |
+| **Configurable weather refresh interval**             | fixed 10 min          | **fork-only**              |
+| **Configurable rain refresh interval**                | fixed                 | **fork-only**              |
+| **Configurable rain-prediction hours window**         | fixed 2 h             | **fork-only**              |
+| **"gevoelstemperatuur" label** (was "feelsLikeTemp")  | feelsLikeTemp         | **fork-only rename**       |
+| **XHR memory-leak fix** (abort + closure cleanup)     | —                     | **fork-only**              |
+| **QML files prefixed `Weer*`** (was `Buienradar*`)    | `Buienradar*`         | **fork-only rename**       |
+| Settings stored in `/mnt/data/tsc`                    | yes (since 8.4.3)     | yes                        |
 
 ### Tooling / repo comparison
 
-| Item                                          | Upstream | Fork |
-|-----------------------------------------------|----------|------|
-| `README.md`                                   | —        | yes  |
-| `.pre-commit-config.yaml` (prettier, qmllint) | —        | yes  |
-| `.prettierrc.json` / `.prettierignore`        | —        | yes  |
+| Item                                          | Upstream | Fork                                  |
+| --------------------------------------------- | -------- | ------------------------------------- |
+| `README.md`                                   | —        | yes                                   |
+| `.pre-commit-config.yaml` (prettier, qmllint) | —        | yes                                   |
+| `.prettierrc.json` / `.prettierignore`        | —        | yes                                   |
 | GitHub Actions PR linting workflow            | —        | yes (`.github/workflows/pr-lint.yml`) |
-| `toon-qml-memory.sh` (QML memory diagnostics) | —        | yes  |
-| `qmlformat`-formatted QML                     | —        | yes  |
+| `toon-qml-memory.sh` (QML memory diagnostics) | —        | yes                                   |
+| `qmlformat`-formatted QML                     | —        | yes                                   |
 
 ### File renames (upstream → fork)
 
 | Upstream                                  | Fork                                |
-|-------------------------------------------|-------------------------------------|
+| ----------------------------------------- | ----------------------------------- |
 | `BuienradarApp.qml`                       | `WeerApp.qml`                       |
 | `BuienradarTile.qml`                      | `WeerTile.qml`                      |
 | `BuienradarDetailsScreen.qml`             | `WeerDetailsScreen.qml`             |
