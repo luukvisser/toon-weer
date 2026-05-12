@@ -33,29 +33,54 @@ jobs:
             DEBIAN_FRONTEND: noninteractive
 
         steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Install Qt 6 declarative tools
+            - name: Install Qt 6 declarative tools and git
               run: |
                   apt-get update -qq
                   apt-get install -y --no-install-recommends \
                     qt6-declarative-dev-tools \
-                    git
+                    git \
+                    ca-certificates
                   echo "/usr/lib/qt6/bin" >> $GITHUB_PATH
 
-            - name: Check qmlformat
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Determine changed QML files
+              id: changed
               run: |
-                  find . -name "*.qml" -print0 | xargs -0 qmlformat -i
+                  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+                  base_ref="${{ github.base_ref }}"
+                  git fetch --no-tags origin "$base_ref"
+                  files=$(git diff --name-only --diff-filter=ACMR "origin/$base_ref"...HEAD -- '*.qml')
+                  if [ -z "$files" ]; then
+                    echo "No changed QML files in this PR."
+                    echo "has_changes=false" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "Changed QML files:"
+                    echo "$files"
+                    echo "has_changes=true" >> "$GITHUB_OUTPUT"
+                    {
+                      echo "files<<EOF"
+                      echo "$files"
+                      echo "EOF"
+                    } >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Check qmlformat
+              if: steps.changed.outputs.has_changes == 'true'
+              run: |
+                  echo "${{ steps.changed.outputs.files }}" | xargs qmlformat -i
                   git diff --exit-code || {
                     echo ""
                     echo "qmlformat found formatting issues. Run locally to fix:"
-                    echo "  find . -name '*.qml' -print0 | xargs -0 qmlformat -i"
+                    echo "  git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD -- '*.qml' | xargs qmlformat -i"
                     exit 1
                   }
 
             - name: Run qmllint
+              if: steps.changed.outputs.has_changes == 'true'
               continue-on-error: true
               run: |
-                  find . -name "*.qml" -print0 | \
-                    xargs -0 qmllint --bare
+                  echo "${{ steps.changed.outputs.files }}" | xargs qmllint --bare
