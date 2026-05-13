@@ -99,9 +99,9 @@ Tile {
     Text {
         id: summaryWind
         text: {
-            var cur = app.windSpeedBft !== "" ? app.windSpeedBft : "—";
-            var max = app.maxWindBftSummary !== "" ? app.maxWindBftSummary : "—";
-            return cur + " | " + max + " Bft";
+            var cur = app.windSpeedMs !== "" ? i18n.number(Number(app.windSpeedMs), 1) : "—";
+            var max = app.maxWindMsSummary !== "" ? app.maxWindMsSummary : "—";
+            return cur + " | " + max + " m/s";
         }
         anchors {
             baseline: parent.bottom
