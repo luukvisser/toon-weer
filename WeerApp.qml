@@ -83,6 +83,8 @@ App {
     property real dayTotalRainTomorrow: 0
     property string dayMaxWindBftToday: ""
     property string dayMaxWindBftTomorrow: ""
+    property string dayMaxWindMsToday: ""
+    property string dayMaxWindMsTomorrow: ""
     property string dayScoreTomorrow: ""
 
     // Switches to tomorrow's values once the current hour reaches (24 + dayOffsetHour) % 24
@@ -95,6 +97,7 @@ App {
     property real maxUVSummary: showTomorrow ? dayMaxUVTomorrow : dayMaxUVToday
     property real totalRainSummary: showTomorrow ? dayTotalRainTomorrow : dayTotalRainToday
     property string maxWindBftSummary: showTomorrow ? dayMaxWindBftTomorrow : dayMaxWindBftToday
+    property string maxWindMsSummary: showTomorrow ? dayMaxWindMsTomorrow : dayMaxWindMsToday
     property string scoreSummary: showTomorrow ? dayScoreTomorrow : scoreToday
 
     // --- Rain tile ---
@@ -425,6 +428,7 @@ App {
                         dayMaxUVToday = 0;
                         dayTotalRainToday = todayForecastBR['mmRainMax'] !== undefined ? todayForecastBR['mmRainMax'] : 0;
                         dayMaxWindBftToday = todayForecastBR['wind'] !== undefined ? WeerJS.msToBftDecimal(WeerJS.bftToMs(parseInt(todayForecastBR['wind']) || 0)).toString() : windSpeedBft;
+                        dayMaxWindMsToday = todayForecastBR['wind'] !== undefined ? i18n.number(WeerJS.bftToMs(parseInt(todayForecastBR['wind']) || 0), 1) : windSpeedMs;
                     }
                     if (tomorrowForecastBR) {
                         dayMinTempTomorrow = tomorrowForecastBR['mintemperatureMin'] !== undefined ? i18n.number(Number(tomorrowForecastBR['mintemperatureMin']), 1) : "";
@@ -432,6 +436,7 @@ App {
                         dayMaxUVTomorrow = 0;
                         dayTotalRainTomorrow = tomorrowForecastBR['mmRainMax'] !== undefined ? tomorrowForecastBR['mmRainMax'] : 0;
                         dayMaxWindBftTomorrow = tomorrowForecastBR['wind'] !== undefined ? WeerJS.msToBftDecimal(WeerJS.bftToMs(parseInt(tomorrowForecastBR['wind']) || 0)).toString() : "";
+                        dayMaxWindMsTomorrow = tomorrowForecastBR['wind'] !== undefined ? i18n.number(WeerJS.bftToMs(parseInt(tomorrowForecastBR['wind']) || 0), 1) : "";
                     }
 
                     //forecast title and text, remove special characters
@@ -634,12 +639,14 @@ App {
                     dayMaxUVToday = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][0] || 0) * 10) / 10 : 0;
                     dayTotalRainToday = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][0] || 0) * 10) / 10 : 0;
                     dayMaxWindBftToday = WeerJS.msToBftDecimal((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][0] || 0) : 0) / 3.6).toString();
+                    dayMaxWindMsToday = i18n.number((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][0] || 0) : 0) / 3.6, 1);
                     if (daily['time'].length > 1) {
                         dayMinTempTomorrow = i18n.number(daily['temperature_2m_min'][1], 1);
                         dayMaxTempTomorrow = i18n.number(daily['temperature_2m_max'][1], 1);
                         dayMaxUVTomorrow = daily['uv_index_max'] ? Math.round((daily['uv_index_max'][1] || 0) * 10) / 10 : 0;
                         dayTotalRainTomorrow = daily['precipitation_sum'] ? Math.round((daily['precipitation_sum'][1] || 0) * 10) / 10 : 0;
                         dayMaxWindBftTomorrow = WeerJS.msToBftDecimal((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][1] || 0) : 0) / 3.6).toString();
+                        dayMaxWindMsTomorrow = i18n.number((daily['wind_speed_10m_max'] ? (daily['wind_speed_10m_max'][1] || 0) : 0) / 3.6, 1);
                     }
 
                     // hourly strip: next 12 hours starting at the current hour
