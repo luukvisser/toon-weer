@@ -13,7 +13,12 @@ Screen {
             app.deviceIp = text.trim();
     }
 
-    function validateIp(text, isFinal) {
+    function saveOpenairIp(text) {
+        if (text !== undefined)
+            app.openairIp = text.trim();
+    }
+
+    function validateText(text, isFinal) {
         return null;
     }
 
@@ -25,26 +30,23 @@ Screen {
         }
     }
 
-    function validateRefresh(text, isFinal) {
-        return null;
-    }
-
     onShown: {
         addCustomTopRightButton("Opslaan");
         ipLabel.inputText = app.deviceIp;
+        openairLabel.inputText = app.openairIp;
         refreshLabel.inputText = app.refreshSec.toString();
     }
 
     onCustomButtonClicked: {
         app.saveSettings();
-        if (app.deviceIp)
+        if (app.deviceIp || app.openairIp)
             app.fetchData();
         hide();
     }
 
     Text {
         id: explanationText
-        text: "IP-adres van de AirGradient luchtkwaliteitsmeter op het lokale netwerk."
+        text: "IP-adressen van de lokale ESPHome apparaten. AirGradient levert CO₂ en temperatuur; Open-AIR levert de ventilatorsnelheid van de Orcon WTW."
         width: isNxt ? 500 : 400
         wrapMode: Text.WordWrap
         font {
@@ -55,7 +57,7 @@ Screen {
         anchors {
             left: ipButton.right
             leftMargin: 20
-            top: ipButton.top
+            top: ipLabel.top
         }
     }
 
@@ -63,7 +65,7 @@ Screen {
         id: ipLabel
         width: isNxt ? 350 : 280
         height: isNxt ? 45 : 35
-        leftText: "IP-adres:"
+        leftText: "AirGradient IP:"
         leftTextAvailableWidth: isNxt ? 175 : 140
 
         anchors {
@@ -74,7 +76,7 @@ Screen {
         }
 
         onClicked: {
-            qkeyboard.open("IP-adres", ipLabel.inputText, saveIp, validateIp);
+            qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
         }
     }
 
@@ -90,7 +92,41 @@ Screen {
         }
 
         onClicked: {
-            qkeyboard.open("IP-adres", ipLabel.inputText, saveIp, validateIp);
+            qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
+        }
+    }
+
+    EditTextLabel4421 {
+        id: openairLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "Open-AIR IP:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+
+        anchors {
+            left: ipLabel.left
+            top: ipLabel.bottom
+            topMargin: 6
+        }
+
+        onClicked: {
+            qkeyboard.open("Open-AIR IP", openairLabel.inputText, saveOpenairIp, validateText);
+        }
+    }
+
+    IconButton {
+        id: openairButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+
+        anchors {
+            left: openairLabel.right
+            leftMargin: 6
+            top: openairLabel.top
+        }
+
+        onClicked: {
+            qkeyboard.open("Open-AIR IP", openairLabel.inputText, saveOpenairIp, validateText);
         }
     }
 
@@ -102,13 +138,13 @@ Screen {
         leftTextAvailableWidth: isNxt ? 175 : 140
 
         anchors {
-            left: ipLabel.left
-            top: ipLabel.bottom
+            left: openairLabel.left
+            top: openairLabel.bottom
             topMargin: 6
         }
 
         onClicked: {
-            qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateRefresh);
+            qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateText);
         }
     }
 
@@ -120,12 +156,11 @@ Screen {
         anchors {
             left: refreshLabel.right
             leftMargin: 6
-            top: ipLabel.bottom
-            topMargin: 6
+            top: refreshLabel.top
         }
 
         onClicked: {
-            qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateRefresh);
+            qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateText);
         }
     }
 }

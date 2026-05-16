@@ -8,10 +8,12 @@ App {
     objectName: "Co2App"
 
     property string deviceIp: ""
+    property string openairIp: ""
     property int refreshSec: 60
 
     property string co2Value: "—"
     property string temperature: "—"
+    property string fanSpeed: "—"
     property string lastUpdated: ""
 
     property url tileUrl: "Co2TempTile.qml"
@@ -60,6 +62,8 @@ App {
             var settings = JSON.parse(co2SettingsFile.read());
             if (settings['deviceIp'])
                 deviceIp = settings['deviceIp'];
+            if (settings['openairIp'])
+                openairIp = settings['openairIp'];
             if (settings['refreshSec'] !== undefined) {
                 var r = parseInt(settings['refreshSec']);
                 if (!isNaN(r) && r >= 10 && r <= 300)
@@ -67,13 +71,14 @@ App {
             }
         } catch (e) {
         }
-        if (deviceIp)
+        if (deviceIp || openairIp)
             fetchData();
     }
 
     function saveSettings() {
         var settings = {
             "deviceIp": deviceIp,
+            "openairIp": openairIp,
             "refreshSec": refreshSec
         };
         var xhr = new XMLHttpRequest();
@@ -82,8 +87,17 @@ App {
     }
 
     function fetchData() {
-        if (!deviceIp)
+        if (deviceIp)
+            fetchCo2();
+        else
+            fetchFanSpeed();
+    }
+
+    function fetchCo2() {
+        if (!deviceIp) {
+            fetchFanSpeed();
             return;
+        }
         cancelXhr(p.fetchXhr);
         var xhr = new XMLHttpRequest();
         p.fetchXhr = xhr;
@@ -107,8 +121,10 @@ App {
     }
 
     function fetchTemperature() {
-        if (!deviceIp)
+        if (!deviceIp) {
+            fetchFanSpeed();
             return;
+        }
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
@@ -121,17 +137,52 @@ App {
                     } catch (e) {
                     }
                 }
-                var now = new Date();
-                lastUpdated = ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
+                fetchFanSpeed();
             }
         };
         xhr.open("GET", "http://" + deviceIp + "/sensor/temperature", true);
         xhr.send();
     }
 
+    function fetchFanSpeed() {
+        if (!openairIp) {
+            updateTimestamp();
+            return;
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                xhr.onreadystatechange = null;
+                if (xhr.status == 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        var speed = -1;
+                        if (data.speed_level !== undefined)
+                            speed = data.speed_level;
+                        else if (data.value !== undefined && typeof data.value === "number")
+                            speed = data.value;
+                        if (speed >= 0)
+                            fanSpeed = Math.round(speed).toString();
+                        else if (data.value === false)
+                            fanSpeed = "0";
+                    } catch (e) {
+                    }
+                }
+                updateTimestamp();
+            }
+        };
+        xhr.open("GET", "http://" + openairIp + "/fan/fan_motor", true);
+        xhr.send();
+    }
+
+    function updateTimestamp() {
+        var now = new Date();
+        lastUpdated = ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
+    }
+
     Timer {
         interval: refreshSec * 1000
-        running: deviceIp.length > 0
+        running: deviceIp.length > 0 || openairIp.length > 0
         repeat: true
         onTriggered: fetchData()
     }
