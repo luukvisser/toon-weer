@@ -7,8 +7,8 @@ App {
     id: co2App
     objectName: "Co2App"
 
-    property string deviceIp: ""
-    property string openairIp: ""
+    property string deviceIp: "192.168.68.111"
+    property string openairIp: "192.168.68.113"
     property int refreshSec: 60
 
     property string co2Value: "—"
