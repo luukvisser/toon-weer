@@ -99,8 +99,8 @@ Tile {
         id: weerTileWindsnelheidText
         text: tempWind
         anchors {
-            bottom: weerTileLuchtdrukText4.top
-            bottomMargin: isNxt ? 5 : 4
+            baseline: weerTileLuchtdrukText4.top
+            baselineOffset: isNxt ? -5 : -4
             horizontalCenter: parent.horizontalCenter
         }
         font {
@@ -130,8 +130,11 @@ Tile {
     Image {
         id: weatherTileIcon
         source: app.iconUrl
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2
+        anchors {
+            baseline: parent.top
+            baselineOffset: isNxt ? 96 : 75
+            horizontalCenter: parent.horizontalCenter
+        }
         cache: false
         visible: !dimState
     }
