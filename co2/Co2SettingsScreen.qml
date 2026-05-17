@@ -130,22 +130,6 @@ Screen {
         }
     }
 
-    Text {
-        id: fanDiagText
-        text: "Open-AIR: " + app.fanDiag
-        visible: app.fanDiag !== ""
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 16 : 13
-        }
-        color: colors.rbTitle
-        anchors {
-            left: openairLabel.left
-            top: openairButton.bottom
-            topMargin: 4
-        }
-    }
-
     EditTextLabel4421 {
         id: refreshLabel
         width: isNxt ? 350 : 280
@@ -155,7 +139,7 @@ Screen {
 
         anchors {
             left: openairLabel.left
-            top: fanDiagText.visible ? fanDiagText.bottom : openairLabel.bottom
+            top: openairLabel.bottom
             topMargin: 6
         }
 

@@ -15,7 +15,6 @@ App {
     property string temperature: "—"
     property string fanSpeed: "—"
     property string lastUpdated: ""
-    property string fanDiag: ""
 
     // Update state
     property string currentVersion: "—"
@@ -281,36 +280,19 @@ App {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 xhr.onreadystatechange = null;
-                if (xhr.status === 0) {
-                    fanDiag = "Geen verbinding";
-                } else if (xhr.status !== 200) {
-                    fanDiag = "HTTP " + xhr.status;
-                } else {
-                    fanDiag = xhr.responseText.substring(0, 80);
+                if (xhr.status == 200) {
                     try {
                         var data = JSON.parse(xhr.responseText);
                         var speed = -1;
-                        if (!data.value) {
-                            // fan is off
-                            speed = 0;
-                        } else if (data.speed_level !== undefined) {
-                            if (data.speed_count !== undefined && data.speed_count > 0)
-                                // discrete levels: normalise to 0-100 %
-                                speed = Math.round(data.speed_level / data.speed_count * 100);
-                            else
-                                speed = data.speed_level;
-                        } else if (data.speed !== undefined) {
-                            // legacy string API: LOW / MEDIUM / HIGH
-                            var lvl = data.speed.toUpperCase();
-                            if (lvl === "HIGH") speed = 100;
-                            else if (lvl === "MEDIUM") speed = 66;
-                            else if (lvl === "LOW") speed = 33;
-                            else speed = 0;
-                        }
+                        if (data.speed_level !== undefined)
+                            speed = data.speed_level;
+                        else if (data.value !== undefined && typeof data.value === "number")
+                            speed = data.value;
                         if (speed >= 0)
-                            fanSpeed = speed.toString();
+                            fanSpeed = Math.round(speed).toString();
+                        else if (data.value === false)
+                            fanSpeed = "0";
                     } catch (e) {
-                        fanDiag = "Parse fout: " + fanDiag;
                     }
                 }
                 updateTimestamp();
