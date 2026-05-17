@@ -317,7 +317,7 @@ App {
                 updateTimestamp();
             }
         };
-        xhr.open("GET", "http://" + openairIp + "/sensor/fan_speed", true);
+        xhr.open("GET", "http://" + openairIp + "/sensor/Fan Speed", true);
         xhr.send();
     }
 
