@@ -308,22 +308,15 @@ App {
                 if (xhr.status == 200) {
                     try {
                         var data = JSON.parse(xhr.responseText);
-                        var speed = -1;
-                        if (data.speed_level !== undefined)
-                            speed = data.speed_level;
-                        else if (data.value !== undefined && typeof data.value === "number")
-                            speed = data.value;
-                        if (speed >= 0)
-                            fanSpeed = Math.round(speed).toString();
-                        else if (data.value === false)
-                            fanSpeed = "0";
+                        if (data.value !== undefined && typeof data.value === "number")
+                            fanSpeed = Math.round(data.value).toString();
                     } catch (e) {
                     }
                 }
                 updateTimestamp();
             }
         };
-        xhr.open("GET", "http://" + openairIp + "/fan/open_air_mini", true);
+        xhr.open("GET", "http://" + openairIp + "/sensor/fan_speed", true);
         xhr.send();
     }
 
