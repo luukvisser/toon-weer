@@ -42,99 +42,92 @@ Tile {
         visible: !dimState
     }
 
-    Text {
-        id: co2ValueText
-        text: app.co2Value + " ppm"
+    // Two-row data block: CO₂ above fan, label column width matches icon width
+    Column {
+        id: dataColumn
+        spacing: isNxt ? 10 : 8
         anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 72 : 56
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 32 : 26
-        }
-        color: co2Color(app.co2Value)
-        visible: !dimState
-    }
-
-    Text {
-        id: co2Label
-        text: "CO<sub>2</sub>"
-        textFormat: Text.RichText
-        anchors {
-            baseline: co2ValueText.baseline
-            right: co2ValueText.left
-            rightMargin: 8
-        }
-        font {
-            family: qfont.semiBold.name
-            pixelSize: isNxt ? 18 : 14
-        }
-        color: defaultTextColor
-        visible: !dimState
-    }
-
-    Item {
-        id: fanRow
-        width: fanIcon.width + fanSpeedText.width + 8
-        height: fanIcon.height
-        anchors {
-            top: co2ValueText.baseline
-            topMargin: isNxt ? 14 : 10
+            top: tileTitle.bottom
+            topMargin: isNxt ? 8 : 6
             horizontalCenter: parent.horizontalCenter
         }
         visible: !dimState
 
-        Canvas {
-            id: fanIcon
-            width: isNxt ? 28 : 22
-            height: width
-            anchors {
-                left: parent.left
-                verticalCenter: parent.verticalCenter
-            }
-            property color blColor: defaultTextColor
-            onBlColorChanged: requestPaint()
+        // Row 1: CO₂ label | value
+        Row {
+            spacing: isNxt ? 8 : 6
 
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-                ctx.fillStyle = blColor;
-                var cx = width / 2;
-                var cy = height / 2;
-                var bladeR = width / 2 - 1;
-                var hubR = width * 0.13;
-                for (var i = 0; i < 3; i++) {
-                    ctx.save();
-                    ctx.translate(cx, cy);
-                    ctx.rotate(i * 2 * Math.PI / 3);
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
-                    ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
-                    ctx.fill();
-                    ctx.restore();
+            Text {
+                id: co2LabelItem
+                text: "CO<sub>2</sub>"
+                textFormat: Text.RichText
+                width: fanIconItem.width
+                height: co2ValueItem.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 16 : 13
                 }
-                ctx.beginPath();
-                ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
-                ctx.fill();
+                color: defaultTextColor
+            }
+
+            Text {
+                id: co2ValueItem
+                text: app.co2Value + " ppm"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 30 : 24
+                }
+                color: co2Color(app.co2Value)
             }
         }
 
-        Text {
-            id: fanSpeedText
-            text: app.fanSpeed + " %"
-            anchors {
-                left: fanIcon.right
-                leftMargin: 8
-                verticalCenter: parent.verticalCenter
+        // Row 2: fan icon | speed
+        Row {
+            spacing: isNxt ? 8 : 6
+
+            Canvas {
+                id: fanIconItem
+                width: isNxt ? 28 : 22
+                height: width
+                property color blColor: defaultTextColor
+                onBlColorChanged: requestPaint()
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
+                    ctx.fillStyle = blColor;
+                    var cx = width / 2;
+                    var cy = height / 2;
+                    var bladeR = width / 2 - 1;
+                    var hubR = width * 0.13;
+                    for (var i = 0; i < 3; i++) {
+                        ctx.save();
+                        ctx.translate(cx, cy);
+                        ctx.rotate(i * 2 * Math.PI / 3);
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
+                        ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
             }
-            font {
-                family: qfont.regular.name
-                pixelSize: isNxt ? 28 : 22
+
+            Text {
+                id: fanSpeedItem
+                text: app.fanSpeed + " %"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 28 : 22
+                }
+                color: defaultTextColor
             }
-            color: defaultTextColor
         }
     }
 
@@ -170,7 +163,7 @@ Tile {
         visible: !dimState
     }
 
-    // ----- Dimmed state: CO2 above fan speed -----
+    // ----- Dimmed state -----
 
     Text {
         id: dimCo2Label
