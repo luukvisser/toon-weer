@@ -80,7 +80,7 @@ Tile {
                 id: co2LabelItem
                 text: "CO<sub>2</sub>"
                 textFormat: Text.RichText
-                width: fanIconItem.width
+                width: isNxt ? 28 : 22
                 height: co2ValueItem.height
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -110,7 +110,7 @@ Tile {
                 id: pm25LabelItem
                 text: "PM<sub>2.5</sub>"
                 textFormat: Text.RichText
-                width: fanIconItem.width
+                width: isNxt ? 28 : 22
                 height: pm25ValueItem.height
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
