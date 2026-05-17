@@ -174,149 +174,104 @@ Tile {
 
     // ----- Dimmed state -----
 
-    Text {
-        id: dimCo2Label
-        text: "CO<sub>2</sub>"
-        textFormat: Text.RichText
+    Column {
+        id: dimColumn
+        spacing: isNxt ? 8 : 6
         anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 28 : 22
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.semiBold.name
-            pixelSize: isNxt ? 20 : 16
-        }
-        color: dimTextColor
-        visible: dimState
-    }
-
-    Text {
-        id: dimCo2Text
-        text: app.co2Value
-        anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 72 : 58
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 44 : 36
-        }
-        color: dimTextColor
-        visible: dimState
-    }
-
-    Text {
-        id: dimCo2Unit
-        text: "ppm"
-        anchors {
-            baseline: dimCo2Text.baseline
-            left: dimCo2Text.right
-            leftMargin: 4
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 18 : 14
-        }
-        color: dimTextColor
-        visible: dimState
-    }
-
-    Row {
-        id: dimPm25Row
-        spacing: 6
-        anchors {
-            top: dimCo2Text.bottom
-            topMargin: isNxt ? 6 : 4
+            verticalCenter: parent.verticalCenter
             horizontalCenter: parent.horizontalCenter
         }
         visible: dimState
 
-        Text {
-            id: dimPm25Label
-            text: "PM<sub>2.5</sub>"
-            textFormat: Text.RichText
-            anchors.verticalCenter: parent.verticalCenter
-            font {
-                family: qfont.regular.name
-                pixelSize: isNxt ? 16 : 13
-            }
-            color: dimTextColor
-        }
+        Row {
+            spacing: isNxt ? 8 : 6
 
-        Text {
-            id: dimPm25Value
-            text: app.pm25Value + " µg/m³"
-            anchors.verticalCenter: parent.verticalCenter
-            font {
-                family: qfont.regular.name
-                pixelSize: isNxt ? 24 : 20
-            }
-            color: dimTextColor
-        }
-    }
-
-    Item {
-        id: dimFanRow
-        width: dimFanIcon.width + dimFanSpeedText.width + 8
-        height: dimFanIcon.height
-        anchors {
-            top: dimPm25Row.bottom
-            topMargin: isNxt ? 6 : 4
-            horizontalCenter: parent.horizontalCenter
-        }
-        visible: dimState
-
-        Canvas {
-            id: dimFanIcon
-            width: isNxt ? 28 : 22
-            height: width
-            anchors {
-                left: parent.left
-                verticalCenter: parent.verticalCenter
-            }
-            property color blColor: dimTextColor
-            onBlColorChanged: requestPaint()
-
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-                ctx.fillStyle = blColor;
-                var cx = width / 2;
-                var cy = height / 2;
-                var bladeR = width / 2 - 1;
-                var hubR = width * 0.13;
-                for (var i = 0; i < 3; i++) {
-                    ctx.save();
-                    ctx.translate(cx, cy);
-                    ctx.rotate(i * 2 * Math.PI / 3);
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
-                    ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
-                    ctx.fill();
-                    ctx.restore();
+            Text {
+                text: "CO<sub>2</sub>"
+                textFormat: Text.RichText
+                font {
+                    family: qfont.semiBold.name
+                    pixelSize: isNxt ? 18 : 14
                 }
-                ctx.beginPath();
-                ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
-                ctx.fill();
+                color: dimTextColor
+            }
+
+            Text {
+                text: app.co2Value + " ppm"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 40 : 32
+                }
+                color: dimTextColor
             }
         }
 
-        Text {
-            id: dimFanSpeedText
-            text: app.fanSpeed + " %"
-            anchors {
-                left: dimFanIcon.right
-                leftMargin: 8
-                verticalCenter: parent.verticalCenter
+        Row {
+            spacing: isNxt ? 8 : 6
+
+            Text {
+                text: "PM<sub>2.5</sub>"
+                textFormat: Text.RichText
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 16 : 13
+                }
+                color: dimTextColor
             }
-            font {
-                family: qfont.regular.name
-                pixelSize: isNxt ? 28 : 22
+
+            Text {
+                text: app.pm25Value + " µg/m³"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 26 : 20
+                }
+                color: dimTextColor
             }
-            color: dimTextColor
+        }
+
+        Row {
+            spacing: isNxt ? 8 : 6
+
+            Canvas {
+                id: dimFanIcon
+                width: isNxt ? 26 : 20
+                height: width
+                property color blColor: dimTextColor
+                onBlColorChanged: requestPaint()
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
+                    ctx.fillStyle = blColor;
+                    var cx = width / 2;
+                    var cy = height / 2;
+                    var bladeR = width / 2 - 1;
+                    var hubR = width * 0.13;
+                    for (var i = 0; i < 3; i++) {
+                        ctx.save();
+                        ctx.translate(cx, cy);
+                        ctx.rotate(i * 2 * Math.PI / 3);
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
+                        ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+
+            Text {
+                text: app.fanSpeed + " %"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 26 : 20
+                }
+                color: dimTextColor
+            }
         }
     }
 }
