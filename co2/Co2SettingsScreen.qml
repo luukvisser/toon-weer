@@ -163,4 +163,80 @@ Screen {
             qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateText);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Update section
+    // -------------------------------------------------------------------------
+
+    Rectangle {
+        id: divider
+        height: 1
+        color: colors.addDeviceBackgroundRectangle
+        anchors {
+            left: refreshLabel.left
+            right: refreshButton.right
+            top: refreshLabel.bottom
+            topMargin: 16
+        }
+    }
+
+    Text {
+        id: versionLabel
+        text: "Versie: " + app.currentVersion
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: colors.rbTitle
+        anchors {
+            left: refreshLabel.left
+            top: divider.bottom
+            topMargin: 12
+        }
+    }
+
+    StandardButton {
+        id: checkButton
+        text: app.updateChecking ? "…" : "Controleer"
+        width: isNxt ? 130 : 105
+        enabled: !app.updateChecking && !app.updateInProgress
+        anchors {
+            left: versionLabel.right
+            leftMargin: 16
+            verticalCenter: versionLabel.verticalCenter
+        }
+        onClicked: app.checkForUpdate()
+    }
+
+    StandardButton {
+        id: installButton
+        text: "Installeer v" + app.latestVersion
+        width: isNxt ? 200 : 160
+        visible: app.updateAvailable && !app.updateInProgress
+        anchors {
+            left: refreshLabel.left
+            top: versionLabel.bottom
+            topMargin: 8
+        }
+        onClicked: app.installUpdate()
+    }
+
+    Text {
+        id: updateStatusText
+        text: app.updateStatus
+        visible: app.updateStatus !== ""
+        wrapMode: Text.WordWrap
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 18 : 14
+        }
+        color: colors.rbTitle
+        anchors {
+            left: app.updateAvailable && !app.updateInProgress ? installButton.right : refreshLabel.left
+            leftMargin: app.updateAvailable && !app.updateInProgress ? 16 : 0
+            right: refreshButton.right
+            top: versionLabel.bottom
+            topMargin: 8
+        }
+    }
 }
