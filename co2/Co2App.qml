@@ -238,7 +238,7 @@ App {
                 fetchTemperature();
             }
         };
-        xhr.open("GET", "http://" + deviceIp + "/sensor/co2", true);
+        xhr.open("GET", "http://" + deviceIp + "/sensor/carbon_dioxide", true);
         xhr.send();
     }
 
@@ -293,7 +293,7 @@ App {
                 updateTimestamp();
             }
         };
-        xhr.open("GET", "http://" + openairIp + "/fan/fan_motor", true);
+        xhr.open("GET", "http://" + openairIp + "/fan/open_air_mini", true);
         xhr.send();
     }
 
