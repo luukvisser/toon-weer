@@ -292,7 +292,7 @@ App {
                 fetchFanSpeed();
             }
         };
-        xhr.open("GET", "http://" + deviceIp + "/sensor/pm_2_5", true);
+        xhr.open("GET", "http://" + deviceIp + "/sensor/pm2_5", true);
         xhr.send();
     }
 
