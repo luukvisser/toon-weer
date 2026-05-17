@@ -1,0 +1,60 @@
+name: Release Co2 app
+
+on:
+    push:
+        tags:
+            - "co2-v*"
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        name: Package and publish
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Derive version from tag
+              id: ver
+              run: |
+                  tag="${GITHUB_REF_NAME}"           # co2-v1.2.3
+                  echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+                  echo "version=${tag#co2-v}" >> "$GITHUB_OUTPUT"   # 1.2.3
+
+            - name: Stamp version file
+              run: echo "${{ steps.ver.outputs.version }}" > co2/version.txt
+
+            - name: Package co2/ directory
+              run: |
+                  tar -czf "${{ steps.ver.outputs.tag }}.tar.gz" \
+                    -C co2 .
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: "Co2 app ${{ steps.ver.outputs.tag }}"
+                  body: |
+                      CO2/temperature/fan-speed tile for the Toon smart thermostat.
+
+                      ### Install / update on device
+
+                      Run the following command **once** over SSH to install or update:
+
+                      ```sh
+                      sh /qmf/qml/apps/co2/update.sh
+                      ```
+
+                      If the app is not yet installed, download `update.sh` first:
+
+                      ```sh
+                      mkdir -p /qmf/qml/apps/co2
+                      wget -O /qmf/qml/apps/co2/update.sh \
+                        https://raw.githubusercontent.com/luukvisser/toon-weer/main/co2/update.sh
+                      sh /qmf/qml/apps/co2/update.sh
+                      ```
+
+                      To enable automatic updates at boot, add a cron entry (see `update.sh`).
+                  files: "${{ steps.ver.outputs.tag }}.tar.gz"
