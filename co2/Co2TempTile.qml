@@ -211,7 +211,7 @@ Tile {
             family: qfont.regular.name
             pixelSize: isNxt ? 44 : 36
         }
-        color: co2Color(app.co2Value)
+        color: dimTextColor
         visible: dimState
     }
 
@@ -261,7 +261,7 @@ Tile {
                 family: qfont.regular.name
                 pixelSize: isNxt ? 24 : 20
             }
-            color: pm25Color(app.pm25Value)
+            color: dimTextColor
         }
     }
 
