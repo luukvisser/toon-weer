@@ -61,7 +61,7 @@ Tile {
         visible: !dimState
     }
 
-    // Two-row data block: CO₂ above fan, label column width matches icon width
+    // Three-row data block: CO₂, PM2.5, fan
     Column {
         id: dataColumn
         spacing: isNxt ? 10 : 8
@@ -80,10 +80,6 @@ Tile {
                 id: co2LabelItem
                 text: "CO<sub>2</sub>"
                 textFormat: Text.RichText
-                width: isNxt ? 28 : 22
-                height: co2ValueItem.height
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 16 : 13
@@ -110,10 +106,6 @@ Tile {
                 id: pm25LabelItem
                 text: "PM<sub>2.5</sub>"
                 textFormat: Text.RichText
-                width: isNxt ? 28 : 22
-                height: pm25ValueItem.height
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 16 : 13
