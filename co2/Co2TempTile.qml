@@ -60,7 +60,8 @@ Tile {
 
     Text {
         id: co2Label
-        text: "CO₂"
+        text: "CO<sub>2</sub>"
+        textFormat: Text.RichText
         anchors {
             baseline: co2ValueText.baseline
             right: co2ValueText.left
@@ -172,6 +173,23 @@ Tile {
     // ----- Dimmed state: CO2 above fan speed -----
 
     Text {
+        id: dimCo2Label
+        text: "CO<sub>2</sub>"
+        textFormat: Text.RichText
+        anchors {
+            baseline: parent.top
+            baselineOffset: isNxt ? 28 : 22
+            horizontalCenter: parent.horizontalCenter
+        }
+        font {
+            family: qfont.semiBold.name
+            pixelSize: isNxt ? 20 : 16
+        }
+        color: dimTextColor
+        visible: dimState
+    }
+
+    Text {
         id: dimCo2Text
         text: app.co2Value
         anchors {
@@ -192,7 +210,6 @@ Tile {
         text: "ppm"
         anchors {
             baseline: dimCo2Text.baseline
-            baselineOffset: 0
             left: dimCo2Text.right
             leftMargin: 6
         }
