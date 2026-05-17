@@ -27,6 +27,7 @@ App {
 
     property url tileUrl: "Co2TempTile.qml"
     property url menuUrl: "Co2Menu.qml"
+    property url settingsScreenUrl: "Co2SettingsScreen.qml"
     property url thumbnailIcon: "qrc:/tsc/weer.png"
     property Co2SettingsScreen co2SettingsScreen
 
@@ -76,7 +77,7 @@ App {
                 "baseTileWeight": 10,
                 "thumbIconVAlignment": "center"
             });
-        registry.registerWidget("screen", "Co2SettingsScreen.qml", this, "co2SettingsScreen");
+        registry.registerWidget("screen", settingsScreenUrl, this, "co2SettingsScreen");
         registry.registerWidget("menuItem", menuUrl, this, "co2Menu", {
                 "weight": 210
             });
