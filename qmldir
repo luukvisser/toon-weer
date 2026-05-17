@@ -2,4 +2,3 @@ module apps.weer
 WeerApp 1.0 WeerApp.qml
 WeerDetailsScreen 1.0 WeerDetailsScreen.qml
 WeerStationScreen 1.0 WeerStationScreen.qml
-Co2App 1.0 Co2App.qml
