@@ -25,6 +25,7 @@ App {
     property string updateStatus: ""
 
     property url tileUrl: "Co2TempTile.qml"
+    property url menuUrl: "Co2Menu.qml"
     property url thumbnailIcon: "qrc:/tsc/weer.png"
     property Co2SettingsScreen co2SettingsScreen
 
@@ -48,6 +49,7 @@ App {
             "Co2App.qml",
             "Co2TempTile.qml",
             "Co2SettingsScreen.qml",
+            "Co2Menu.qml",
             "EditTextLabel4421.qml",
             "update.sh",
             "version.txt"
@@ -74,6 +76,9 @@ App {
                 "thumbIconVAlignment": "center"
             });
         registry.registerWidget("screen", "Co2SettingsScreen.qml", this, "co2SettingsScreen");
+        registry.registerWidget("menuItem", menuUrl, this, "co2Menu", {
+                "weight": 210
+            });
     }
 
     Component.onDestruction: {
