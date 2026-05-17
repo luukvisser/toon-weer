@@ -13,6 +13,7 @@ App {
 
     property string co2Value: "—"
     property string temperature: "—"
+    property string pm25Value: "—"
     property string fanSpeed: "—"
     property string lastUpdated: ""
 
@@ -249,7 +250,7 @@ App {
 
     function fetchTemperature() {
         if (!deviceIp) {
-            fetchFanSpeed();
+            fetchPm25();
             return;
         }
         var xhr = new XMLHttpRequest();
@@ -264,10 +265,34 @@ App {
                     } catch (e) {
                     }
                 }
-                fetchFanSpeed();
+                fetchPm25();
             }
         };
         xhr.open("GET", "http://" + deviceIp + "/sensor/temperature", true);
+        xhr.send();
+    }
+
+    function fetchPm25() {
+        if (!deviceIp) {
+            fetchFanSpeed();
+            return;
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                xhr.onreadystatechange = null;
+                if (xhr.status == 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.value !== undefined)
+                            pm25Value = (Math.round(data.value * 10) / 10).toString();
+                    } catch (e) {
+                    }
+                }
+                fetchFanSpeed();
+            }
+        };
+        xhr.open("GET", "http://" + deviceIp + "/sensor/pm_2_5", true);
         xhr.send();
     }
 

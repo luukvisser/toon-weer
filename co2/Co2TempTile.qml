@@ -19,6 +19,17 @@ Tile {
         return "#e74c3c";
     }
 
+    function pm25Color(val) {
+        var v = parseFloat(val);
+        if (isNaN(v))
+            return defaultTextColor;
+        if (v <= 12)
+            return "#2ecc71";
+        if (v <= 35)
+            return "#f39c12";
+        return "#e74c3c";
+    }
+
     onClicked: {
         if (app.co2SettingsScreen)
             app.co2SettingsScreen.show();
@@ -83,7 +94,37 @@ Tile {
             }
         }
 
-        // Row 2: fan icon | speed
+        // Row 2: PM2.5 label | value
+        Row {
+            spacing: isNxt ? 8 : 6
+
+            Text {
+                id: pm25LabelItem
+                text: "PM<sub>2.5</sub>"
+                textFormat: Text.RichText
+                width: fanIconItem.width
+                height: pm25ValueItem.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 16 : 13
+                }
+                color: defaultTextColor
+            }
+
+            Text {
+                id: pm25ValueItem
+                text: app.pm25Value + " µg/m³"
+                font {
+                    family: qfont.regular.name
+                    pixelSize: isNxt ? 30 : 24
+                }
+                color: pm25Color(app.pm25Value)
+            }
+        }
+
+        // Row 3: fan icon | speed
         Row {
             spacing: isNxt ? 8 : 6
 
@@ -135,29 +176,13 @@ Tile {
         id: tempValueText
         text: "Temp " + app.temperature + "°"
         anchors {
-            bottom: lastUpdatedText.top
-            bottomMargin: 2
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -10 : -8
             horizontalCenter: parent.horizontalCenter
         }
         font {
             family: qfont.regular.name
             pixelSize: isNxt ? 18 : 14
-        }
-        color: defaultTextColor
-        visible: !dimState
-    }
-
-    Text {
-        id: lastUpdatedText
-        text: app.lastUpdated
-        anchors {
-            baseline: parent.bottom
-            baselineOffset: -8
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 14 : 12
         }
         color: defaultTextColor
         visible: !dimState
@@ -272,6 +297,40 @@ Tile {
             font {
                 family: qfont.regular.name
                 pixelSize: isNxt ? 36 : 28
+            }
+            color: dimTextColor
+        }
+    }
+
+    Row {
+        id: dimPm25Row
+        spacing: 6
+        anchors {
+            top: dimFanRow.bottom
+            topMargin: isNxt ? 12 : 10
+            horizontalCenter: parent.horizontalCenter
+        }
+        visible: dimState
+
+        Text {
+            id: dimPm25Label
+            text: "PM<sub>2.5</sub>"
+            textFormat: Text.RichText
+            anchors.verticalCenter: parent.verticalCenter
+            font {
+                family: qfont.regular.name
+                pixelSize: isNxt ? 20 : 16
+            }
+            color: dimTextColor
+        }
+
+        Text {
+            id: dimPm25Value
+            text: app.pm25Value + " µg/m³"
+            anchors.verticalCenter: parent.verticalCenter
+            font {
+                family: qfont.regular.name
+                pixelSize: isNxt ? 28 : 22
             }
             color: dimTextColor
         }
