@@ -98,7 +98,7 @@ Tile {
                 text: app.co2Value + " ppm"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: co2Color(app.co2Value)
             }
@@ -130,7 +130,7 @@ Tile {
                 text: app.pm25Value + " µg/m³"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: pm25Color(app.pm25Value)
             }
@@ -185,7 +185,7 @@ Tile {
                 text: app.fanSpeed + " %"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: defaultTextColor
             }
@@ -228,7 +228,7 @@ Tile {
                 text: app.co2Value + " ppm"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: dimTextColor
             }
@@ -259,7 +259,7 @@ Tile {
                 text: app.pm25Value + " µg/m³"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: dimTextColor
             }
@@ -311,7 +311,7 @@ Tile {
                 text: app.fanSpeed + " %"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 30 : 24
+                    pixelSize: isNxt ? 38 : 30
                 }
                 color: dimTextColor
             }
