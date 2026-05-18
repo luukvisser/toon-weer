@@ -16,7 +16,7 @@ Screen {
     }
 
     onShown: {
-        addCustomTopRightButton("Locatie");
+        addCustomTopRightButton("Instellingen");
         app.radarImagesSmallUrl = "http://toon/";
         app.radarImagesSmallUrl = "https://api.buienradar.nl/image/1.0/RadarMapNL?width=180&height=180";
         fivedayforecastModel.clear();

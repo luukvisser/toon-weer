@@ -17,7 +17,7 @@ Screen {
     }
 
     onShown: {
-        addCustomTopRightButton("Locatie");
+        addCustomTopRightButton("Instellingen");
         stillRadarImage.visible = false;
         bigRadarImage.visible = true;
         rightNow = new Date();
