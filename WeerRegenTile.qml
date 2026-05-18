@@ -81,10 +81,10 @@ Tile {
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 20 : 16
+            pixelSize: isNxt ? 14 : 11
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-        text: "mm"
+        text: "mm/u"
     }
 
     Rectangle {
