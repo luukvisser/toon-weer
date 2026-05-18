@@ -188,8 +188,10 @@ Tile {
                             // Buienradar window (first 2 hours): 10-min ticks
                             if (index < brSlots && index % 2 === 0)
                                 return 3;
-                            // Open-Meteo window (after 2 hours): hourly ticks
+                            // Open-Meteo window (after 2 hours): hourly ticks taller, 15-min ticks shorter
                             if (index >= brSlots && index % 12 === 0)
+                                return 5;
+                            if (index >= brSlots && index % 3 === 0)
                                 return 3;
                             return 0;
                         }
