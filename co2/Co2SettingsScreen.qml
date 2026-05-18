@@ -64,7 +64,7 @@ Screen {
 
     Text {
         id: explanationText
-        text: "IP-adressen en sensorpaden van de lokale ESPHome apparaten. AirGradient levert CO<sub>2</sub> en PM2.5; Open AIR Mini levert de ventilatorsnelheid."
+        text: "IP-adressen en sensorpaden van de lokale ESPHome apparaten."
         textFormat: Text.RichText
         width: isNxt ? 460 : 370
         wrapMode: Text.WordWrap
@@ -80,13 +80,13 @@ Screen {
         }
     }
 
-    // ---- AirGradient group ----
+    // ---- ESPHome sensor group ----
 
     EditTextLabel4421 {
         id: ipLabel
         width: isNxt ? 350 : 280
         height: isNxt ? 45 : 35
-        leftText: "AirGradient IP:"
+        leftText: "ESPHome sensor IP:"
         leftTextAvailableWidth: isNxt ? 175 : 140
         anchors {
             left: parent.left
@@ -95,7 +95,7 @@ Screen {
             topMargin: 30
         }
         onClicked: {
-            qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
+            qkeyboard.open("ESPHome sensor IP", ipLabel.inputText, saveIp, validateText);
         }
     }
 
@@ -109,7 +109,7 @@ Screen {
             top: ipLabel.top
         }
         onClicked: {
-            qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
+            qkeyboard.open("ESPHome sensor IP", ipLabel.inputText, saveIp, validateText);
         }
     }
 
@@ -173,13 +173,13 @@ Screen {
         }
     }
 
-    // ---- Open AIR Mini group ----
+    // ---- ESPHome ventilator group ----
 
     EditTextLabel4421 {
         id: openairLabel
         width: isNxt ? 350 : 280
         height: isNxt ? 45 : 35
-        leftText: "Open AIR Mini IP:"
+        leftText: "ESPHome ventilator IP:"
         leftTextAvailableWidth: isNxt ? 175 : 140
         anchors {
             left: ipLabel.left
@@ -187,7 +187,7 @@ Screen {
             topMargin: isNxt ? 18 : 14
         }
         onClicked: {
-            qkeyboard.open("Open AIR Mini IP", openairLabel.inputText, saveOpenairIp, validateText);
+            qkeyboard.open("ESPHome ventilator IP", openairLabel.inputText, saveOpenairIp, validateText);
         }
     }
 
@@ -201,7 +201,7 @@ Screen {
             top: openairLabel.top
         }
         onClicked: {
-            qkeyboard.open("Open AIR Mini IP", openairLabel.inputText, saveOpenairIp, validateText);
+            qkeyboard.open("ESPHome ventilator IP", openairLabel.inputText, saveOpenairIp, validateText);
         }
     }
 
