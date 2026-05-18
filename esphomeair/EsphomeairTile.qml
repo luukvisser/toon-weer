@@ -176,7 +176,7 @@ Tile {
 
                 Canvas {
                     id: fanIconItem
-                    width: isNxt ? 28 : 22
+                    width: isNxt ? 20 : 16
                     height: width
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -349,7 +349,7 @@ Tile {
 
                 Canvas {
                     id: dimFanIcon
-                    width: isNxt ? 26 : 20
+                    width: isNxt ? 20 : 16
                     height: width
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
