@@ -9,29 +9,13 @@ Tile {
             app.weerDetailsScreen.show();
     }
 
-    // Top label: indicates whether second values are today or tomorrow
-    Text {
-        id: summaryDayLabel
-        text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
-        anchors {
-            top: parent.top
-            topMargin: isNxt ? 14 : 11
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 19 : 15
-        }
-        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-    }
-
-    // Min/max temp row below day label, spaced to match the bottom two text rows
+    // Min/max temp row at the top
     Text {
         id: summaryMinTemp
         text: "min: " + (app.minTempSummary !== "" ? app.minTempSummary + "°" : "—")
         anchors {
-            top: summaryDayLabel.bottom
-            topMargin: 1
+            top: parent.top
+            topMargin: isNxt ? 14 : 11
             left: parent.left
             leftMargin: isNxt ? 14 : 11
         }
@@ -46,8 +30,8 @@ Tile {
         id: summaryMaxTemp
         text: "max: " + (app.maxTempSummary !== "" ? app.maxTempSummary + "°" : "—")
         anchors {
-            top: summaryDayLabel.bottom
-            topMargin: 1
+            top: parent.top
+            topMargin: isNxt ? 14 : 11
             right: parent.right
             rightMargin: isNxt ? 14 : 11
         }
@@ -58,12 +42,13 @@ Tile {
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
     }
 
-    // Center: current weather icon + current temperature, vertically centered
+    // Center: current weather icon + current temperature, below min/max row
     Item {
         id: summaryCenterRow
         anchors {
+            top: summaryMinTemp.bottom
+            topMargin: isNxt ? 6 : 5
             horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
         }
         width: summaryCurrentIcon.width + summaryCurrentTemp.width + (isNxt ? 8 : 6)
         height: Math.max(summaryCurrentIcon.height, summaryCurrentTemp.height)
@@ -95,19 +80,48 @@ Tile {
         }
     }
 
-    // Mid-low row: max wind (left) and weather score (right)
+    // "nu | vandaag" label below the big temperature
     Text {
-        id: summaryWind
-        text: {
-            var cur = app.windSpeedMs !== "" ? i18n.number(Number(app.windSpeedMs), 1) : "—";
-            var max = app.maxWindMsSummary !== "" ? app.maxWindMsSummary : "—";
-            return cur + " | " + max + " m/s";
+        id: summaryDayLabel
+        text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
+        anchors {
+            top: summaryCenterRow.bottom
+            topMargin: isNxt ? 4 : 3
+            horizontalCenter: parent.horizontalCenter
         }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    // Bottom row 1, left side: current wind | max wind m/s
+    // Pipe is at a fixed left position so it aligns with the UV row pipe below.
+    Text {
+        id: summaryWindCur
+        text: app.windSpeedMs !== "" ? i18n.number(Number(app.windSpeedMs), 1) : "—"
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -36 : -29
+            right: summaryWindPipe.left
+            rightMargin: 4
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryWindPipe
+        text: "| "
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
             left: parent.left
-            leftMargin: isNxt ? 14 : 11
+            leftMargin: isNxt ? 65 : 52
         }
         font {
             family: qfont.regular.name
@@ -117,16 +131,12 @@ Tile {
     }
 
     Text {
-        id: summaryScore
-        text: {
-            var nowStr = app.scoreNow !== "" ? app.scoreNow : "—";
-            var sumStr = app.scoreSummary !== "" ? app.scoreSummary : "—";
-            return nowStr + " | " + sumStr + " /10";
-        }
+        id: summaryWindMax
+        text: (app.maxWindMsSummary !== "" ? i18n.number(Number(app.maxWindMsSummary), 1) : "—") + " m/s"
         anchors {
-            baseline: summaryWind.baseline
-            right: parent.right
-            rightMargin: isNxt ? 14 : 11
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -36 : -29
+            left: summaryWindPipe.right
         }
         font {
             family: qfont.regular.name
@@ -135,19 +145,81 @@ Tile {
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
     }
 
-    // Bottom row: max UV and total precipitation over the configured summary window
+    // Bottom row 1, right side: score now | score today /10
+    // Pipe is at a fixed right position so it aligns with the precip row pipe below.
     Text {
-        id: summaryUV
-        text: {
-            var cur = app.uvNow >= 0 ? i18n.number(app.uvNow, 1) : "—";
-            var max = app.maxUVSummary > 0 ? i18n.number(app.maxUVSummary, 1) : "—";
-            return cur + " | " + max + " UV";
+        id: summaryScoreNow
+        text: app.scoreNow !== "" ? i18n.number(Number(app.scoreNow), 1) : "—"
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -36 : -29
+            right: summaryScorePipe.left
+            rightMargin: 4
         }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryScorePipe
+        text: "| "
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -36 : -29
+            right: parent.right
+            rightMargin: isNxt ? 82 : 66
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryScoreSum
+        text: (app.scoreSummary !== "" ? i18n.number(Number(app.scoreSummary), 1) : "—") + " /10"
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -36 : -29
+            left: summaryScorePipe.right
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    // Bottom row 2, left side: current UV | max UV UV
+    // Pipe leftMargin matches summaryWindPipe so the | characters align vertically.
+    Text {
+        id: summaryUVCur
+        text: app.uvNow >= 0 ? i18n.number(app.uvNow, 1) : "—"
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -16 : -13
+            right: summaryUVPipe.left
+            rightMargin: 4
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryUVPipe
+        text: "| "
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -16 : -13
             left: parent.left
-            leftMargin: isNxt ? 14 : 11
+            leftMargin: isNxt ? 65 : 52
         }
         font {
             family: qfont.regular.name
@@ -157,16 +229,61 @@ Tile {
     }
 
     Text {
-        id: summaryPrecip
-        text: {
-            var cur = (app.rainForecast && app.rainForecast.length > 0) ? i18n.number(app.rainForecast[0], 1) : "0";
-            var total = app.totalRainSummary > 0 ? i18n.number(app.totalRainSummary, 1) : "0";
-            return cur + " | " + total + " mm";
-        }
+        id: summaryUVMax
+        text: (app.maxUVSummary > 0 ? i18n.number(app.maxUVSummary, 1) : "—") + " UV"
         anchors {
-            baseline: summaryUV.baseline
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -16 : -13
+            left: summaryUVPipe.right
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    // Bottom row 2, right side: precip now | total precip mm
+    // Pipe rightMargin matches summaryScorePipe so the | characters align vertically.
+    Text {
+        id: summaryPrecipNow
+        text: (app.rainForecast && app.rainForecast.length > 0) ? i18n.number(app.rainForecast[0], 1) : i18n.number(0, 1)
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -16 : -13
+            right: summaryPrecipPipe.left
+            rightMargin: 4
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryPrecipPipe
+        text: "| "
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -16 : -13
             right: parent.right
-            rightMargin: isNxt ? 14 : 11
+            rightMargin: isNxt ? 82 : 66
+        }
+        font {
+            family: qfont.regular.name
+            pixelSize: isNxt ? 19 : 15
+        }
+        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+    }
+
+    Text {
+        id: summaryPrecipTotal
+        text: (app.totalRainSummary > 0 ? i18n.number(app.totalRainSummary, 1) : i18n.number(0, 1)) + " mm"
+        anchors {
+            baseline: parent.bottom
+            baselineOffset: isNxt ? -16 : -13
+            left: summaryPrecipPipe.right
         }
         font {
             family: qfont.regular.name
