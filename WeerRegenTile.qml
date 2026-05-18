@@ -61,8 +61,7 @@ Tile {
         anchors {
             baseline: parent.top
             baselineOffset: isNxt ? 55 : 45
-            left: parent.left
-            leftMargin: isNxt ? 5 : 4
+            horizontalCenter: weerYaxismm.horizontalCenter
         }
         font {
             family: qfont.bold.name
