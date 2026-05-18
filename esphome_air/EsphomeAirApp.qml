@@ -48,16 +48,7 @@ App {
         id: p
         property var fetchXhr: null
 
-        property var updateFileList: [
-            "qmldir",
-            "EsphomeAirApp.qml",
-            "EsphomeAirTile.qml",
-            "EsphomeAirSettingsScreen.qml",
-            "EsphomeAirMenu.qml",
-            "EditTextLabel4421.qml",
-            "update.sh",
-            "version.txt"
-        ]
+        property var updateFileList: ["qmldir", "EsphomeAirApp.qml", "EsphomeAirTile.qml", "EsphomeAirSettingsScreen.qml", "EsphomeAirMenu.qml", "EditTextLabel4421.qml", "update.sh", "version.txt"]
     }
 
     function cancelXhr(xhr) {
@@ -66,23 +57,22 @@ App {
         xhr.onreadystatechange = null;
         try {
             xhr.abort();
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function init() {
         registry.registerWidget("tile", tileUrl, this, null, {
-                "thumbLabel": "Luchtkwaliteit",
-                "thumbIcon": thumbnailIcon,
-                "thumbCategory": "general",
-                "thumbWeight": 30,
-                "baseTileWeight": 10,
-                "thumbIconVAlignment": "center"
-            });
+            "thumbLabel": "Luchtkwaliteit",
+            "thumbIcon": thumbnailIcon,
+            "thumbCategory": "general",
+            "thumbWeight": 30,
+            "baseTileWeight": 10,
+            "thumbIconVAlignment": "center"
+        });
         registry.registerWidget("screen", settingsScreenUrl, this, "esphomeAirSettingsScreen");
         registry.registerWidget("menuItem", menuUrl, this, "esphomeAirMenu", {
-                "weight": 210
-            });
+            "weight": 210
+        });
     }
 
     Component.onDestruction: {
@@ -114,8 +104,7 @@ App {
                 pm25SensorPath = settings['pm25SensorPath'];
             if (settings['fanSpeedPath'])
                 fanSpeedPath = settings['fanSpeedPath'];
-        } catch (e) {
-        }
+        } catch (e) {}
         if (deviceIp || openairIp)
             fetchData();
     }
@@ -250,8 +239,7 @@ App {
                         var data = JSON.parse(xhr.responseText);
                         if (data.value !== undefined)
                             co2Value = Math.round(data.value).toString();
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
                 fetchTemperature();
             }
@@ -274,8 +262,7 @@ App {
                         var data = JSON.parse(xhr.responseText);
                         if (data.value !== undefined)
                             temperature = (Math.round(data.value * 10) / 10).toString();
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
                 fetchPm25();
             }
@@ -298,8 +285,7 @@ App {
                         var data = JSON.parse(xhr.responseText);
                         if (data.value !== undefined)
                             pm25Value = (Math.round(data.value * 10) / 10).toString();
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
                 fetchFanSpeed();
             }
@@ -322,8 +308,7 @@ App {
                         var data = JSON.parse(xhr.responseText);
                         if (data.value !== undefined && typeof data.value === "number")
                             fanSpeed = Math.round(data.value).toString();
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
                 updateTimestamp();
             }
