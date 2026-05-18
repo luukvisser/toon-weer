@@ -773,9 +773,16 @@ App {
     // --- Open-Meteo rain fetcher ---
 
     // Combined rain forecast: Buienradar 5-min data for the first 2 hours +
-    // Open-Meteo hourly data for the remaining hours up to rainHours. The
-    // resulting array uses 5-min resolution throughout (rainHours * 12 slots);
-    // each Open-Meteo hourly value is repeated across its 12 5-min slots.
+    // Open-Meteo 15-min binned data for the remaining hours up to rainHours.
+    // The resulting array uses 5-min resolution throughout (rainHours * 12
+    // slots); each Open-Meteo 15-min value is expanded across its 3 5-min
+    // slots with linear interpolation to the next 15-min value.
+    //
+    // Open-Meteo convention for accumulated variables like precipitation:
+    // the timestamp marks the START of the window, and the value is the mm
+    // accumulated during [t, t+15min). We multiply by 4 to convert mm/15min
+    // to mm/h so units match Buienradar's intensity-based values, and treat
+    // the value as the rate at t (same approach previously used for hourly).
     function fetchOpenMeteoRain() {
         cancelXhr(p.rainXhr);
         var totalSlots = rainHours * 12;
@@ -836,7 +843,7 @@ App {
         function fetchHourly() {
             var lat4 = parseFloat(lat).toFixed(4);
             var lon4 = parseFloat(lon).toFixed(4);
-            var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4 + "&longitude=" + lon4 + "&hourly=precipitation" + "&timezone=auto&forecast_days=2";
+            var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat4 + "&longitude=" + lon4 + "&minutely_15=precipitation" + "&timezone=auto&forecast_days=2";
             var omXhr = new XMLHttpRequest();
             p.rainXhr = omXhr;
             omXhr.onreadystatechange = function () {
@@ -845,39 +852,42 @@ App {
                 if (omXhr.status == 200) {
                     try {
                         var data = JSON.parse(omXhr.responseText);
-                        var hourly = data['hourly'];
-                        var refDate, fillStartSlot, hoursToFill;
+                        var minutely = data['minutely_15'];
+                        var refDate, fillStartSlot, binsToFill;
                         if (state.gotBR) {
                             refDate = new Date(state.startDate.getTime());
                             refDate.setHours(refDate.getHours() + 2);
-                            refDate.setMinutes(0, 0, 0);
+                            // Round down to nearest 15-min boundary (Open-Meteo bins start at :00/:15/:30/:45)
+                            refDate.setMinutes(refDate.getMinutes() - (refDate.getMinutes() % 15), 0, 0);
                             fillStartSlot = 24;
-                            hoursToFill = rainHours - 2;
+                            binsToFill = (rainHours - 2) * 4;
                         } else {
                             var now = new Date();
                             refDate = new Date(now);
-                            refDate.setMinutes(0, 0, 0);
+                            refDate.setMinutes(refDate.getMinutes() - (refDate.getMinutes() % 15), 0, 0);
                             fillStartSlot = 0;
-                            hoursToFill = rainHours;
+                            binsToFill = rainHours * 4;
                             state.startDate = refDate;
-                            state.startTime = ("0" + refDate.getHours()).slice(-2) + ":00";
+                            state.startTime = ("0" + refDate.getHours()).slice(-2) + ":" + ("0" + refDate.getMinutes()).slice(-2);
                         }
-                        var targetTimeStr = refDate.getFullYear() + "-" + ("0" + (refDate.getMonth() + 1)).slice(-2) + "-" + ("0" + refDate.getDate()).slice(-2) + "T" + ("0" + refDate.getHours()).slice(-2) + ":00";
-                        var startHourIdx = -1;
-                        for (var i = 0; i < hourly['time'].length; i++) {
-                            if (hourly['time'][i] === targetTimeStr) {
-                                startHourIdx = i;
+                        var targetTimeStr = refDate.getFullYear() + "-" + ("0" + (refDate.getMonth() + 1)).slice(-2) + "-" + ("0" + refDate.getDate()).slice(-2) + "T" + ("0" + refDate.getHours()).slice(-2) + ":" + ("0" + refDate.getMinutes()).slice(-2);
+                        var startBinIdx = -1;
+                        for (var i = 0; i < minutely['time'].length; i++) {
+                            if (minutely['time'][i] === targetTimeStr) {
+                                startBinIdx = i;
                                 break;
                             }
                         }
-                        if (startHourIdx >= 0) {
-                            for (var h = 0; h < hoursToFill; h++) {
-                                var precipA = hourly['precipitation'][startHourIdx + h] || 0;
-                                var precipB = (startHourIdx + h + 1 < hourly['precipitation'].length) ? (hourly['precipitation'][startHourIdx + h + 1] || 0) : 0;
-                                for (var slot = 0; slot < 12; slot++) {
-                                    var slotIdx = fillStartSlot + h * 12 + slot;
+                        if (startBinIdx >= 0) {
+                            for (var b = 0; b < binsToFill; b++) {
+                                // Open-Meteo returns mm accumulated per 15-min window;
+                                // multiply by 4 to express as mm/h to match Buienradar units.
+                                var precipA = (minutely['precipitation'][startBinIdx + b] || 0) * 4;
+                                var precipB = (startBinIdx + b + 1 < minutely['precipitation'].length) ? ((minutely['precipitation'][startBinIdx + b + 1] || 0) * 4) : 0;
+                                for (var slot = 0; slot < 3; slot++) {
+                                    var slotIdx = fillStartSlot + b * 3 + slot;
                                     if (slotIdx < totalSlots) {
-                                        var v = precipA + (precipB - precipA) * slot / 12;
+                                        var v = precipA + (precipB - precipA) * slot / 3;
                                         precipSlots[slotIdx] = v;
                                         if (v > 0)
                                             state.hasRain = true;
