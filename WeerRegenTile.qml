@@ -19,21 +19,6 @@ Tile {
     }
 
     Text {
-        id: weerRegenTileTitleText
-        anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 38 : 30
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 20 : 16
-        }
-        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-        text: "Regenverwachting"
-    }
-
-    Text {
         id: weerRegenTileTitleText2
         anchors {
             baseline: parent.top
