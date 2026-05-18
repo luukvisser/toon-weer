@@ -1,9 +1,9 @@
-name: Release esphome_air app
+name: Release esphomeair app
 
 on:
     push:
         tags:
-            - "esphome-air-v*"
+            - "esphomeair-v*"
 
 permissions:
     contents: write
@@ -20,22 +20,22 @@ jobs:
             - name: Derive version from tag
               id: ver
               run: |
-                  tag="${GITHUB_REF_NAME}"                    # esphome-air-v1.2.3
+                  tag="${GITHUB_REF_NAME}"                    # esphomeair-v1.2.3
                   echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-                  echo "version=${tag#esphome-air-v}" >> "$GITHUB_OUTPUT"   # 1.2.3
+                  echo "version=${tag#esphomeair-v}" >> "$GITHUB_OUTPUT"   # 1.2.3
 
             - name: Stamp version file
-              run: echo "${{ steps.ver.outputs.version }}" > esphome_air/version.txt
+              run: echo "${{ steps.ver.outputs.version }}" > esphomeair/version.txt
 
-            - name: Package esphome_air/ directory
+            - name: Package esphomeair/ directory
               run: |
                   tar -czf "${{ steps.ver.outputs.tag }}.tar.gz" \
-                    -C esphome_air .
+                    -C esphomeair .
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
               with:
-                  name: "esphome_air app ${{ steps.ver.outputs.tag }}"
+                  name: "esphomeair app ${{ steps.ver.outputs.tag }}"
                   body: |
                       ESPHome air quality tile for the Toon smart thermostat.
                       Shows CO₂, PM2.5, and fan speed from local ESPHome devices.
@@ -45,16 +45,16 @@ jobs:
                       Run the following command **once** over SSH to install or update:
 
                       ```sh
-                      sh /qmf/qml/apps/esphome_air/update.sh
+                      sh /qmf/qml/apps/esphomeair/update.sh
                       ```
 
                       If the app is not yet installed, download `update.sh` first:
 
                       ```sh
-                      mkdir -p /qmf/qml/apps/esphome_air
-                      wget -O /qmf/qml/apps/esphome_air/update.sh \
-                        https://raw.githubusercontent.com/luukvisser/toon-weer/main/esphome_air/update.sh
-                      sh /qmf/qml/apps/esphome_air/update.sh
+                      mkdir -p /qmf/qml/apps/esphomeair
+                      wget -O /qmf/qml/apps/esphomeair/update.sh \
+                        https://raw.githubusercontent.com/luukvisser/toon-weer/main/esphomeair/update.sh
+                      sh /qmf/qml/apps/esphomeair/update.sh
                       ```
 
                       To enable automatic updates at boot, add a cron entry (see `update.sh`).

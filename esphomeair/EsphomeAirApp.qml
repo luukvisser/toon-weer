@@ -36,12 +36,12 @@ App {
 
     FileIO {
         id: settingsFile
-        source: "file:///mnt/data/tsc/esphome_air.userSettings.json"
+        source: "file:///mnt/data/tsc/esphomeair.userSettings.json"
     }
 
     FileIO {
         id: versionFile
-        source: "file:///qmf/qml/apps/esphome_air/version.txt"
+        source: "file:///qmf/qml/apps/esphomeair/version.txt"
     }
 
     QtObject {
@@ -119,7 +119,7 @@ App {
             "fanSpeedPath": fanSpeedPath
         };
         var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "file:///mnt/data/tsc/esphome_air.userSettings.json");
+        xhr.open("PUT", "file:///mnt/data/tsc/esphomeair.userSettings.json");
         xhr.send(JSON.stringify(settings));
     }
 
@@ -143,7 +143,7 @@ App {
                         var found = "";
                         for (var i = 0; i < releases.length; i++) {
                             var tag = releases[i].tag_name;
-                            if (tag.indexOf("esphome-air-v") === 0) {
+                            if (tag.indexOf("esphomeair-v") === 0) {
                                 found = tag.substring(13);
                                 break;
                             }
@@ -190,14 +190,14 @@ App {
         var filename = p.updateFileList[index];
         var total = p.updateFileList.length;
         updateStatus = "Downloaden " + filename + " (" + (index + 1) + "/" + total + ")…";
-        var rawUrl = "https://raw.githubusercontent.com/luukvisser/toon-weer/esphome-air-v" + latestVersion + "/esphome_air/" + filename;
+        var rawUrl = "https://raw.githubusercontent.com/luukvisser/toon-weer/esphomeair-v" + latestVersion + "/esphomeair/" + filename;
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 xhr.onreadystatechange = null;
                 if (xhr.status == 200) {
                     var putXhr = new XMLHttpRequest();
-                    putXhr.open("PUT", "file:///qmf/qml/apps/esphome_air/" + filename);
+                    putXhr.open("PUT", "file:///qmf/qml/apps/esphomeair/" + filename);
                     putXhr.send(xhr.responseText);
                 } else {
                     updateStatus = "Fout bij downloaden van " + filename + ".";
