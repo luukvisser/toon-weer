@@ -87,21 +87,35 @@ Tile {
                     anchors.verticalCenter: parent.verticalCenter
                     font {
                         family: qfont.regular.name
-                        pixelSize: isNxt ? 16 : 13
+                        pixelSize: isNxt ? 20 : 16
                     }
                     color: defaultTextColor
                 }
             }
 
-            Text {
+            Item {
                 id: co2ValueItem
-                text: app.co2Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> ppm</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: co2Num.width + (isNxt ? 5 : 4) + co2Unit.width
+                height: co2Num.height
+
+                Text {
+                    id: co2Num
+                    text: app.co2Value
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: co2Color(app.co2Value)
                 }
-                color: co2Color(app.co2Value)
+
+                Text {
+                    id: co2Unit
+                    text: "ppm"
+                    anchors.left: co2Num.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
             }
         }
 
@@ -120,21 +134,35 @@ Tile {
                     anchors.verticalCenter: parent.verticalCenter
                     font {
                         family: qfont.regular.name
-                        pixelSize: isNxt ? 16 : 13
+                        pixelSize: isNxt ? 20 : 16
                     }
                     color: defaultTextColor
                 }
             }
 
-            Text {
+            Item {
                 id: pm25ValueItem
-                text: app.pm25Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> µg/m³</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: pm25Num.width + (isNxt ? 5 : 4) + pm25Unit.width
+                height: pm25Num.height
+
+                Text {
+                    id: pm25Num
+                    text: app.pm25Value
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: pm25Color(app.pm25Value)
                 }
-                color: pm25Color(app.pm25Value)
+
+                Text {
+                    id: pm25Unit
+                    text: "µg/m³"
+                    anchors.left: pm25Num.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
             }
         }
 
@@ -182,15 +210,29 @@ Tile {
                 }
             }
 
-            Text {
+            Item {
                 id: fanSpeedItem
-                text: app.fanSpeed + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> %</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: fanNum.width + (isNxt ? 5 : 4) + fanUnit.width
+                height: fanNum.height
+
+                Text {
+                    id: fanNum
+                    text: app.fanSpeed
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: defaultTextColor
                 }
-                color: defaultTextColor
+
+                Text {
+                    id: fanUnit
+                    text: "%"
+                    anchors.left: fanNum.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
             }
         }
     }
@@ -220,21 +262,35 @@ Tile {
                     anchors.verticalCenter: parent.verticalCenter
                     font {
                         family: qfont.semiBold.name
-                        pixelSize: isNxt ? 18 : 14
+                        pixelSize: isNxt ? 20 : 16
                     }
                     color: dimTextColor
                 }
             }
 
-            Text {
+            Item {
                 id: dimCo2Value
-                text: app.co2Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> ppm</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: dimCo2Num.width + (isNxt ? 5 : 4) + dimCo2Unit.width
+                height: dimCo2Num.height
+
+                Text {
+                    id: dimCo2Num
+                    text: app.co2Value
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: dimTextColor
                 }
-                color: dimTextColor
+
+                Text {
+                    id: dimCo2Unit
+                    text: "ppm"
+                    anchors.left: dimCo2Num.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
             }
         }
 
@@ -252,21 +308,35 @@ Tile {
                     anchors.verticalCenter: parent.verticalCenter
                     font {
                         family: qfont.regular.name
-                        pixelSize: isNxt ? 16 : 13
+                        pixelSize: isNxt ? 20 : 16
                     }
                     color: dimTextColor
                 }
             }
 
-            Text {
+            Item {
                 id: dimPm25Value
-                text: app.pm25Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> µg/m³</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: dimPm25Num.width + (isNxt ? 5 : 4) + dimPm25Unit.width
+                height: dimPm25Num.height
+
+                Text {
+                    id: dimPm25Num
+                    text: app.pm25Value
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: dimTextColor
                 }
-                color: dimTextColor
+
+                Text {
+                    id: dimPm25Unit
+                    text: "µg/m³"
+                    anchors.left: dimPm25Num.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
             }
         }
 
@@ -281,6 +351,7 @@ Tile {
                     id: dimFanIcon
                     width: isNxt ? 26 : 20
                     height: width
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     property color blColor: dimTextColor
                     onBlColorChanged: requestPaint()
@@ -311,15 +382,29 @@ Tile {
                 }
             }
 
-            Text {
+            Item {
                 id: dimFanSpeed
-                text: app.fanSpeed + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> %</span>"
-                textFormat: Text.RichText
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 38 : 30
+                width: dimFanNum.width + (isNxt ? 5 : 4) + dimFanUnit.width
+                height: dimFanNum.height
+
+                Text {
+                    id: dimFanNum
+                    text: app.fanSpeed
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: dimTextColor
                 }
-                color: dimTextColor
+
+                Text {
+                    id: dimFanUnit
+                    text: "%"
+                    anchors.left: dimFanNum.right
+                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
             }
         }
     }
