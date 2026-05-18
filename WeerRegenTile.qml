@@ -61,8 +61,7 @@ Tile {
         anchors {
             baseline: parent.top
             baselineOffset: isNxt ? 55 : 45
-            left: parent.left
-            leftMargin: isNxt ? 5 : 4
+            horizontalCenter: weerYaxismm.horizontalCenter
         }
         font {
             family: qfont.bold.name
@@ -81,10 +80,10 @@ Tile {
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 20 : 16
+            pixelSize: isNxt ? 14 : 11
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-        text: "mm"
+        text: "mm/u"
     }
 
     Rectangle {
@@ -169,32 +168,32 @@ Tile {
 
         Repeater {
             id: xLegendRepeater
-            // Total 5-min slots in the model: 24 for Buienradar-only, rainHours*12 for combined
-            model: app.useOpenMeteo ? (app.rainHours * 12 + 1) : 13
+            // Total 5-min slots in the model: 25 for Buienradar-only, rainHours*12+1 for combined
+            model: app.useOpenMeteo ? (app.rainHours * 12 + 1) : 25
             Item {
                 height: isNxt ? 10 : 8
-                width: app.useOpenMeteo ? (brgraphItem.width / (app.rainHours * 12)) : (brgraphItem.width / 12)
+                width: app.useOpenMeteo ? (brgraphItem.width / (app.rainHours * 12)) : (brgraphItem.width / 24)
 
                 Rectangle {
                     id: linexaxisMarker
                     color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
                     height: {
+                        var startMin = parseInt(app.rainForecastFrom.substring(3, 5)) || 0;
+                        // Wall-clock hour check is the same for both modes: each slot = 5 min
+                        if ((startMin + index * 5) % 60 === 0)
+                            return 6;
                         if (app.useOpenMeteo) {
                             var brSlots = Math.min(24, app.rainHours * 12);
-                            var midSlot = Math.floor(app.rainHours / 2) * 12;
-                            var endSlot = app.rainHours * 12;
-                            // Tall tick at start, middle, end
-                            if (index === 0 || index === midSlot || index === endSlot)
-                                return 6;
                             // Buienradar window (first 2 hours): 10-min ticks
                             if (index < brSlots && index % 2 === 0)
                                 return 3;
-                            // Open-Meteo window (after 2 hours): hourly ticks
-                            if (index >= brSlots && index % 12 === 0)
+                            // Open-Meteo window (after 2 hours): 15-min ticks
+                            if (index >= brSlots && index % 3 === 0)
                                 return 3;
                             return 0;
                         }
-                        return (index === 0 || index === 6 || index === 12) ? 6 : 3;
+                        // Buienradar-only: 10-min ticks
+                        return (index % 2 === 0) ? 3 : 0;
                     }
                     width: 1
 
