@@ -4,8 +4,8 @@ import qb.base 1.0
 import FileIO 1.0
 
 App {
-    id: co2App
-    objectName: "Co2App"
+    id: esphomeAirApp
+    objectName: "EsphomeAirApp"
 
     property string deviceIp: "192.168.68.111"
     property string openairIp: "192.168.68.113"
@@ -28,33 +28,32 @@ App {
     property bool updateInProgress: false
     property string updateStatus: ""
 
-    property url tileUrl: "Co2TempTile.qml"
-    property url menuUrl: "Co2Menu.qml"
-    property url settingsScreenUrl: "Co2SettingsScreen.qml"
+    property url tileUrl: "EsphomeAirTile.qml"
+    property url menuUrl: "EsphomeAirMenu.qml"
+    property url settingsScreenUrl: "EsphomeAirSettingsScreen.qml"
     property url thumbnailIcon: "qrc:/tsc/weer.png"
-    property Co2SettingsScreen co2SettingsScreen
+    property EsphomeAirSettingsScreen esphomeAirSettingsScreen
 
     FileIO {
-        id: co2SettingsFile
-        source: "file:///mnt/data/tsc/co2.userSettings.json"
+        id: settingsFile
+        source: "file:///mnt/data/tsc/esphome_air.userSettings.json"
     }
 
     FileIO {
-        id: co2VersionFile
-        source: "file:///qmf/qml/apps/co2/version.txt"
+        id: versionFile
+        source: "file:///qmf/qml/apps/esphome_air/version.txt"
     }
 
     QtObject {
         id: p
         property var fetchXhr: null
 
-        // files downloaded sequentially during an update
         property var updateFileList: [
             "qmldir",
-            "Co2App.qml",
-            "Co2TempTile.qml",
-            "Co2SettingsScreen.qml",
-            "Co2Menu.qml",
+            "EsphomeAirApp.qml",
+            "EsphomeAirTile.qml",
+            "EsphomeAirSettingsScreen.qml",
+            "EsphomeAirMenu.qml",
             "EditTextLabel4421.qml",
             "update.sh",
             "version.txt"
@@ -80,8 +79,8 @@ App {
                 "baseTileWeight": 10,
                 "thumbIconVAlignment": "center"
             });
-        registry.registerWidget("screen", settingsScreenUrl, this, "co2SettingsScreen");
-        registry.registerWidget("menuItem", menuUrl, this, "co2Menu", {
+        registry.registerWidget("screen", settingsScreenUrl, this, "esphomeAirSettingsScreen");
+        registry.registerWidget("menuItem", menuUrl, this, "esphomeAirMenu", {
                 "weight": 210
             });
     }
@@ -93,13 +92,13 @@ App {
 
     Component.onCompleted: {
         try {
-            currentVersion = co2VersionFile.read().trim();
+            currentVersion = versionFile.read().trim();
         } catch (e) {
             currentVersion = "onbekend";
         }
 
         try {
-            var settings = JSON.parse(co2SettingsFile.read());
+            var settings = JSON.parse(settingsFile.read());
             if (settings['deviceIp'])
                 deviceIp = settings['deviceIp'];
             if (settings['openairIp'])
@@ -131,7 +130,7 @@ App {
             "fanSpeedPath": fanSpeedPath
         };
         var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "file:///mnt/data/tsc/co2.userSettings.json");
+        xhr.open("PUT", "file:///mnt/data/tsc/esphome_air.userSettings.json");
         xhr.send(JSON.stringify(settings));
     }
 
@@ -155,8 +154,8 @@ App {
                         var found = "";
                         for (var i = 0; i < releases.length; i++) {
                             var tag = releases[i].tag_name;
-                            if (tag.indexOf("co2-v") === 0) {
-                                found = tag.substring(5);
+                            if (tag.indexOf("esphome-air-v") === 0) {
+                                found = tag.substring(13);
                                 break;
                             }
                         }
@@ -202,14 +201,14 @@ App {
         var filename = p.updateFileList[index];
         var total = p.updateFileList.length;
         updateStatus = "Downloaden " + filename + " (" + (index + 1) + "/" + total + ")…";
-        var rawUrl = "https://raw.githubusercontent.com/luukvisser/toon-weer/co2-v" + latestVersion + "/co2/" + filename;
+        var rawUrl = "https://raw.githubusercontent.com/luukvisser/toon-weer/esphome-air-v" + latestVersion + "/esphome_air/" + filename;
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 xhr.onreadystatechange = null;
                 if (xhr.status == 200) {
                     var putXhr = new XMLHttpRequest();
-                    putXhr.open("PUT", "file:///qmf/qml/apps/co2/" + filename);
+                    putXhr.open("PUT", "file:///qmf/qml/apps/esphome_air/" + filename);
                     putXhr.send(xhr.responseText);
                 } else {
                     updateStatus = "Fout bij downloaden van " + filename + ".";

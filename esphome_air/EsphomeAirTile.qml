@@ -2,7 +2,7 @@ import QtQuick 2.1
 import qb.components 1.0
 
 Tile {
-    id: co2TempTile
+    id: esphomeAirTile
 
     property bool dimState: screenStateController.dimmedColors
     property color defaultTextColor: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
@@ -39,8 +39,8 @@ Tile {
     }
 
     onClicked: {
-        if (app.co2SettingsScreen)
-            app.co2SettingsScreen.show();
+        if (app.esphomeAirSettingsScreen)
+            app.esphomeAirSettingsScreen.show();
     }
 
     // ----- Normal state -----

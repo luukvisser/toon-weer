@@ -1,0 +1,2 @@
+module apps.esphome_air
+EsphomeAirApp 1.0 EsphomeAirApp.qml

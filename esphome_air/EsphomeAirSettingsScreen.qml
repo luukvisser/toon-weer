@@ -3,7 +3,7 @@ import qb.components 1.0
 import BasicUIControls 1.0
 
 Screen {
-    id: co2SettingsScreen
+    id: esphomeAirSettingsScreen
 
     screenTitle: "Luchtkwaliteit instellingen"
     hasCancelButton: true
