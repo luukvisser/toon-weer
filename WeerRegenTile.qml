@@ -115,11 +115,11 @@ Tile {
         anchors {
             horizontalCenter: brgraphItem.left
             baseline: brgraphItem.bottom
-            baselineOffset: isNxt ? 31 : 25
+            baselineOffset: isNxt ? 33 : 27
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 25 : 20
+            pixelSize: isNxt ? 18 : 14
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastFrom
@@ -130,11 +130,11 @@ Tile {
         anchors {
             horizontalCenter: brgraphItem.horizontalCenter
             baseline: brgraphItem.bottom
-            baselineOffset: isNxt ? 31 : 25
+            baselineOffset: isNxt ? 33 : 27
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 25 : 20
+            pixelSize: isNxt ? 18 : 14
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastMid
@@ -145,11 +145,11 @@ Tile {
         anchors {
             horizontalCenter: brgraphItem.right
             baseline: brgraphItem.bottom
-            baselineOffset: isNxt ? 31 : 25
+            baselineOffset: isNxt ? 33 : 27
         }
         font {
             family: qfont.regular.name
-            pixelSize: isNxt ? 25 : 20
+            pixelSize: isNxt ? 18 : 14
         }
         color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
         text: app.rainForecastTo
