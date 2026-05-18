@@ -181,7 +181,7 @@ Tile {
                         var startMin = parseInt(app.rainForecastFrom.substring(3, 5)) || 0;
                         // Wall-clock hour check is the same for both modes: each slot = 5 min
                         if ((startMin + index * 5) % 60 === 0)
-                            return 6;
+                            return 9;
                         if (app.useOpenMeteo) {
                             var brSlots = Math.min(24, app.rainHours * 12);
                             // Buienradar window (first 2 hours): 10-min ticks
