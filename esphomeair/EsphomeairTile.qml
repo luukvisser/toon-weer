@@ -95,7 +95,8 @@ Tile {
 
             Text {
                 id: co2ValueItem
-                text: app.co2Value + " ppm"
+                text: app.co2Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> ppm</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
@@ -127,7 +128,8 @@ Tile {
 
             Text {
                 id: pm25ValueItem
-                text: app.pm25Value + " µg/m³"
+                text: app.pm25Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> µg/m³</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
@@ -182,7 +184,8 @@ Tile {
 
             Text {
                 id: fanSpeedItem
-                text: app.fanSpeed + " %"
+                text: app.fanSpeed + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> %</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
@@ -225,7 +228,8 @@ Tile {
 
             Text {
                 id: dimCo2Value
-                text: app.co2Value + " ppm"
+                text: app.co2Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> ppm</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
@@ -256,7 +260,8 @@ Tile {
 
             Text {
                 id: dimPm25Value
-                text: app.pm25Value + " µg/m³"
+                text: app.pm25Value + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> µg/m³</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
@@ -308,7 +313,8 @@ Tile {
 
             Text {
                 id: dimFanSpeed
-                text: app.fanSpeed + " %"
+                text: app.fanSpeed + "<span style='font-size:" + (isNxt ? 16 : 13) + "px'> %</span>"
+                textFormat: Text.RichText
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 38 : 30
