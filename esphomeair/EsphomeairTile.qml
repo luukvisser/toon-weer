@@ -76,16 +76,21 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Text {
-                id: co2LabelItem
-                text: "CO<sub>2</sub>"
-                textFormat: Text.RichText
+            Item {
                 width: isNxt ? 44 : 35
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 16 : 13
+                height: co2ValueItem.height
+
+                Text {
+                    text: "CO<sub>2</sub>"
+                    textFormat: Text.RichText
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font {
+                        family: qfont.regular.name
+                        pixelSize: isNxt ? 16 : 13
+                    }
+                    color: defaultTextColor
                 }
-                color: defaultTextColor
             }
 
             Text {
@@ -103,16 +108,21 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Text {
-                id: pm25LabelItem
-                text: "PM<sub>2.5</sub>"
-                textFormat: Text.RichText
+            Item {
                 width: isNxt ? 44 : 35
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 16 : 13
+                height: pm25ValueItem.height
+
+                Text {
+                    text: "PM<sub>2.5</sub>"
+                    textFormat: Text.RichText
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font {
+                        family: qfont.regular.name
+                        pixelSize: isNxt ? 16 : 13
+                    }
+                    color: defaultTextColor
                 }
-                color: defaultTextColor
             }
 
             Text {
@@ -132,12 +142,13 @@ Tile {
 
             Item {
                 width: isNxt ? 44 : 35
-                height: isNxt ? 28 : 22
+                height: fanSpeedItem.height
 
                 Canvas {
                     id: fanIconItem
                     width: isNxt ? 28 : 22
                     height: width
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
 
                     property color blColor: defaultTextColor
@@ -195,18 +206,25 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Text {
-                text: "CO<sub>2</sub>"
-                textFormat: Text.RichText
+            Item {
                 width: isNxt ? 44 : 35
-                font {
-                    family: qfont.semiBold.name
-                    pixelSize: isNxt ? 18 : 14
+                height: dimCo2Value.height
+
+                Text {
+                    text: "CO<sub>2</sub>"
+                    textFormat: Text.RichText
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font {
+                        family: qfont.semiBold.name
+                        pixelSize: isNxt ? 18 : 14
+                    }
+                    color: dimTextColor
                 }
-                color: dimTextColor
             }
 
             Text {
+                id: dimCo2Value
                 text: app.co2Value + " ppm"
                 font {
                     family: qfont.regular.name
@@ -219,18 +237,25 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Text {
-                text: "PM<sub>2.5</sub>"
-                textFormat: Text.RichText
+            Item {
                 width: isNxt ? 44 : 35
-                font {
-                    family: qfont.regular.name
-                    pixelSize: isNxt ? 16 : 13
+                height: dimPm25Value.height
+
+                Text {
+                    text: "PM<sub>2.5</sub>"
+                    textFormat: Text.RichText
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font {
+                        family: qfont.regular.name
+                        pixelSize: isNxt ? 16 : 13
+                    }
+                    color: dimTextColor
                 }
-                color: dimTextColor
             }
 
             Text {
+                id: dimPm25Value
                 text: app.pm25Value + " µg/m³"
                 font {
                     family: qfont.regular.name
@@ -245,7 +270,7 @@ Tile {
 
             Item {
                 width: isNxt ? 44 : 35
-                height: isNxt ? 26 : 20
+                height: dimFanSpeed.height
 
                 Canvas {
                     id: dimFanIcon
@@ -282,6 +307,7 @@ Tile {
             }
 
             Text {
+                id: dimFanSpeed
                 text: app.fanSpeed + " %"
                 font {
                     family: qfont.regular.name
