@@ -45,29 +45,11 @@ Tile {
 
     // ----- Normal state -----
 
-    Text {
-        id: tileTitle
-        text: "Luchtkwaliteit"
-        anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 28 : 22
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.semiBold.name
-            pixelSize: isNxt ? 18 : 14
-        }
-        color: defaultTextColor
-        visible: !dimState
-    }
-
-    // Three-row data block: CO₂, PM2.5, fan
     Column {
         id: dataColumn
         spacing: isNxt ? 8 : 6
         anchors {
-            top: tileTitle.bottom
-            topMargin: isNxt ? 8 : 6
+            verticalCenter: parent.verticalCenter
             horizontalCenter: parent.horizontalCenter
         }
         visible: !dimState
