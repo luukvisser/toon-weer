@@ -10,6 +10,9 @@ App {
     property string deviceIp: "192.168.68.111"
     property string openairIp: "192.168.68.113"
     property int refreshSec: 60
+    property string co2SensorPath: "sensor/carbon_dioxide"
+    property string pm25SensorPath: "sensor/pm2_5"
+    property string fanSpeedPath: "sensor/Fan Speed"
 
     property string co2Value: "—"
     property string temperature: "—"
@@ -106,6 +109,12 @@ App {
                 if (!isNaN(r) && r >= 10 && r <= 300)
                     refreshSec = r;
             }
+            if (settings['co2SensorPath'])
+                co2SensorPath = settings['co2SensorPath'];
+            if (settings['pm25SensorPath'])
+                pm25SensorPath = settings['pm25SensorPath'];
+            if (settings['fanSpeedPath'])
+                fanSpeedPath = settings['fanSpeedPath'];
         } catch (e) {
         }
         if (deviceIp || openairIp)
@@ -116,7 +125,10 @@ App {
         var settings = {
             "deviceIp": deviceIp,
             "openairIp": openairIp,
-            "refreshSec": refreshSec
+            "refreshSec": refreshSec,
+            "co2SensorPath": co2SensorPath,
+            "pm25SensorPath": pm25SensorPath,
+            "fanSpeedPath": fanSpeedPath
         };
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "file:///mnt/data/tsc/co2.userSettings.json");
@@ -245,7 +257,7 @@ App {
                 fetchTemperature();
             }
         };
-        xhr.open("GET", "http://" + deviceIp + "/sensor/carbon_dioxide", true);
+        xhr.open("GET", "http://" + deviceIp + "/" + co2SensorPath, true);
         xhr.send();
     }
 
@@ -293,7 +305,7 @@ App {
                 fetchFanSpeed();
             }
         };
-        xhr.open("GET", "http://" + deviceIp + "/sensor/pm2_5", true);
+        xhr.open("GET", "http://" + deviceIp + "/" + pm25SensorPath, true);
         xhr.send();
     }
 
@@ -317,7 +329,7 @@ App {
                 updateTimestamp();
             }
         };
-        xhr.open("GET", "http://" + openairIp + "/sensor/Fan Speed", true);
+        xhr.open("GET", "http://" + openairIp + "/" + fanSpeedPath, true);
         xhr.send();
     }
 

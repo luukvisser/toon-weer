@@ -18,8 +18,19 @@ Screen {
             app.openairIp = text.trim();
     }
 
-    function validateText(text, isFinal) {
-        return null;
+    function saveCo2SensorPath(text) {
+        if (text !== undefined)
+            app.co2SensorPath = text.trim();
+    }
+
+    function savePm25SensorPath(text) {
+        if (text !== undefined)
+            app.pm25SensorPath = text.trim();
+    }
+
+    function saveFanSpeedPath(text) {
+        if (text !== undefined)
+            app.fanSpeedPath = text.trim();
     }
 
     function saveRefresh(text) {
@@ -30,10 +41,17 @@ Screen {
         }
     }
 
+    function validateText(text, isFinal) {
+        return null;
+    }
+
     onShown: {
         addCustomTopRightButton("Opslaan");
         ipLabel.inputText = app.deviceIp;
+        co2SensorLabel.inputText = app.co2SensorPath;
+        pm25SensorLabel.inputText = app.pm25SensorPath;
         openairLabel.inputText = app.openairIp;
+        fanSpeedLabel.inputText = app.fanSpeedPath;
         refreshLabel.inputText = app.refreshSec.toString();
     }
 
@@ -46,13 +64,13 @@ Screen {
 
     Text {
         id: explanationText
-        text: "IP-adressen van de lokale ESPHome apparaten. AirGradient levert CO<sub>2</sub> en temperatuur; Open-AIR levert de ventilatorsnelheid van de Orcon WTW."
+        text: "IP-adressen en sensorpaden van de lokale ESPHome apparaten. AirGradient levert CO<sub>2</sub> en PM2.5; Open AIR Mini levert de ventilatorsnelheid."
         textFormat: Text.RichText
-        width: isNxt ? 500 : 400
+        width: isNxt ? 460 : 370
         wrapMode: Text.WordWrap
         font {
             family: qfont.semiBold.name
-            pixelSize: isNxt ? 20 : 16
+            pixelSize: isNxt ? 18 : 14
         }
         color: colors.rbTitle
         anchors {
@@ -62,20 +80,20 @@ Screen {
         }
     }
 
+    // ---- AirGradient group ----
+
     EditTextLabel4421 {
         id: ipLabel
         width: isNxt ? 350 : 280
         height: isNxt ? 45 : 35
         leftText: "AirGradient IP:"
         leftTextAvailableWidth: isNxt ? 175 : 140
-
         anchors {
             left: parent.left
             leftMargin: 40
             top: parent.top
             topMargin: 30
         }
-
         onClicked: {
             qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
         }
@@ -85,33 +103,91 @@ Screen {
         id: ipButton
         width: isNxt ? 50 : 40
         iconSource: "qrc:/tsc/edit.png"
-
         anchors {
             left: ipLabel.right
             leftMargin: 6
             top: ipLabel.top
         }
-
         onClicked: {
             qkeyboard.open("AirGradient IP", ipLabel.inputText, saveIp, validateText);
         }
     }
 
     EditTextLabel4421 {
-        id: openairLabel
+        id: co2SensorLabel
         width: isNxt ? 350 : 280
         height: isNxt ? 45 : 35
-        leftText: "Open-AIR IP:"
+        leftText: "CO2 sensor:"
         leftTextAvailableWidth: isNxt ? 175 : 140
-
         anchors {
             left: ipLabel.left
             top: ipLabel.bottom
             topMargin: 6
         }
-
         onClicked: {
-            qkeyboard.open("Open-AIR IP", openairLabel.inputText, saveOpenairIp, validateText);
+            qkeyboard.open("CO2 sensor pad", co2SensorLabel.inputText, saveCo2SensorPath, validateText);
+        }
+    }
+
+    IconButton {
+        id: co2SensorButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+        anchors {
+            left: co2SensorLabel.right
+            leftMargin: 6
+            top: co2SensorLabel.top
+        }
+        onClicked: {
+            qkeyboard.open("CO2 sensor pad", co2SensorLabel.inputText, saveCo2SensorPath, validateText);
+        }
+    }
+
+    EditTextLabel4421 {
+        id: pm25SensorLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "PM2.5 sensor:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+        anchors {
+            left: ipLabel.left
+            top: co2SensorLabel.bottom
+            topMargin: 6
+        }
+        onClicked: {
+            qkeyboard.open("PM2.5 sensor pad", pm25SensorLabel.inputText, savePm25SensorPath, validateText);
+        }
+    }
+
+    IconButton {
+        id: pm25SensorButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+        anchors {
+            left: pm25SensorLabel.right
+            leftMargin: 6
+            top: pm25SensorLabel.top
+        }
+        onClicked: {
+            qkeyboard.open("PM2.5 sensor pad", pm25SensorLabel.inputText, savePm25SensorPath, validateText);
+        }
+    }
+
+    // ---- Open AIR Mini group ----
+
+    EditTextLabel4421 {
+        id: openairLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "Open AIR Mini IP:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+        anchors {
+            left: ipLabel.left
+            top: pm25SensorLabel.bottom
+            topMargin: isNxt ? 18 : 14
+        }
+        onClicked: {
+            qkeyboard.open("Open AIR Mini IP", openairLabel.inputText, saveOpenairIp, validateText);
         }
     }
 
@@ -119,17 +195,47 @@ Screen {
         id: openairButton
         width: isNxt ? 50 : 40
         iconSource: "qrc:/tsc/edit.png"
-
         anchors {
             left: openairLabel.right
             leftMargin: 6
             top: openairLabel.top
         }
-
         onClicked: {
-            qkeyboard.open("Open-AIR IP", openairLabel.inputText, saveOpenairIp, validateText);
+            qkeyboard.open("Open AIR Mini IP", openairLabel.inputText, saveOpenairIp, validateText);
         }
     }
+
+    EditTextLabel4421 {
+        id: fanSpeedLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "Ventilator pad:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+        anchors {
+            left: ipLabel.left
+            top: openairLabel.bottom
+            topMargin: 6
+        }
+        onClicked: {
+            qkeyboard.open("Ventilator sensor pad", fanSpeedLabel.inputText, saveFanSpeedPath, validateText);
+        }
+    }
+
+    IconButton {
+        id: fanSpeedButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+        anchors {
+            left: fanSpeedLabel.right
+            leftMargin: 6
+            top: fanSpeedLabel.top
+        }
+        onClicked: {
+            qkeyboard.open("Ventilator sensor pad", fanSpeedLabel.inputText, saveFanSpeedPath, validateText);
+        }
+    }
+
+    // ---- Refresh interval ----
 
     EditTextLabel4421 {
         id: refreshLabel
@@ -137,13 +243,11 @@ Screen {
         height: isNxt ? 45 : 35
         leftText: "Verversing (s):"
         leftTextAvailableWidth: isNxt ? 175 : 140
-
         anchors {
-            left: openairLabel.left
-            top: openairLabel.bottom
-            topMargin: 6
+            left: ipLabel.left
+            top: fanSpeedLabel.bottom
+            topMargin: isNxt ? 18 : 14
         }
-
         onClicked: {
             qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateText);
         }
@@ -153,21 +257,17 @@ Screen {
         id: refreshButton
         width: isNxt ? 50 : 40
         iconSource: "qrc:/tsc/edit.png"
-
         anchors {
             left: refreshLabel.right
             leftMargin: 6
             top: refreshLabel.top
         }
-
         onClicked: {
             qnumKeyboard.open("Verversing (10-300 s)", refreshLabel.inputText, app.refreshSec.toString(), 0, saveRefresh, validateText);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Update section
-    // -------------------------------------------------------------------------
+    // ---- Update section ----
 
     Rectangle {
         id: divider
