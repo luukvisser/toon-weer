@@ -5,7 +5,7 @@ import FileIO 1.0
 
 App {
     id: esphomeAirApp
-    objectName: "EsphomeAirApp"
+    objectName: "EsphomeairApp"
 
     property string deviceIp: "192.168.68.111"
     property string openairIp: "192.168.68.113"
@@ -28,11 +28,11 @@ App {
     property bool updateInProgress: false
     property string updateStatus: ""
 
-    property url tileUrl: "EsphomeAirTile.qml"
-    property url menuUrl: "EsphomeAirMenu.qml"
-    property url settingsScreenUrl: "EsphomeAirSettingsScreen.qml"
+    property url tileUrl: "EsphomeairTile.qml"
+    property url menuUrl: "EsphomeairMenu.qml"
+    property url settingsScreenUrl: "EsphomeairSettingsScreen.qml"
     property url thumbnailIcon: "qrc:/tsc/weer.png"
-    property EsphomeAirSettingsScreen esphomeAirSettingsScreen
+    property EsphomeairSettingsScreen esphomeAirSettingsScreen
 
     FileIO {
         id: settingsFile
@@ -48,7 +48,7 @@ App {
         id: p
         property var fetchXhr: null
 
-        property var updateFileList: ["qmldir", "EsphomeAirApp.qml", "EsphomeAirTile.qml", "EsphomeAirSettingsScreen.qml", "EsphomeAirMenu.qml", "EditTextLabel4421.qml", "update.sh", "version.txt"]
+        property var updateFileList: ["qmldir", "EsphomeairApp.qml", "EsphomeairTile.qml", "EsphomeairSettingsScreen.qml", "EsphomeairMenu.qml", "EditTextLabel4421.qml", "update.sh", "version.txt"]
     }
 
     function cancelXhr(xhr) {

@@ -3,7 +3,7 @@ import qb.components 1.0
 import qb.base 1.0
 
 MenuItem {
-    property EsphomeAirApp app
+    property EsphomeairApp app
     label: "Luchtkwaliteit"
     image: "qrc:/tsc/weer.png"
     weight: 210
