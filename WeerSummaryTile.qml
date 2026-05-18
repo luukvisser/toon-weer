@@ -104,8 +104,8 @@ Tile {
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
-            right: summaryWindPipe.left
-            rightMargin: 4
+            left: parent.left
+            leftMargin: isNxt ? 14 : 11
         }
         font {
             family: qfont.regular.name
@@ -202,8 +202,8 @@ Tile {
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -16 : -13
-            right: summaryUVPipe.left
-            rightMargin: 4
+            left: parent.left
+            leftMargin: isNxt ? 14 : 11
         }
         font {
             family: qfont.regular.name
