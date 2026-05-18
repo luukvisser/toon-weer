@@ -178,24 +178,22 @@ Tile {
                     id: linexaxisMarker
                     color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
                     height: {
+                        var startMin = parseInt(app.rainForecastFrom.substring(3, 5)) || 0;
                         if (app.useOpenMeteo) {
                             var brSlots = Math.min(24, app.rainHours * 12);
-                            var midSlot = Math.floor(app.rainHours / 2) * 12;
-                            var endSlot = app.rainHours * 12;
-                            // Tall tick at start, middle, end
-                            if (index === 0 || index === midSlot || index === endSlot)
+                            // Tall tick at every wall-clock hour boundary (:00)
+                            if ((startMin + index * 5) % 60 === 0)
                                 return 6;
                             // Buienradar window (first 2 hours): 10-min ticks
                             if (index < brSlots && index % 2 === 0)
                                 return 3;
-                            // Open-Meteo window (after 2 hours): hourly ticks taller, 15-min ticks shorter
-                            if (index >= brSlots && index % 12 === 0)
-                                return 5;
+                            // Open-Meteo window (after 2 hours): 15-min ticks
                             if (index >= brSlots && index % 3 === 0)
                                 return 3;
                             return 0;
                         }
-                        return (index === 0 || index === 6 || index === 12) ? 6 : 3;
+                        // Buienradar-only: 10-min ticks, tall at wall-clock hour boundaries
+                        return ((startMin + index * 10) % 60 === 0) ? 6 : 3;
                     }
                     width: 1
 
