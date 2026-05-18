@@ -185,7 +185,7 @@ Tile {
                 text: app.fanSpeed + " %"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 28 : 22
+                    pixelSize: isNxt ? 30 : 24
                 }
                 color: defaultTextColor
             }
@@ -228,7 +228,7 @@ Tile {
                 text: app.co2Value + " ppm"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 40 : 32
+                    pixelSize: isNxt ? 30 : 24
                 }
                 color: dimTextColor
             }
@@ -259,7 +259,7 @@ Tile {
                 text: app.pm25Value + " µg/m³"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 26 : 20
+                    pixelSize: isNxt ? 30 : 24
                 }
                 color: dimTextColor
             }
@@ -311,7 +311,7 @@ Tile {
                 text: app.fanSpeed + " %"
                 font {
                     family: qfont.regular.name
-                    pixelSize: isNxt ? 26 : 20
+                    pixelSize: isNxt ? 30 : 24
                 }
                 color: dimTextColor
             }
