@@ -46,7 +46,8 @@ Screen {
 
     Text {
         id: explanationText
-        text: "IP-adressen van de lokale ESPHome apparaten. AirGradient levert CO₂ en temperatuur; Open-AIR levert de ventilatorsnelheid van de Orcon WTW."
+        text: "IP-adressen van de lokale ESPHome apparaten. AirGradient levert CO<sub>2</sub> en temperatuur; Open-AIR levert de ventilatorsnelheid van de Orcon WTW."
+        textFormat: Text.RichText
         width: isNxt ? 500 : 400
         wrapMode: Text.WordWrap
         font {
