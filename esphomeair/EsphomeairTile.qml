@@ -147,7 +147,7 @@ Tile {
 
                 Text {
                     id: pm25Num
-                    text: app.pm25Value
+                    text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
@@ -321,7 +321,7 @@ Tile {
 
                 Text {
                     id: dimPm25Num
-                    text: app.pm25Value
+                    text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
