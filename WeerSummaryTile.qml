@@ -86,7 +86,7 @@ Tile {
         text: app.showTomorrow ? "nu | morgen" : "nu | vandaag"
         anchors {
             top: summaryCenterRow.bottom
-            topMargin: isNxt ? 4 : 3
+            topMargin: isNxt ? -2 : -3
             horizontalCenter: parent.horizontalCenter
         }
         font {
