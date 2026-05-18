@@ -120,8 +120,8 @@ Tile {
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
-            left: parent.left
-            leftMargin: isNxt ? 65 : 52
+            left: summaryWindCur.right
+            leftMargin: isNxt ? 4 : 3
         }
         font {
             family: qfont.regular.name
@@ -132,7 +132,7 @@ Tile {
 
     Text {
         id: summaryWindMax
-        text: (app.maxWindMsSummary !== "" ? i18n.number(Number(app.maxWindMsSummary), 1) : "—") + " m/s"
+        text: (app.maxWindMsSummary !== "" ? app.maxWindMsSummary : "—") + " m/s"
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
@@ -218,8 +218,8 @@ Tile {
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -16 : -13
-            left: parent.left
-            leftMargin: isNxt ? 65 : 52
+            left: summaryUVCur.right
+            leftMargin: isNxt ? 4 : 3
         }
         font {
             family: qfont.regular.name

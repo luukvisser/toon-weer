@@ -33,22 +33,6 @@ Tile {
         text: "Regenverwachting"
     }
 
-    Text {
-        id: weerRegenTileTitleText2
-        anchors {
-            baseline: parent.top
-            baselineOffset: isNxt ? 58 : 46
-            horizontalCenter: parent.horizontalCenter
-        }
-        font {
-            family: qfont.regular.name
-            pixelSize: isNxt ? 16 : 13
-        }
-        color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.tileTextColor
-        text: "Geen neerslag verwacht"
-        visible: !app.showRain
-    }
-
     Item {
         id: brgraphItem
 
