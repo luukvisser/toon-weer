@@ -168,22 +168,22 @@ Tile {
 
         Repeater {
             id: xLegendRepeater
-            // Total 5-min slots in the model: 24 for Buienradar-only, rainHours*12 for combined
-            model: app.useOpenMeteo ? (app.rainHours * 12 + 1) : 13
+            // Total 5-min slots in the model: 25 for Buienradar-only, rainHours*12+1 for combined
+            model: app.useOpenMeteo ? (app.rainHours * 12 + 1) : 25
             Item {
                 height: isNxt ? 10 : 8
-                width: app.useOpenMeteo ? (brgraphItem.width / (app.rainHours * 12)) : (brgraphItem.width / 12)
+                width: app.useOpenMeteo ? (brgraphItem.width / (app.rainHours * 12)) : (brgraphItem.width / 24)
 
                 Rectangle {
                     id: linexaxisMarker
                     color: (typeof dimmableColors !== 'undefined') ? dimmableColors.tileTextColor : colors.graphTileRect
                     height: {
                         var startMin = parseInt(app.rainForecastFrom.substring(3, 5)) || 0;
+                        // Wall-clock hour check is the same for both modes: each slot = 5 min
+                        if ((startMin + index * 5) % 60 === 0)
+                            return 6;
                         if (app.useOpenMeteo) {
                             var brSlots = Math.min(24, app.rainHours * 12);
-                            // Tall tick at every wall-clock hour boundary (:00)
-                            if ((startMin + index * 5) % 60 === 0)
-                                return 6;
                             // Buienradar window (first 2 hours): 10-min ticks
                             if (index < brSlots && index % 2 === 0)
                                 return 3;
@@ -192,8 +192,8 @@ Tile {
                                 return 3;
                             return 0;
                         }
-                        // Buienradar-only: 10-min ticks, tall at wall-clock hour boundaries
-                        return ((startMin + index * 10) % 60 === 0) ? 6 : 3;
+                        // Buienradar-only: 10-min ticks
+                        return (index % 2 === 0) ? 3 : 0;
                     }
                     width: 1
 
