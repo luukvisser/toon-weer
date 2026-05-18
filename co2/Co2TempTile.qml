@@ -64,7 +64,7 @@ Tile {
     // Three-row data block: CO₂, PM2.5, fan
     Column {
         id: dataColumn
-        spacing: isNxt ? 10 : 8
+        spacing: isNxt ? 8 : 6
         anchors {
             top: tileTitle.bottom
             topMargin: isNxt ? 8 : 6
@@ -80,6 +80,7 @@ Tile {
                 id: co2LabelItem
                 text: "CO<sub>2</sub>"
                 textFormat: Text.RichText
+                width: isNxt ? 44 : 35
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 16 : 13
@@ -106,6 +107,7 @@ Tile {
                 id: pm25LabelItem
                 text: "PM<sub>2.5</sub>"
                 textFormat: Text.RichText
+                width: isNxt ? 44 : 35
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 16 : 13
@@ -128,35 +130,42 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Canvas {
-                id: fanIconItem
-                width: isNxt ? 28 : 22
-                height: width
-                property color blColor: defaultTextColor
-                onBlColorChanged: requestPaint()
+            Item {
+                width: isNxt ? 44 : 35
+                height: isNxt ? 28 : 22
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.fillStyle = blColor;
-                    var cx = width / 2;
-                    var cy = height / 2;
-                    var bladeR = width / 2 - 1;
-                    var hubR = width * 0.13;
-                    for (var i = 0; i < 3; i++) {
-                        ctx.save();
-                        ctx.translate(cx, cy);
-                        ctx.rotate(i * 2 * Math.PI / 3);
+                Canvas {
+                    id: fanIconItem
+                    width: isNxt ? 28 : 22
+                    height: width
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property color blColor: defaultTextColor
+                    onBlColorChanged: requestPaint()
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.fillStyle = blColor;
+                        var cx = width / 2;
+                        var cy = height / 2;
+                        var bladeR = width / 2 - 1;
+                        var hubR = width * 0.13;
+                        for (var i = 0; i < 3; i++) {
+                            ctx.save();
+                            ctx.translate(cx, cy);
+                            ctx.rotate(i * 2 * Math.PI / 3);
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
+                            ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                            ctx.fill();
+                            ctx.restore();
+                        }
                         ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
-                        ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                        ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
                         ctx.fill();
-                        ctx.restore();
                     }
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
-                    ctx.fill();
                 }
             }
 
@@ -189,6 +198,7 @@ Tile {
             Text {
                 text: "CO<sub>2</sub>"
                 textFormat: Text.RichText
+                width: isNxt ? 44 : 35
                 font {
                     family: qfont.semiBold.name
                     pixelSize: isNxt ? 18 : 14
@@ -212,6 +222,7 @@ Tile {
             Text {
                 text: "PM<sub>2.5</sub>"
                 textFormat: Text.RichText
+                width: isNxt ? 44 : 35
                 font {
                     family: qfont.regular.name
                     pixelSize: isNxt ? 16 : 13
@@ -232,35 +243,41 @@ Tile {
         Row {
             spacing: isNxt ? 8 : 6
 
-            Canvas {
-                id: dimFanIcon
-                width: isNxt ? 26 : 20
-                height: width
-                property color blColor: dimTextColor
-                onBlColorChanged: requestPaint()
+            Item {
+                width: isNxt ? 44 : 35
+                height: isNxt ? 26 : 20
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.fillStyle = blColor;
-                    var cx = width / 2;
-                    var cy = height / 2;
-                    var bladeR = width / 2 - 1;
-                    var hubR = width * 0.13;
-                    for (var i = 0; i < 3; i++) {
-                        ctx.save();
-                        ctx.translate(cx, cy);
-                        ctx.rotate(i * 2 * Math.PI / 3);
+                Canvas {
+                    id: dimFanIcon
+                    width: isNxt ? 26 : 20
+                    height: width
+                    anchors.verticalCenter: parent.verticalCenter
+                    property color blColor: dimTextColor
+                    onBlColorChanged: requestPaint()
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.fillStyle = blColor;
+                        var cx = width / 2;
+                        var cy = height / 2;
+                        var bladeR = width / 2 - 1;
+                        var hubR = width * 0.13;
+                        for (var i = 0; i < 3; i++) {
+                            ctx.save();
+                            ctx.translate(cx, cy);
+                            ctx.rotate(i * 2 * Math.PI / 3);
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
+                            ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                            ctx.fill();
+                            ctx.restore();
+                        }
                         ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(bladeR * 0.35, -bladeR * 0.55, bladeR, 0);
-                        ctx.quadraticCurveTo(bladeR * 0.35, bladeR * 0.55, 0, 0);
+                        ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
                         ctx.fill();
-                        ctx.restore();
                     }
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
-                    ctx.fill();
                 }
             }
 
