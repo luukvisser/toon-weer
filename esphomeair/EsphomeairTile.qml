@@ -54,46 +54,46 @@ Tile {
         }
         visible: !dimState
 
-        // Row 1: CO₂ label | value
+        // Row 1: value | unit | CO₂ label
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: co2ValueItem.height
-
-                Text {
-                    text: "CO<sub>2</sub>"
-                    textFormat: Text.RichText
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    font {
-                        family: qfont.regular.name
-                        pixelSize: isNxt ? 20 : 16
-                    }
-                    color: defaultTextColor
-                }
-            }
-
-            Item {
-                id: co2ValueItem
-                width: co2Num.width + (isNxt ? 5 : 4) + co2Unit.width
+                width: isNxt ? 100 : 80
                 height: co2Num.height
 
                 Text {
                     id: co2Num
                     text: app.co2Value
-                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: co2Color(app.co2Value)
                 }
+            }
+
+            Item {
+                width: co2Unit.width
+                height: co2Num.height
 
                 Text {
                     id: co2Unit
                     text: "ppm"
-                    anchors.left: co2Num.right
-                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
+            }
+
+            Item {
+                width: isNxt ? 44 : 35
+                height: co2Num.height
+
+                Text {
+                    text: "CO<sub>2</sub>"
+                    textFormat: Text.RichText
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
                     color: defaultTextColor
@@ -101,46 +101,46 @@ Tile {
             }
         }
 
-        // Row 2: PM2.5 label | value
+        // Row 2: value | unit | PM2.5 label
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: pm25ValueItem.height
-
-                Text {
-                    text: "PM<sub>2.5</sub>"
-                    textFormat: Text.RichText
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    font {
-                        family: qfont.regular.name
-                        pixelSize: isNxt ? 20 : 16
-                    }
-                    color: defaultTextColor
-                }
-            }
-
-            Item {
-                id: pm25ValueItem
-                width: pm25Num.width + (isNxt ? 5 : 4) + pm25Unit.width
+                width: isNxt ? 100 : 80
                 height: pm25Num.height
 
                 Text {
                     id: pm25Num
                     text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
-                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: pm25Color(app.pm25Value)
                 }
+            }
+
+            Item {
+                width: pm25Unit.width
+                height: pm25Num.height
 
                 Text {
                     id: pm25Unit
                     text: "µg/m³"
-                    anchors.left: pm25Num.right
-                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
+            }
+
+            Item {
+                width: isNxt ? 44 : 35
+                height: pm25Num.height
+
+                Text {
+                    text: "PM<sub>2.5</sub>"
+                    textFormat: Text.RichText
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
                     color: defaultTextColor
@@ -148,19 +148,47 @@ Tile {
             }
         }
 
-        // Row 3: fan icon | speed
+        // Row 3: value | unit | fan icon
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: fanSpeedItem.height
+                width: isNxt ? 100 : 80
+                height: fanNum.height
+
+                Text {
+                    id: fanNum
+                    text: app.fanSpeed
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: defaultTextColor
+                }
+            }
+
+            Item {
+                width: fanUnit.width
+                height: fanNum.height
+
+                Text {
+                    id: fanUnit
+                    text: "%"
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: defaultTextColor
+                }
+            }
+
+            Item {
+                width: isNxt ? 20 : 16
+                height: fanNum.height
 
                 Canvas {
                     id: fanIconItem
                     width: isNxt ? 20 : 16
                     height: width
-                    anchors.right: parent.right
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
 
                     property color blColor: defaultTextColor
@@ -191,31 +219,6 @@ Tile {
                     }
                 }
             }
-
-            Item {
-                id: fanSpeedItem
-                width: fanNum.width + (isNxt ? 5 : 4) + fanUnit.width
-                height: fanNum.height
-
-                Text {
-                    id: fanNum
-                    text: app.fanSpeed
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
-                    color: defaultTextColor
-                }
-
-                Text {
-                    id: fanUnit
-                    text: "%"
-                    anchors.left: fanNum.right
-                    anchors.leftMargin: isNxt ? 5 : 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
-                    color: defaultTextColor
-                }
-            }
         }
     }
 
@@ -230,91 +233,93 @@ Tile {
         }
         visible: dimState
 
+        // Row 1: value | unit | CO₂ label
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: dimCo2Value.height
-
-                Text {
-                    text: "CO<sub>2</sub>"
-                    textFormat: Text.RichText
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    font {
-                        family: qfont.semiBold.name
-                        pixelSize: isNxt ? 20 : 16
-                    }
-                    color: dimTextColor
-                }
-            }
-
-            Item {
-                id: dimCo2Value
-                width: dimCo2Num.width + (isNxt ? 5 : 4) + dimCo2Unit.width
+                width: isNxt ? 100 : 80
                 height: dimCo2Num.height
 
                 Text {
                     id: dimCo2Num
                     text: app.co2Value
-                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: dimTextColor
                 }
+            }
+
+            Item {
+                width: dimCo2Unit.width
+                height: dimCo2Num.height
 
                 Text {
                     id: dimCo2Unit
                     text: "ppm"
-                    anchors.left: dimCo2Num.right
-                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
                     color: dimTextColor
                 }
             }
+
+            Item {
+                width: isNxt ? 44 : 35
+                height: dimCo2Num.height
+
+                Text {
+                    text: "CO<sub>2</sub>"
+                    textFormat: Text.RichText
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.semiBold.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
+            }
         }
 
+        // Row 2: value | unit | PM2.5 label
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: dimPm25Value.height
-
-                Text {
-                    text: "PM<sub>2.5</sub>"
-                    textFormat: Text.RichText
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    font {
-                        family: qfont.regular.name
-                        pixelSize: isNxt ? 20 : 16
-                    }
-                    color: dimTextColor
-                }
-            }
-
-            Item {
-                id: dimPm25Value
-                width: dimPm25Num.width + (isNxt ? 5 : 4) + dimPm25Unit.width
+                width: isNxt ? 100 : 80
                 height: dimPm25Num.height
 
                 Text {
                     id: dimPm25Num
                     text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
-                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: dimTextColor
                 }
+            }
+
+            Item {
+                width: dimPm25Unit.width
+                height: dimPm25Num.height
 
                 Text {
                     id: dimPm25Unit
                     text: "µg/m³"
-                    anchors.left: dimPm25Num.right
-                    anchors.leftMargin: isNxt ? 5 : 4
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
+            }
+
+            Item {
+                width: isNxt ? 44 : 35
+                height: dimPm25Num.height
+
+                Text {
+                    text: "PM<sub>2.5</sub>"
+                    textFormat: Text.RichText
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
                     color: dimTextColor
@@ -322,18 +327,47 @@ Tile {
             }
         }
 
+        // Row 3: value | unit | fan icon
         Row {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 44 : 35
-                height: dimFanSpeed.height
+                width: isNxt ? 100 : 80
+                height: dimFanNum.height
+
+                Text {
+                    id: dimFanNum
+                    text: app.fanSpeed
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    color: dimTextColor
+                }
+            }
+
+            Item {
+                width: dimFanUnit.width
+                height: dimFanNum.height
+
+                Text {
+                    id: dimFanUnit
+                    text: "%"
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
+                    color: dimTextColor
+                }
+            }
+
+            Item {
+                width: isNxt ? 20 : 16
+                height: dimFanNum.height
 
                 Canvas {
                     id: dimFanIcon
                     width: isNxt ? 20 : 16
                     height: width
-                    anchors.right: parent.right
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     property color blColor: dimTextColor
                     onBlColorChanged: requestPaint()
@@ -361,31 +395,6 @@ Tile {
                         ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
                         ctx.fill();
                     }
-                }
-            }
-
-            Item {
-                id: dimFanSpeed
-                width: dimFanNum.width + (isNxt ? 5 : 4) + dimFanUnit.width
-                height: dimFanNum.height
-
-                Text {
-                    id: dimFanNum
-                    text: app.fanSpeed
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
-                    color: dimTextColor
-                }
-
-                Text {
-                    id: dimFanUnit
-                    text: "%"
-                    anchors.left: dimFanNum.right
-                    anchors.leftMargin: isNxt ? 5 : 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 20 : 16 }
-                    color: dimTextColor
                 }
             }
         }
