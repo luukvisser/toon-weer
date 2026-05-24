@@ -9,6 +9,8 @@ App {
 
     property string deviceIp: "192.168.68.111"
     property string openairIp: "192.168.68.113"
+    property string outdoorPm25Ip: ""
+    property string outdoorPm25Path: "sensor/pm2_5"
     property int refreshSec: 60
     property string co2SensorPath: "sensor/carbon_dioxide"
     property string pm25SensorPath: "sensor/pm2_5"
@@ -17,6 +19,7 @@ App {
     property string co2Value: "—"
     property string temperature: "—"
     property string pm25Value: "—"
+    property string outdoorPm25Value: "—"
     property string fanSpeed: "—"
     property string lastUpdated: ""
 
@@ -104,6 +107,10 @@ App {
                 pm25SensorPath = settings['pm25SensorPath'];
             if (settings['fanSpeedPath'])
                 fanSpeedPath = settings['fanSpeedPath'];
+            if (settings['outdoorPm25Ip'] !== undefined)
+                outdoorPm25Ip = settings['outdoorPm25Ip'];
+            if (settings['outdoorPm25Path'])
+                outdoorPm25Path = settings['outdoorPm25Path'];
         } catch (e) {}
         if (deviceIp || openairIp)
             fetchData();
@@ -113,6 +120,8 @@ App {
         var settings = {
             "deviceIp": deviceIp,
             "openairIp": openairIp,
+            "outdoorPm25Ip": outdoorPm25Ip,
+            "outdoorPm25Path": outdoorPm25Path,
             "refreshSec": refreshSec,
             "co2SensorPath": co2SensorPath,
             "pm25SensorPath": pm25SensorPath,
@@ -287,10 +296,33 @@ App {
                             pm25Value = (Math.round(data.value * 10) / 10).toString();
                     } catch (e) {}
                 }
-                fetchFanSpeed();
+                fetchOutdoorPm25();
             }
         };
         xhr.open("GET", "http://" + deviceIp + "/" + pm25SensorPath, true);
+        xhr.send();
+    }
+
+    function fetchOutdoorPm25() {
+        if (!outdoorPm25Ip) {
+            fetchFanSpeed();
+            return;
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                xhr.onreadystatechange = null;
+                if (xhr.status == 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.value !== undefined)
+                            outdoorPm25Value = (Math.round(data.value * 10) / 10).toString();
+                    } catch (e) {}
+                }
+                fetchFanSpeed();
+            }
+        };
+        xhr.open("GET", "http://" + outdoorPm25Ip + "/" + outdoorPm25Path, true);
         xhr.send();
     }
 
@@ -324,7 +356,7 @@ App {
 
     Timer {
         interval: refreshSec * 1000
-        running: deviceIp.length > 0 || openairIp.length > 0
+        running: deviceIp.length > 0 || openairIp.length > 0 || outdoorPm25Ip.length > 0
         repeat: true
         onTriggered: fetchData()
     }

@@ -33,6 +33,16 @@ Screen {
             app.fanSpeedPath = text.trim();
     }
 
+    function saveOutdoorPm25Ip(text) {
+        if (text !== undefined)
+            app.outdoorPm25Ip = text.trim();
+    }
+
+    function saveOutdoorPm25Path(text) {
+        if (text !== undefined)
+            app.outdoorPm25Path = text.trim();
+    }
+
     function saveRefresh(text) {
         if (text) {
             var v = parseInt(text);
@@ -50,6 +60,8 @@ Screen {
         ipLabel.inputText = app.deviceIp;
         co2SensorLabel.inputText = app.co2SensorPath;
         pm25SensorLabel.inputText = app.pm25SensorPath;
+        outdoorPm25IpLabel.inputText = app.outdoorPm25Ip;
+        outdoorPm25PathLabel.inputText = app.outdoorPm25Path;
         openairLabel.inputText = app.openairIp;
         fanSpeedLabel.inputText = app.fanSpeedPath;
         refreshLabel.inputText = app.refreshSec.toString();
@@ -173,6 +185,68 @@ Screen {
         }
     }
 
+    // ---- Extern PM2.5 monitor (buiten) ----
+
+    EditTextLabel4421 {
+        id: outdoorPm25IpLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "Buiten PM2.5 IP:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+        anchors {
+            left: ipLabel.left
+            top: pm25SensorLabel.bottom
+            topMargin: isNxt ? 18 : 14
+        }
+        onClicked: {
+            qkeyboard.open("Buiten PM2.5 IP", outdoorPm25IpLabel.inputText, saveOutdoorPm25Ip, validateText);
+        }
+    }
+
+    IconButton {
+        id: outdoorPm25IpButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+        anchors {
+            left: outdoorPm25IpLabel.right
+            leftMargin: 6
+            top: outdoorPm25IpLabel.top
+        }
+        onClicked: {
+            qkeyboard.open("Buiten PM2.5 IP", outdoorPm25IpLabel.inputText, saveOutdoorPm25Ip, validateText);
+        }
+    }
+
+    EditTextLabel4421 {
+        id: outdoorPm25PathLabel
+        width: isNxt ? 350 : 280
+        height: isNxt ? 45 : 35
+        leftText: "Buiten PM2.5 sensor:"
+        leftTextAvailableWidth: isNxt ? 175 : 140
+        anchors {
+            left: ipLabel.left
+            top: outdoorPm25IpLabel.bottom
+            topMargin: 6
+        }
+        onClicked: {
+            qkeyboard.open("Buiten PM2.5 sensor pad", outdoorPm25PathLabel.inputText, saveOutdoorPm25Path, validateText);
+        }
+    }
+
+    IconButton {
+        id: outdoorPm25PathButton
+        width: isNxt ? 50 : 40
+        iconSource: "qrc:/tsc/edit.png"
+        anchors {
+            left: outdoorPm25PathLabel.right
+            leftMargin: 6
+            top: outdoorPm25PathLabel.top
+        }
+        onClicked: {
+            qkeyboard.open("Buiten PM2.5 sensor pad", outdoorPm25PathLabel.inputText, saveOutdoorPm25Path, validateText);
+        }
+    }
+
     // ---- ESPHome ventilator group ----
 
     EditTextLabel4421 {
@@ -183,7 +257,7 @@ Screen {
         leftTextAvailableWidth: isNxt ? 175 : 140
         anchors {
             left: ipLabel.left
-            top: pm25SensorLabel.bottom
+            top: outdoorPm25PathLabel.bottom
             topMargin: isNxt ? 18 : 14
         }
         onClicked: {

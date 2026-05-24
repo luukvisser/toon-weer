@@ -111,10 +111,17 @@ Tile {
 
                 Text {
                     id: pm25Num
-                    text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
+                    text: {
+                        var indoor = isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1);
+                        if (app.outdoorPm25Ip) {
+                            var outdoor = isNaN(Number(app.outdoorPm25Value)) ? app.outdoorPm25Value : i18n.number(Number(app.outdoorPm25Value), 1);
+                            return indoor + "/" + outdoor;
+                        }
+                        return indoor;
+                    }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    font { family: qfont.regular.name; pixelSize: app.outdoorPm25Ip ? (isNxt ? 26 : 20) : (isNxt ? 40 : 32) }
                     color: pm25Color(app.pm25Value)
                 }
             }
@@ -290,10 +297,17 @@ Tile {
 
                 Text {
                     id: dimPm25Num
-                    text: isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1)
+                    text: {
+                        var indoor = isNaN(Number(app.pm25Value)) ? app.pm25Value : i18n.number(Number(app.pm25Value), 1);
+                        if (app.outdoorPm25Ip) {
+                            var outdoor = isNaN(Number(app.outdoorPm25Value)) ? app.outdoorPm25Value : i18n.number(Number(app.outdoorPm25Value), 1);
+                            return indoor + "/" + outdoor;
+                        }
+                        return indoor;
+                    }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
+                    font { family: qfont.regular.name; pixelSize: app.outdoorPm25Ip ? (isNxt ? 26 : 20) : (isNxt ? 40 : 32) }
                     color: dimTextColor
                 }
             }
