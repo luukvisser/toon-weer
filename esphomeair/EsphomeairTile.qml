@@ -106,7 +106,7 @@ Tile {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 100 : 80
+                width: app.outdoorPm25Ip ? (isNxt ? 150 : 120) : (isNxt ? 100 : 80)
                 height: pm25Num.height
 
                 Text {
@@ -121,7 +121,7 @@ Tile {
                     }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: app.outdoorPm25Ip ? (isNxt ? 26 : 20) : (isNxt ? 40 : 32) }
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: pm25Color(app.pm25Value)
                 }
             }
@@ -292,7 +292,7 @@ Tile {
             spacing: isNxt ? 8 : 6
 
             Item {
-                width: isNxt ? 100 : 80
+                width: app.outdoorPm25Ip ? (isNxt ? 150 : 120) : (isNxt ? 100 : 80)
                 height: dimPm25Num.height
 
                 Text {
@@ -307,7 +307,7 @@ Tile {
                     }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    font { family: qfont.regular.name; pixelSize: app.outdoorPm25Ip ? (isNxt ? 26 : 20) : (isNxt ? 40 : 32) }
+                    font { family: qfont.regular.name; pixelSize: isNxt ? 40 : 32 }
                     color: dimTextColor
                 }
             }
