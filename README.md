@@ -125,7 +125,6 @@ rows marked **fork-only** below.
 | `.pre-commit-config.yaml` (prettier, qmllint) | —        | yes                                   |
 | `.prettierrc.json` / `.prettierignore`        | —        | yes                                   |
 | GitHub Actions PR linting workflow            | —        | yes (`.github/workflows/pr-lint.yml`) |
-| `toon-qml-memory.sh` (QML memory diagnostics) | —        | yes                                   |
 | `qmlformat`-formatted QML                     | —        | yes                                   |
 
 ### File renames (upstream → fork)
@@ -172,7 +171,6 @@ rows marked **fork-only** below.
 ├── drawables/                      # weather icons (day/night/dim variants)
 ├── lang/                           # translations
 ├── qmldir                          # QML module declaration
-├── toon-qml-memory.sh              # memory diagnostic script (fork-only)
 ├── version.txt                     # current version
 └── weer.js                         # JS helpers (formatting, score, fetch)
 ```

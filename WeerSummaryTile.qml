@@ -11,7 +11,8 @@ Tile {
 
     function msToBft(ms) {
         var v = parseFloat(ms);
-        if (isNaN(v) || v < 0) return "—";
+        if (isNaN(v) || v < 0)
+            return "—";
         return i18n.number(Math.pow(v / 0.836, 2 / 3), 1);
     }
 

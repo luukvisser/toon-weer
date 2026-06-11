@@ -23,14 +23,6 @@ App {
     property string fanSpeed: "—"
     property string lastUpdated: ""
 
-    // Update state
-    property string currentVersion: "—"
-    property string latestVersion: ""
-    property bool updateAvailable: false
-    property bool updateChecking: false
-    property bool updateInProgress: false
-    property string updateStatus: ""
-
     property url tileUrl: "EsphomeairTile.qml"
     property url menuUrl: "EsphomeairMenu.qml"
     property url settingsScreenUrl: "EsphomeairSettingsScreen.qml"
@@ -42,16 +34,9 @@ App {
         source: "file:///mnt/data/tsc/esphomeair.userSettings.json"
     }
 
-    FileIO {
-        id: versionFile
-        source: "file:///qmf/qml/apps/esphomeair/version.txt"
-    }
-
     QtObject {
         id: p
         property var fetchXhr: null
-
-        property var updateFileList: ["qmldir", "EsphomeairApp.qml", "EsphomeairTile.qml", "EsphomeairSettingsScreen.qml", "EsphomeairMenu.qml", "EditTextLabel4421.qml", "update.sh", "version.txt"]
     }
 
     function cancelXhr(xhr) {
@@ -84,12 +69,6 @@ App {
     }
 
     Component.onCompleted: {
-        try {
-            currentVersion = versionFile.read().trim();
-        } catch (e) {
-            currentVersion = "onbekend";
-        }
-
         try {
             var settings = JSON.parse(settingsFile.read());
             if (settings['deviceIp'])
@@ -130,94 +109,6 @@ App {
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "file:///mnt/data/tsc/esphomeair.userSettings.json");
         xhr.send(JSON.stringify(settings));
-    }
-
-    // -------------------------------------------------------------------------
-    // Update functions
-    // -------------------------------------------------------------------------
-
-    function checkForUpdate() {
-        if (updateChecking || updateInProgress)
-            return;
-        updateChecking = true;
-        updateStatus = "Controleren…";
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                xhr.onreadystatechange = null;
-                updateChecking = false;
-                if (xhr.status == 200) {
-                    try {
-                        var releases = JSON.parse(xhr.responseText);
-                        var found = "";
-                        for (var i = 0; i < releases.length; i++) {
-                            var tag = releases[i].tag_name;
-                            if (tag.indexOf("esphomeair-v") === 0) {
-                                found = tag.substring(13);
-                                break;
-                            }
-                        }
-                        if (found) {
-                            latestVersion = found;
-                            if (found === currentVersion) {
-                                updateAvailable = false;
-                                updateStatus = "Versie " + currentVersion + " is de laatste versie.";
-                            } else {
-                                updateAvailable = true;
-                                updateStatus = "Versie " + found + " beschikbaar!";
-                            }
-                        } else {
-                            updateStatus = "Geen release gevonden.";
-                        }
-                    } catch (e) {
-                        updateStatus = "Fout bij verwerken van releaseinfo.";
-                    }
-                } else {
-                    updateStatus = "Kan GitHub niet bereiken.";
-                }
-            }
-        };
-        xhr.open("GET", "https://api.github.com/repos/luukvisser/toon-weer/releases", true);
-        xhr.send();
-    }
-
-    function installUpdate() {
-        if (!updateAvailable || updateInProgress)
-            return;
-        updateInProgress = true;
-        downloadFile(0);
-    }
-
-    function downloadFile(index) {
-        if (index >= p.updateFileList.length) {
-            currentVersion = latestVersion;
-            updateAvailable = false;
-            updateInProgress = false;
-            updateStatus = "Klaar! Herstart de Toon om de update toe te passen.";
-            return;
-        }
-        var filename = p.updateFileList[index];
-        var total = p.updateFileList.length;
-        updateStatus = "Downloaden " + filename + " (" + (index + 1) + "/" + total + ")…";
-        var rawUrl = "https://raw.githubusercontent.com/luukvisser/toon-weer/esphomeair-v" + latestVersion + "/esphomeair/" + filename;
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                xhr.onreadystatechange = null;
-                if (xhr.status == 200) {
-                    var putXhr = new XMLHttpRequest();
-                    putXhr.open("PUT", "file:///qmf/qml/apps/esphomeair/" + filename);
-                    putXhr.send(xhr.responseText);
-                } else {
-                    updateStatus = "Fout bij downloaden van " + filename + ".";
-                    updateInProgress = false;
-                    return;
-                }
-                downloadFile(index + 1);
-            }
-        };
-        xhr.open("GET", rawUrl, true);
-        xhr.send();
     }
 
     // -------------------------------------------------------------------------
