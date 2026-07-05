@@ -7,13 +7,13 @@ App {
     id: esphomeAirApp
     objectName: "EsphomeairApp"
 
-    property string deviceIp: "192.168.68.111"
-    property string openairIp: "192.168.68.113"
+    property string deviceIp: ""
+    property string openairIp: ""
     property string outdoorPm25Ip: ""
-    property string outdoorPm25Path: "sensor/pm2_5"
+    property string outdoorPm25Path: "sensor/PM2.5"
     property int refreshSec: 60
-    property string co2SensorPath: "sensor/carbon_dioxide"
-    property string pm25SensorPath: "sensor/pm2_5"
+    property string co2SensorPath: "sensor/Carbon Dioxide"
+    property string pm25SensorPath: "sensor/PM2.5"
     property string fanSpeedPath: "sensor/Fan Speed"
 
     property string co2Value: "—"
