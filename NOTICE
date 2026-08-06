@@ -1,0 +1,86 @@
+# NOTICE
+
+`toon-weer` is a fork of
+[`ToonSoftwareCollective/buienradar`](https://github.com/ToonSoftwareCollective/buienradar).
+
+The MIT license in `LICENSE` covers the contributions made in this repository
+by its authors. It does not grant rights to material that originates from the
+upstream project.
+
+## Upstream material
+
+At the time of writing, the upstream repository publishes no license file and
+states no license terms. Upstream material is therefore used here on the same
+informal basis it is distributed by the Toon Software Collective, and is
+**excluded from the MIT grant** in `LICENSE`.
+
+The following are wholly or substantially upstream in origin:
+
+| Path                        | Status                                                             |
+| --------------------------- | ------------------------------------------------------------------ |
+| `EditTextLabel4421.qml`     | Verbatim copy from upstream. Not covered by the MIT license.       |
+| `StationFilterDelegate.qml` | Verbatim copy from upstream. Not covered by the MIT license.       |
+| `Changelog.txt`             | Upstream changelog. Not covered by the MIT license.                |
+| `drawables/` (119 files)    | Upstream images. Enumerated below. Not covered by the MIT license. |
+| `lang/` (2 files)           | Upstream translations. Enumerated below. Not covered by the MIT license. |
+
+Every file in `drawables/` and `lang/` entered this repository with the initial
+upstream import; the fork has added no images or translations of its own. The
+only change ever made to any of them is a trailing-whitespace normalisation of
+`drawables/a-frame.svg` by the repository's formatting hooks.
+
+### `drawables/` — weather icons, dimmed variants (34 files)
+
+`DimClearNight.png`, `DimClouded.png`, `DimCloudedNight.png`, `DimCross.png`, `DimFog.png`, `DimFogDay.png`,
+`DimFogNight.png`, `DimHail.png`, `DimHailDay.png`, `DimHailNight.png`, `DimLightRain.png`, `DimLightRainDay.png`,
+`DimLightRainNight.png`, `DimLightSnow.png`, `DimLightSnowDay.png`, `DimLightSnowNight.png`, `DimRain.png`,
+`DimRainDay.png`, `DimRainHail.png`, `DimRainHailDay.png`, `DimRainHailNight.png`, `DimRainNight.png`,
+`DimSleet.png`, `DimSleetDay.png`, `DimSleetNight.png`, `DimSlipRisk.png`, `DimSnow.png`, `DimSnowDay.png`,
+`DimSnowNight.png`, `DimSunny.png`, `DimSunnyIntervals.png`, `DimThunder.png`, `DimThunderDay.png`,
+`DimThunderNight.png`
+
+### `drawables/` — weather icons, home-screen variants (34 files)
+
+`HomeClearNight.png`, `HomeClouded.png`, `HomeCloudedNight.png`, `HomeCross.png`, `HomeFog.png`, `HomeFogDay.png`,
+`HomeFogNight.png`, `HomeHail.png`, `HomeHailDay.png`, `HomeHailNight.png`, `HomeLightRain.png`,
+`HomeLightRainDay.png`, `HomeLightRainNight.png`, `HomeLightSnow.png`, `HomeLightSnowDay.png`,
+`HomeLightSnowNight.png`, `HomeRain.png`, `HomeRainDay.png`, `HomeRainHail.png`, `HomeRainHailDay.png`,
+`HomeRainHailNight.png`, `HomeRainNight.png`, `HomeSleet.png`, `HomeSleetDay.png`, `HomeSleetNight.png`,
+`HomeSlipRisk.png`, `HomeSnow.png`, `HomeSnowDay.png`, `HomeSnowNight.png`, `HomeSunny.png`,
+`HomeSunnyIntervals.png`, `HomeThunder.png`, `HomeThunderDay.png`, `HomeThunderNight.png`
+
+### `drawables/` — Buienradar icon-code images (44 files)
+
+Named after the weather-condition codes in the Buienradar feed; the doubled names are the night variants.
+
+`a.png`, `aa.png`, `b.png`, `bb.png`, `c.png`, `cc.png`, `d.png`, `dd.png`, `f.png`, `ff.png`, `g.png`, `gg.png`,
+`h.png`, `hh.png`, `i.png`, `ii.png`, `j.png`, `jj.png`, `k.png`, `kk.png`, `l.png`, `ll.png`, `m.png`, `mm.png`,
+`n.png`, `nn.png`, `o.png`, `oo.png`, `p.png`, `pp.png`, `q.png`, `qq.png`, `r.png`, `rr.png`, `s.png`, `ss.png`,
+`t.png`, `tt.png`, `u.png`, `uu.png`, `v.png`, `vv.png`, `w.png`, `ww.png`
+
+### `drawables/` — application and UI images (7 files)
+
+`MinusSmall.png`, `PlusSmall.png`, `a-frame.svg`, `buienradar.png`, `buienradarMarker.png`, `buienradarTray.png`,
+`edit.png`
+
+### `lang/` — compiled translations (2 files)
+
+`lang_en_GB.qm`, `lang_nl_NL.qm`
+
+The `Weer*.qml` files and `weer.js` are modified derivatives of their upstream
+`Buienradar*.qml` / `buienradar.js` counterparts (see the rename table in
+`README.md`). The MIT license applies to the changes made in this fork; the
+underlying upstream code remains subject to whatever terms the upstream
+project holds.
+
+If you are the copyright holder of any upstream material and want it removed,
+relicensed or attributed differently, please open an issue.
+
+## Data sources
+
+Weather data is retrieved from third-party services and is subject to their own
+terms:
+
+- [Buienradar](https://www.buienradar.nl/) — current conditions, station list,
+  forecast, radar imagery.
+- [Open-Meteo](https://open-meteo.com/) — hourly precipitation and UV index.

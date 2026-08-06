@@ -20,6 +20,7 @@ Currently tracking upstream version **9.0.11** (see `version.txt` / `Changelog.t
 - [Comparison with upstream](#comparison-with-upstream)
 - [Repository layout](#repository-layout)
 - [Development](#development)
+- [License](#license)
 
 ---
 
@@ -154,8 +155,10 @@ rows marked **fork-only** below.
 ├── .prettierrc.json                # prettier config (fork-only)
 ├── .prettierignore                 # prettier ignores (fork-only)
 ├── Changelog.txt                   # upstream changelog
-├── EditTextLabel4421.qml           # firmware 4.4.21 compatibility helper
-├── StationFilterDelegate.qml       # station-list filter delegate
+├── EditTextLabel4421.qml           # firmware 4.4.21 compatibility helper (upstream)
+├── LICENSE                         # MIT license (fork-only)
+├── NOTICE                          # upstream attribution / license exceptions
+├── StationFilterDelegate.qml       # station-list filter delegate (upstream)
 ├── WeerActualRadarScreen.qml       # big radar viewer
 ├── WeerApp.qml                     # main app (data fetching, state)
 ├── WeerDetailsScreen.qml           # details screen
@@ -192,3 +195,17 @@ checks run on pull requests via `.github/workflows/pr-lint.yml`.
 Deployment to a Toon device is unchanged from upstream — install through
 ToonStore, or push the contents of this directory to `/qmf/qml/apps/weer/` on
 the device.
+
+## License
+
+The contributions in this repository are released under the
+[MIT license](LICENSE).
+
+This is a fork of
+[`ToonSoftwareCollective/buienradar`](https://github.com/ToonSoftwareCollective/buienradar),
+which publishes no license of its own. Material that originates upstream is
+**not** covered by the MIT grant — most notably `EditTextLabel4421.qml` and
+`StationFilterDelegate.qml` (verbatim copies), plus `Changelog.txt`,
+`drawables/` and `lang/`. The `Weer*.qml` files and `weer.js` are modified
+derivatives of upstream files: the MIT license covers the changes made here,
+not the underlying upstream code. See [NOTICE](NOTICE) for the full breakdown.
