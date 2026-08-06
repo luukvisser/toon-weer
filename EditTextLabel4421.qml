@@ -1,3 +1,7 @@
+// Verbatim copy from the upstream project
+// https://github.com/ToonSoftwareCollective/buienradar
+// Not covered by the MIT license in LICENSE. See NOTICE.
+
 import QtQuick 2.1
 import BasicUIControls 1.0
 
