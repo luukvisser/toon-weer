@@ -138,51 +138,50 @@ App {
         xhr.onreadystatechange = null;
         try {
             xhr.abort();
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function init() {
         registry.registerWidget("tile", tileUrl, this, null, {
-                "thumbLabel": qsTr("Weer v2"),
-                "thumbIcon": thumbnailIcon,
-                "thumbCategory": "general",
-                "thumbWeight": 30,
-                "baseTileWeight": 10,
-                "thumbIconVAlignment": "center"
-            });
+            "thumbLabel": qsTr("Weer v2"),
+            "thumbIcon": thumbnailIcon,
+            "thumbCategory": "general",
+            "thumbWeight": 30,
+            "baseTileWeight": 10,
+            "thumbIconVAlignment": "center"
+        });
         registry.registerWidget("tile", tileUrlRegen, this, null, {
-                "thumbLabel": "Regenverw. v2",
-                "thumbIcon": thumbnailIcon,
-                "thumbCategory": "general",
-                "thumbWeight": 30,
-                "baseTileWeight": 10,
-                "thumbIconVAlignment": "center"
-            });
+            "thumbLabel": "Regenverw. v2",
+            "thumbIcon": thumbnailIcon,
+            "thumbCategory": "general",
+            "thumbWeight": 30,
+            "baseTileWeight": 10,
+            "thumbIconVAlignment": "center"
+        });
         registry.registerWidget("tile", tileSunrise, this, null, {
-                "thumbLabel": "Zon op/onder v2",
-                "thumbIcon": thumbnailIcon,
-                "thumbCategory": "general",
-                "thumbWeight": 30,
-                "baseTileWeight": 10,
-                "thumbIconVAlignment": "center"
-            });
+            "thumbLabel": "Zon op/onder v2",
+            "thumbIcon": thumbnailIcon,
+            "thumbCategory": "general",
+            "thumbWeight": 30,
+            "baseTileWeight": 10,
+            "thumbIconVAlignment": "center"
+        });
         registry.registerWidget("tile", tileSummary, this, null, {
-                "thumbLabel": "Vandaag v2",
-                "thumbIcon": thumbnailIcon,
-                "thumbCategory": "general",
-                "thumbWeight": 30,
-                "baseTileWeight": 10,
-                "thumbIconVAlignment": "center"
-            });
+            "thumbLabel": "Vandaag v2",
+            "thumbIcon": thumbnailIcon,
+            "thumbCategory": "general",
+            "thumbWeight": 30,
+            "baseTileWeight": 10,
+            "thumbIconVAlignment": "center"
+        });
         registry.registerWidget("screen", p.weerDetailsScreenUrl, this, "weerDetailsScreen");
         registry.registerWidget("screen", p.weerStationScreenUrl, this, "weerStationScreen");
         registry.registerWidget("screen", p.weerActualRadarScreenUrl, this, "weerActualRadarScreen");
         registry.registerWidget("screen", p.weerEditLonLatScreenUrl, this, "weerEditLonLatScreen");
         registry.registerWidget("screen", p.weerFullWeatherForecastScreenUrl, this, "weerFullWeatherForecastScreen");
         registry.registerWidget("menuItem", p.weerMenuUrl, this, "weerMenu", {
-                "weight": 110
-            });
+            "weight": 110
+        });
         registry.registerWidget("systrayIcon", p.weerTrayUrl, weerApp);
     }
 
@@ -228,8 +227,7 @@ App {
                 if (!isNaN(parsed) && parsed >= -12 && parsed <= 12)
                     dayOffsetHour = parsed;
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function saveSettings() {
@@ -334,25 +332,25 @@ App {
                         // fill model for grid of weather station data on detail screen
                         var rows = [];
                         rows.push({
-                                "location": stationNames[stationIndex],
-                                "temperature": 'Temperatuur:',
-                                "windsnelheid": 'Windsnelheid:',
-                                "windDirection": 'Windrichting:',
-                                "humidity": 'Luchtvochtigheid:',
-                                "pressure": 'Luchtdruk:',
-                                "zicht": 'Zicht:',
-                                "zonoponder": 'Zon op\/onder'
-                            });
+                            "location": stationNames[stationIndex],
+                            "temperature": 'Temperatuur:',
+                            "windsnelheid": 'Windsnelheid:',
+                            "windDirection": 'Windrichting:',
+                            "humidity": 'Luchtvochtigheid:',
+                            "pressure": 'Luchtdruk:',
+                            "zicht": 'Zicht:',
+                            "zonoponder": 'Zon op\/onder'
+                        });
                         rows.push({
-                                "location": WeerJS.dateFormat(data['actual']['stationmeasurements'][stationIndex]['timestamp']),
-                                "temperature": WeerJS.lineTemp(temperature),
-                                "windDirection": windDirection,
-                                "windsnelheid": WeerJS.lineWindsnelheid(windSpeedBft),
-                                "humidity": WeerJS.lineLuchtvochtigheid(humidity),
-                                "pressure": WeerJS.lineLuchtdruk(pressure),
-                                "zicht": WeerJS.lineZichtmeters(visibilityMeters),
-                                "zonoponder": WeerJS.lineZonOpOnder(data['actual']['sunrise'], data['actual']['sunset'])
-                            });
+                            "location": WeerJS.dateFormat(data['actual']['stationmeasurements'][stationIndex]['timestamp']),
+                            "temperature": WeerJS.lineTemp(temperature),
+                            "windDirection": windDirection,
+                            "windsnelheid": WeerJS.lineWindsnelheid(windSpeedBft),
+                            "humidity": WeerJS.lineLuchtvochtigheid(humidity),
+                            "pressure": WeerJS.lineLuchtdruk(pressure),
+                            "zicht": WeerJS.lineZichtmeters(visibilityMeters),
+                            "zonoponder": WeerJS.lineZonOpOnder(data['actual']['sunrise'], data['actual']['sunset'])
+                        });
                         actualWeather = rows;
                         sunrise = data['actual']['sunrise'];
                         sunset = data['actual']['sunset'];
@@ -363,13 +361,13 @@ App {
                     var dayName = dayNames[date.getDay()];
                     var forecast = [];
                     forecast.push({
-                            "kanszon": 'zon %',
-                            "kansregen": 'regen %',
-                            "tempRange": 'temp °C',
-                            "precip": 'neerslag',
-                            "wind": 'wind',
-                            "score": 'score'
-                        });
+                        "kanszon": 'zon %',
+                        "kansregen": 'regen %',
+                        "tempRange": 'temp °C',
+                        "precip": 'neerslag',
+                        "wind": 'wind',
+                        "score": 'score'
+                    });
 
                     // if the new day-plus 1 differs from the old one, we have received a new set of 5 days and can copy the old day1 to day0 (which is today actually)
                     if (firstDayForecast == "  ") {
@@ -406,15 +404,15 @@ App {
                         var maxTempBR = Math.round(Number(maxTemp));
                         var precipBR = data['forecast']['fivedayforecast'][i]['mmRainMax'] !== undefined ? i18n.number(data['forecast']['fivedayforecast'][i]['mmRainMax'], 1) + " mm" : "—";
                         forecast.push({
-                                "dagweek": dayName,
-                                "kanszon": sunChance,
-                                "kansregen": rainChance,
-                                "tempRange": minTempBR + " - " + maxTempBR,
-                                "precip": precipBR,
-                                "wind": wind,
-                                "score": score,
-                                "icoon": dayIconPath
-                            });
+                            "dagweek": dayName,
+                            "kanszon": sunChance,
+                            "kansregen": rainChance,
+                            "tempRange": minTempBR + " - " + maxTempBR,
+                            "precip": precipBR,
+                            "wind": wind,
+                            "score": score,
+                            "icoon": dayIconPath
+                        });
                     }
                     fiveDayForecast = forecast;
 
@@ -534,25 +532,25 @@ App {
                     function buildActualWeatherOM(locStr) {
                         var rows = [];
                         rows.push({
-                                "location": 'GPS locatie',
-                                "temperature": 'Temperatuur:',
-                                "windsnelheid": 'Windsnelheid:',
-                                "windDirection": 'Windrichting:',
-                                "humidity": 'Luchtvochtigheid:',
-                                "pressure": 'Luchtdruk:',
-                                "zicht": 'UV index:',
-                                "zonoponder": 'Zon op\/onder'
-                            });
+                            "location": 'GPS locatie',
+                            "temperature": 'Temperatuur:',
+                            "windsnelheid": 'Windsnelheid:',
+                            "windDirection": 'Windrichting:',
+                            "humidity": 'Luchtvochtigheid:',
+                            "pressure": 'Luchtdruk:',
+                            "zicht": 'UV index:',
+                            "zonoponder": 'Zon op\/onder'
+                        });
                         rows.push({
-                                "location": locStr,
-                                "temperature": WeerJS.lineTemp(temperature),
-                                "windsnelheid": WeerJS.lineWindsnelheid(windSpeedBft),
-                                "windDirection": windDirection,
-                                "humidity": WeerJS.lineLuchtvochtigheid(humidity),
-                                "pressure": WeerJS.lineLuchtdruk(pressure),
-                                "zicht": uvIndexStr,
-                                "zonoponder": WeerJS.lineZonOpOnder(sunrise, sunset)
-                            });
+                            "location": locStr,
+                            "temperature": WeerJS.lineTemp(temperature),
+                            "windsnelheid": WeerJS.lineWindsnelheid(windSpeedBft),
+                            "windDirection": windDirection,
+                            "humidity": WeerJS.lineLuchtvochtigheid(humidity),
+                            "pressure": WeerJS.lineLuchtdruk(pressure),
+                            "zicht": uvIndexStr,
+                            "zonoponder": WeerJS.lineZonOpOnder(sunrise, sunset)
+                        });
                         actualWeather = rows;
                     }
                     // fall back to coordinates immediately so the tile resolves even if the geocode fails
@@ -574,8 +572,7 @@ App {
                                         locationName = city;
                                         buildActualWeatherOM(locationName);
                                     }
-                                } catch (e) {
-                                }
+                                } catch (e) {}
                             }
                             geocodeXhr.onreadystatechange = null;
                             if (p.geocodeXhr === geocodeXhr)
@@ -588,13 +585,13 @@ App {
                     // 5-day forecast
                     var forecast = [];
                     forecast.push({
-                            "kanszon": 'zon %',
-                            "kansregen": 'regen %',
-                            "tempRange": 'temp °C',
-                            "precip": 'neerslag',
-                            "wind": 'wind',
-                            "score": 'score'
-                        });
+                        "kanszon": 'zon %',
+                        "kansregen": 'regen %',
+                        "tempRange": 'temp °C',
+                        "precip": 'neerslag',
+                        "wind": 'wind',
+                        "score": 'score'
+                    });
                     var dateToScore = {};
                     for (var i = 0; i < 5; i++) {
                         var date = new Date(daily['time'][i]);
@@ -621,15 +618,15 @@ App {
                         var maxTempOM = Math.round(daily['temperature_2m_max'][i]);
                         var precipOM = daily['precipitation_sum'] && daily['precipitation_sum'][i] !== null ? i18n.number(daily['precipitation_sum'][i], 1) + " mm" : "—";
                         forecast.push({
-                                "dagweek": dayName,
-                                "kanszon": sunChance,
-                                "kansregen": rainChance,
-                                "tempRange": minTempOM + " - " + maxTempOM,
-                                "precip": precipOM,
-                                "wind": wind,
-                                "score": score,
-                                "icoon": dayIconPath
-                            });
+                            "dagweek": dayName,
+                            "kanszon": sunChance,
+                            "kansregen": rainChance,
+                            "tempRange": minTempOM + " - " + maxTempOM,
+                            "precip": precipOM,
+                            "wind": wind,
+                            "score": score,
+                            "icoon": dayIconPath
+                        });
                     }
                     fiveDayForecast = forecast;
 
@@ -675,12 +672,12 @@ App {
                             var hRainMm = hourly['precipitation'] ? (hourly['precipitation'][h] || 0) : 0;
                             var hScore = WeerJS.calcWeatherScore(hSunPct, hRainProb, hTemp !== null ? hTemp : 15, hWindDir + " " + hWindBft, hRainMm, undefined).toString();
                             hourlyRows.push({
-                                    "hour": hourLabel,
-                                    "icoon": hIconPath,
-                                    "temp": (hTemp !== null && hTemp !== undefined) ? Math.round(hTemp) + "°" : "",
-                                    "rainPct": hRainProb + "%",
-                                    "score": hScore
-                                });
+                                "hour": hourLabel,
+                                "icoon": hIconPath,
+                                "temp": (hTemp !== null && hTemp !== undefined) ? Math.round(hTemp) + "°" : "",
+                                "rainPct": hRainProb + "%",
+                                "score": hScore
+                            });
                         }
                     }
                     hourlyForecast = hourlyRows;
@@ -825,8 +822,7 @@ App {
                             state.maxPrecip = precip;
                     }
                     state.gotBR = true;
-                } catch (e) {
-                }
+                } catch (e) {}
             }
             brXhr.onreadystatechange = null;
             // only release the slot if no follow-up XHR has taken it
@@ -897,8 +893,7 @@ App {
                                 }
                             }
                         }
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
                 omXhr.onreadystatechange = null;
                 if (p.rainXhr === omXhr)

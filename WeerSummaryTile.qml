@@ -9,6 +9,13 @@ Tile {
             app.weerDetailsScreen.show();
     }
 
+    function msToBft(ms) {
+        var v = parseFloat(ms);
+        if (isNaN(v) || v < 0)
+            return "—";
+        return i18n.number(Math.pow(v / 0.836, 2 / 3), 1);
+    }
+
     // Min/max temp row at the top
     Text {
         id: summaryMinTemp
@@ -100,7 +107,7 @@ Tile {
     // Pipe is at a fixed left position so it aligns with the UV row pipe below.
     Text {
         id: summaryWindCur
-        text: app.windSpeedMs !== "" ? i18n.number(Number(app.windSpeedMs), 1) : "—"
+        text: app.windSpeedMs !== "" ? msToBft(app.windSpeedMs) : "—"
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
@@ -132,7 +139,7 @@ Tile {
 
     Text {
         id: summaryWindMax
-        text: (app.maxWindMsSummary !== "" ? app.maxWindMsSummary : "—") + " m/s"
+        text: (app.maxWindMsSummary !== "" ? msToBft(app.maxWindMsSummary) : "—") + " Bft"
         anchors {
             baseline: parent.bottom
             baselineOffset: isNxt ? -36 : -29
